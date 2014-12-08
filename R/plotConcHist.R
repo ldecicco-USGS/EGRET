@@ -26,9 +26,11 @@
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param col.pred color of flow normalized line on plot, see ?par 'Color Specification'
+#' @param USGSsytle logical use USGSwsGraph package for USGS style
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
+#' @import USGSwsGraphs
 #' @seealso \code{\link{setupYears}}, \code{\link{genericEGRETDotPlot}}
 #' @examples
 #' yearStart <- 2001
@@ -39,11 +41,21 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotConcHist(eList, yearStart, yearEnd)
+#' setPDF("test",layout="portrait")
+#' plotConcHist(eList, yearStart, yearEnd, USGSstyle=TRUE)
+#' graphics.off()
+#' 
+#' setPDF("test2",layout="landscape")
+#' par(mfcol=c(2,1))
+#' plotConcHist(eList, yearStart, yearEnd, USGSstyle=TRUE)
+#' plotFluxHist(eList, yearStart, yearEnd, USGSstyle=TRUE)
+#' graphics.off()
 plotConcHist<-function(eList, yearStart = NA, yearEnd = NA, 
                        concMax = NA, printTitle = TRUE, 
                        tinyPlot = FALSE,plotFlowNorm = TRUE,
                         cex=0.8, cex.axis=1.1,cex.main=1.1, 
-                       lwd=2, col="black", col.pred="green", customPar=FALSE,...){
+                       lwd=2, col="black", col.pred="green", customPar=FALSE,
+                       USGSstyle=FALSE,...){
 
   localDaily <- getDaily(eList)
   localINFO <- getInfo(eList)
@@ -71,17 +83,31 @@ plotConcHist<-function(eList, yearStart = NA, yearEnd = NA,
   yInfo <- generalAxis(x=combinedY, minVal=0, maxVal=concMax, padPercent=5, 
                        tinyPlot=tinyPlot,units=localINFO$param.units)
   
-  genericEGRETDotPlot(x=localAnnualResults$DecYear, y=localAnnualResults$Conc,
-                      xTicks=xInfo$ticks, yTicks=yInfo$ticks,xDate=TRUE,
-                      xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
-                      ylab=yInfo$label, col=col,cex=cex,
-                      plotTitle=title, cex.axis=cex.axis,cex.main=cex.main,
-                      tinyPlot=tinyPlot,customPar=customPar,...
-    )
-  
-  if(plotFlowNorm) with(localAnnualResults, 
-                        lines(DecYear[DecYear>xInfo$bottom & DecYear<xInfo$top], 
-                              FNConc[DecYear>xInfo$bottom & DecYear<xInfo$top], 
-                              col=col.pred, lwd=lwd))
+  if(USGSstyle){
+    localAnnualResults$Date <- as.Date(paste0(as.character(as.integer(localAnnualResults$DecYear)),"-04-01"))
+#     setPDF("test",layout="portrait")
+    timePlot(localAnnualResults$Date, localAnnualResults$Conc, Plot=list(what="points"),
+             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yInfo$label,
+             xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))))
+    if(plotFlowNorm) {
+      addXY(localAnnualResults$Date, localAnnualResults$FNConc, Plot=list(color="green"))
+    }
+    addTitle(title, Justification = "center")
+#     graphics.off()
+    
+  } else {
+    genericEGRETDotPlot(x=localAnnualResults$DecYear, y=localAnnualResults$Conc,
+                        xTicks=xInfo$ticks, yTicks=yInfo$ticks,xDate=TRUE,
+                        xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
+                        ylab=yInfo$label, col=col,cex=cex,
+                        plotTitle=title, cex.axis=cex.axis,cex.main=cex.main,
+                        tinyPlot=tinyPlot,customPar=customPar,...
+      )
+    
+    if(plotFlowNorm) with(localAnnualResults, 
+                          lines(DecYear[DecYear>xInfo$bottom & DecYear<xInfo$top], 
+                                FNConc[DecYear>xInfo$bottom & DecYear<xInfo$top], 
+                                col=col.pred, lwd=lwd))
+  }
 	
 }

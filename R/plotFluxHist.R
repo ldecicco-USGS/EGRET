@@ -26,6 +26,7 @@
 #' @param customPar logical defaults to FALSE. If TRUE, par() should be set by user before calling this function 
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
 #' @param col.pred color of flow normalized line on plot, see ?par 'Color Specification'
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
@@ -44,7 +45,8 @@
 plotFluxHist<-function(eList, yearStart = NA, yearEnd = NA, fluxUnit = 9, 
     fluxMax = NA, printTitle = TRUE, plotFlowNorm = TRUE,
     tinyPlot=FALSE,col="black",col.pred="green",
-    cex=0.8, cex.axis=1.1,cex.main=1.1, lwd=2, customPar=FALSE, ...){
+    cex=0.8, cex.axis=1.1,cex.main=1.1, lwd=2, customPar=FALSE,
+    USGSstyle=FALSE,...){
 
   localINFO <- getInfo(eList)
   localDaily <- getDaily(eList)
@@ -107,15 +109,27 @@ plotFluxHist<-function(eList, yearStart = NA, yearEnd = NA, fluxUnit = 9,
   yInfo <- generalAxis(x=combinedY, minVal=0, maxVal=fluxMax, padPercent=5, tinyPlot=tinyPlot)
   
   ###############################################
-  
-  genericEGRETDotPlot(x=subAnnualResults$DecYear, y = annFlux,
-                      xTicks=xInfo$ticks, yTicks=yInfo$ticks,xDate=TRUE,
-                      xlim=c(xInfo$bottom,xInfo$top), ylim=c(0,yInfo$top),col=col,
-                      ylab=ylabel, plotTitle=title, customPar=customPar,cex=cex,
-                      cex.axis=cex.axis,cex.main=cex.main, tinyPlot=tinyPlot,...
-                      
-    )
-
-  if(plotFlowNorm) lines(subAnnualResults$DecYear, fnFlux, col=col.pred, lwd=lwd)
+  if(USGSstyle){
+    subAnnualResults$Date <- as.Date(paste0(as.character(as.integer(subAnnualResults$DecYear)),"-04-01"))
+    #     setPDF("test",layout="portrait")
+    timePlot(subAnnualResults$Date, annFlux, Plot=list(what="points"),
+             yaxis.range=c(0,yInfo$top), ytitle=ylabel,
+             xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))))
+    if(plotFlowNorm) {
+      addXY(subAnnualResults$Date, fnFlux, Plot=list(color="green"))
+    }
+    addTitle(title, Justification = "center")
+    #     graphics.off()
     
+  } else {
+    genericEGRETDotPlot(x=subAnnualResults$DecYear, y = annFlux,
+                        xTicks=xInfo$ticks, yTicks=yInfo$ticks,xDate=TRUE,
+                        xlim=c(xInfo$bottom,xInfo$top), ylim=c(0,yInfo$top),col=col,
+                        ylab=ylabel, plotTitle=title, customPar=customPar,cex=cex,
+                        cex.axis=cex.axis,cex.main=cex.main, tinyPlot=tinyPlot,...
+                        
+      )
+  
+    if(plotFlowNorm) lines(subAnnualResults$DecYear, fnFlux, col=col.pred, lwd=lwd)
+  }
 }

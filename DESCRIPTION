@@ -19,7 +19,8 @@ Imports:
     fields,
     stats,
     lubridate,
-    methods
+    methods,
+    USGSwsGraphs
 Suggests:
     xtable,
     knitr,
