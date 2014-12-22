@@ -36,6 +36,11 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotConcQ(eList)
+#' setPDF(basename = "test")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutResponse)
+#' plotConcQ(eList, logScale=TRUE, USGSstyle=TRUE, margin=layoutStuff)
+#' graphics.off()
 plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
                     concMax = NA, concMin =NA, printTitle = TRUE, cex=0.8, cex.axis=1.1,cex.main=1.1,
                     rmSciX=FALSE,rmSciY=FALSE, customPar=FALSE,col="black",
@@ -110,7 +115,7 @@ plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
     }
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    return(plotTitle)
+    invisible(plotTitle)
   } else {
     genericEGRETDotPlot(x=x, y=yHigh, 
                         xlim=c(xInfo$bottom, xInfo$top), ylim=c(yInfo$bottom,yInfo$top),

@@ -45,10 +45,14 @@
 #' plotConcHist(eList, yearStart, yearEnd, USGSstyle=TRUE)
 #' graphics.off()
 #' 
-#' setPDF("test2",layout="landscape")
-#' par(mfcol=c(2,1))
-#' plotConcHist(eList, yearStart, yearEnd, USGSstyle=TRUE)
-#' plotFluxHist(eList, yearStart, yearEnd, USGSstyle=TRUE)
+#' setPDF(basename = "test")
+#' layoutResponse <- setLayout(num.rows=2)
+#' AA.gr <- setGraph(1, layoutResponse)
+#' title1 <- plotFluxHist(eList,customPar=TRUE, printTitle=FALSE, USGSstyle=TRUE, margin=AA.gr)
+#' addTitle(title1, Justification = "center")
+#' AA.gr <- setGraph(2, layoutResponse)
+#' title2 <- plotConcHist(eList,customPar=TRUE, printTitle=FALSE, USGSstyle=TRUE, margin=AA.gr)
+#' addTitle(title2, Justification="right")
 #' graphics.off()
 plotConcHist<-function(eList, yearStart = NA, yearEnd = NA, 
                        concMax = NA, printTitle = TRUE, 
@@ -93,7 +97,8 @@ plotConcHist<-function(eList, yearStart = NA, yearEnd = NA,
     if(plotFlowNorm) {
       addXY(localAnnualResults$Date, localAnnualResults$FNConc, Plot=list(color="green"))
     }
-    addTitle(title, Justification = "center")
+    invisible(title)
+#     addTitle(title, Justification = "center")
 
     
   } else {

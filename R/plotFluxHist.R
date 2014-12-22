@@ -42,6 +42,11 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotFluxHist(eList) 
+#' setPDF(basename = "test")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutResponse)
+#' plotFluxHist(eList, yearStart, yearEnd, fluxUnit = 1, USGSstyle=TRUE, margin=layoutStuff)
+#' graphics.off()
 plotFluxHist<-function(eList, yearStart = NA, yearEnd = NA, fluxUnit = 9, 
     fluxMax = NA, printTitle = TRUE, plotFlowNorm = TRUE,
     tinyPlot=FALSE,col="black",col.pred="green",
@@ -119,8 +124,8 @@ plotFluxHist<-function(eList, yearStart = NA, yearEnd = NA, fluxUnit = 9,
     if(plotFlowNorm) {
       addXY(subAnnualResults$Date, fnFlux, Plot=list(color="green"))
     }
-    addTitle(title, Justification = "center")
-    #     graphics.off()
+#     addTitle(title, Justification = "center")
+    invisible(title)
     
   } else {
     genericEGRETDotPlot(x=subAnnualResults$DecYear, y = annFlux,

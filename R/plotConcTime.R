@@ -41,7 +41,11 @@
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotConcTime(eList, qUnit = 1, qLower = 100, qUpper = 10000)
 #' plotConcTime(eList, logScale=TRUE)
-#' 
+#' setPDF(basename = "test")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutResponse)
+#' plotConcTime(eList, logScale=TRUE, USGSstyle=TRUE, margin=layoutStuff)
+#' graphics.off()
 plotConcTime<-function(eList, qUnit = 2, 
                        qLower = NA, qUpper = NA, 
                        tinyPlot = FALSE, concMax = NA, concMin = NA, printTitle = TRUE,logScale=FALSE, 
@@ -137,7 +141,7 @@ plotConcTime<-function(eList, qUnit = 2,
     }
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    return(plotTitle)
+    invisible(plotTitle)
   } else {
     genericEGRETDotPlot(x=x, y=yHigh, 
                         xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),

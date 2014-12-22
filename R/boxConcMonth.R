@@ -21,6 +21,7 @@
 #' @param showXAxis logical defaults to TRUE. If FALSE, the x axis is not plotted
 #' @param showYAxis logical defaults to TRUE. If FALSE, the y axis is not plotted
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
+#' @param USGSsytle logical use USGSwsGraph package for USGS style
 #' @keywords graphics water-quality statistics
 #' @seealso \code{\link[graphics]{boxplot}}
 #' @export
@@ -35,7 +36,8 @@
 boxConcMonth<-function(eList, printTitle = TRUE,
                        cex=0.8, cex.axis=1.1, cex.main=1.1, las=1,logScale=FALSE,tcl=0.5,
                        tinyPlot = FALSE, customPar=FALSE,showYLabels=TRUE,
-                       showXLabels=TRUE,showXAxis=TRUE,showYAxis=TRUE,...) {
+                       showXLabels=TRUE,showXAxis=TRUE,showYAxis=TRUE,
+                       USGSstyle=FALSE,...) {
   
   localINFO <- getInfo(eList)
   localSample <- getSample(eList)
@@ -87,31 +89,40 @@ boxConcMonth<-function(eList, printTitle = TRUE,
                        tinyPlot=tinyPlot,logScale=logScale,units=localINFO$param.units)
   yTicksLab <- prettyNum(yInfo$ticks)
   
-  boxplot(tempDF$conc ~ tempDF$month,
-          ylim=c(yInfo$bottom,yInfo$top),yaxs="i", yTicks=yInfo$ticks,
-          varwidth=TRUE,yaxt="n", 
-          names=names,
-          xlab=if(showXLabels) "Month" else "",
-          ylab=if(showYLabels) yInfo$label else "",
-          main=plotTitle,
-          cex=cex,cex.axis=cex.axis,cex.main=cex.main,
-          las=las,tcl=tcl,
-          log=logScaleText,
-          ...)  
+  if(USGSstyle){
+    
+    currentPlot <- boxPlot(tempDF$conc, group=tempDF$month, 
+                           Box=list(type="tukey"),
+                           ytitle=if(showYLabels) yInfo$label else "",
+                           xtitle=if(showXLabels) "Month" else "")
+    
+    xMid <- 6
+ 
+    yTop <- 0.9*max(currentPlot$yax$range)
 
-  if(showYAxis){
-    axis(2,tcl=tcl,las=las,at=yInfo$ticks,cex.axis=cex.axis,labels=yTicksLab)
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=title2, current=currentPlot,size=10)
+    invisible(plotTitle)
+    
   } else {
-    axis(2,tcl=tcl,las=las,at=yInfo$ticks,cex.axis=cex.axis,labels=FALSE)    
+    boxplot(tempDF$conc ~ tempDF$month,
+            ylim=c(yInfo$bottom,yInfo$top),yaxs="i", yTicks=yInfo$ticks,
+            varwidth=TRUE,yaxt="n", 
+            names=names,
+            xlab=if(showXLabels) "Month" else "",
+            ylab=if(showYLabels) yInfo$label else "",
+            main=plotTitle,
+            cex=cex,cex.axis=cex.axis,cex.main=cex.main,
+            las=las,tcl=tcl,
+            log=logScaleText,
+            ...)  
+  
+    if(showYAxis){
+      axis(2,tcl=tcl,las=las,at=yInfo$ticks,cex.axis=cex.axis,labels=yTicksLab)
+    } else {
+      axis(2,tcl=tcl,las=las,at=yInfo$ticks,cex.axis=cex.axis,labels=FALSE)    
+    }
+  
+    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
   }
-
-#   if(showXAxis){
-#     axis(1,tcl=tcl,at=xTicks,cex.axis=cex.axis,labels=xTicksLab)  
-#   } else {
-#     axis(1,tcl=tcl,at=xTicks,labels=FALSE)
-#   }
-  
-  
-  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
-
 }
