@@ -24,6 +24,7 @@
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param lwd number line width
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @keywords graphics water-quality statistics
 #' @export
 #' @seealso \code{\link{selectDays}}, \code{\link{genericEGRETDotPlot}}
@@ -37,7 +38,8 @@
 #' plotConcQ(eList)
 plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
                     concMax = NA, concMin =NA, printTitle = TRUE, cex=0.8, cex.axis=1.1,cex.main=1.1,
-                    rmSciX=FALSE,rmSciY=FALSE, customPar=FALSE,col="black",lwd=1,...){
+                    rmSciX=FALSE,rmSciY=FALSE, customPar=FALSE,col="black",
+                    lwd=1,USGSstyle=FALSE,...){
   # this function shows the sample data,
   # discharge on x-axis on a log scale, concentration on y-axis
   
@@ -89,16 +91,42 @@ plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
   yInfo <- generalAxis(x=yHigh, maxVal=concMax, minVal=yMin, tinyPlot=tinyPlot,logScale=logScale,units=localINFO$param.units)
   xInfo <- generalAxis(x=x, maxVal=NA, minVal=NA, logScale=TRUE, tinyPlot=tinyPlot)
   
-  genericEGRETDotPlot(x=x, y=yHigh, 
-                      xlim=c(xInfo$bottom, xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
-                      xlab=xLab, ylab=yInfo$label,
-                      xTicks=xInfo$ticks, yTicks=yInfo$ticks,
-                      plotTitle=plotTitle, log=logScaleText,cex.axis=cex.axis,cex=cex,
-                      cex.main=cex.main, tinyPlot=tinyPlot,xaxt="n",
-                      rmSciX=rmSciX,rmSciY=rmSciY,customPar=customPar,col=col,lwd=lwd,...
-  )
-  
-  censoredSegments(yInfo$bottom, yLow, yHigh, x, Uncen,col=col,lwd=lwd)
-  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  if(USGSstyle){
+        
+    currentPlot <- xyPlot(x, yHigh, Plot=list(what="points"),
+             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yInfo$label,
+             xaxis.range=c(xInfo$bottom, xInfo$top), xtitle=xLab,
+             yaxis.log=logScale, xaxis.log=TRUE,
+             ...)
+    newX <- transData(data = x[Uncen == 0], TRUE, FALSE)
+    currentPlot <- addBars(newX, yHigh[Uncen == 0], base=min(currentPlot$yax$range), 
+                           current=currentPlot, Bars=list(width=0.01,fill="black"))
+#     addTitle(plotTitle, Justification = "center")
+    xMid <- exp(mean(c(log(xInfo$bottom), log(xInfo$top))))
+    if(logScale){
+      yTop <- exp(0.9*max(c(log(yInfo$bottom),log(yInfo$top))))
+    } else {   
+      yTop <- 0.9*max(c(yInfo$bottom,yInfo$top))
+    }
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=title2, current=currentPlot,size=10)
+      
+    
+
+    return(plotTitle)
+  } else {
+    genericEGRETDotPlot(x=x, y=yHigh, 
+                        xlim=c(xInfo$bottom, xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
+                        xlab=xLab, ylab=yInfo$label,
+                        xTicks=xInfo$ticks, yTicks=yInfo$ticks,
+                        plotTitle=plotTitle, log=logScaleText,cex.axis=cex.axis,cex=cex,
+                        cex.main=cex.main, tinyPlot=tinyPlot,xaxt="n",
+                        rmSciX=rmSciX,rmSciY=rmSciY,customPar=customPar,col=col,lwd=lwd,...
+    )
+    
+    censoredSegments(yInfo$bottom, yLow, yHigh, x, Uncen,col=col,lwd=lwd)
+    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  }
+
 
 }
