@@ -85,15 +85,16 @@ plotConcHist<-function(eList, yearStart = NA, yearEnd = NA,
   
   if(USGSstyle){
     localAnnualResults$Date <- as.Date(paste0(as.character(as.integer(localAnnualResults$DecYear)),"-04-01"))
-#     setPDF("test",layout="portrait")
+
     timePlot(localAnnualResults$Date, localAnnualResults$Conc, Plot=list(what="points"),
              yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yInfo$label,
-             xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))))
+             xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
+             ...)
     if(plotFlowNorm) {
       addXY(localAnnualResults$Date, localAnnualResults$FNConc, Plot=list(color="green"))
     }
     addTitle(title, Justification = "center")
-#     graphics.off()
+
     
   } else {
     genericEGRETDotPlot(x=localAnnualResults$DecYear, y=localAnnualResults$Conc,
