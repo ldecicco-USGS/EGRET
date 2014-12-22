@@ -114,7 +114,8 @@ plotFluxHist<-function(eList, yearStart = NA, yearEnd = NA, fluxUnit = 9,
     #     setPDF("test",layout="portrait")
     timePlot(subAnnualResults$Date, annFlux, Plot=list(what="points"),
              yaxis.range=c(0,yInfo$top), ytitle=ylabel,
-             xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))))
+             xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
+             ...)
     if(plotFlowNorm) {
       addXY(subAnnualResults$Date, fnFlux, Plot=list(color="green"))
     }
