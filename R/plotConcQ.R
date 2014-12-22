@@ -110,9 +110,6 @@ plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
     }
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-      
-    
-
     return(plotTitle)
   } else {
     genericEGRETDotPlot(x=x, y=yHigh, 
