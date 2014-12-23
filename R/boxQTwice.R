@@ -24,6 +24,7 @@
 #' @param customPar logical defaults to FALSE. If TRUE, par() should be set by user before calling this function 
 #' @param las numeric in {0,1,2,3}; the style of axis labels, see ?par
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @keywords graphics water-quality statistics
 #' @seealso \code{\link[graphics]{boxplot}}
 #' @export
@@ -36,9 +37,14 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' boxQTwice(eList)
+#' library(USGSwsGraphs)
+#' setPDF(basename="test")
+#' boxQTwice(eList,USGSstyle=TRUE)
+#' graphics.off()
 boxQTwice<-function(eList, 
                     printTitle = TRUE, qUnit = 2, cex=0.8,cex.main=1.1,logScale=TRUE, 
-                    cex.axis=1.1, tcl=0.5, las=1, tinyPlot = FALSE, customPar=FALSE,...){
+                    cex.axis=1.1, tcl=0.5, las=1, tinyPlot = FALSE, 
+                    customPar=FALSE,USGSstyle=FALSE,...){
   
   localINFO <- getInfo(eList)
   localSample <- getSample(eList)
@@ -73,6 +79,7 @@ boxQTwice<-function(eList,
   index1<-rep(1,nS)
   index2<-rep(2,nD)
   index<-c(index1,index2)
+  charIndex <- c(rep("Sample", length=nrow(localSample)),rep("Daily",nrow(localDaily)))
   
   plotTitle<-if(printTitle) paste(localINFO$shortName,",",localINFO$paramShortName,"\nComparison of distribution of\nSampled Discharges and All Daily Discharges") else ""
  
@@ -81,17 +88,13 @@ boxQTwice<-function(eList,
   
   if (tinyPlot) {
     yLabel <- qUnit@qUnitTiny
-    if (!customPar) par(mar=c(4,5,1,0.1),tcl=tcl,cex.lab=cex.axis)
+    if (!customPar & !USGSstyle) par(mar=c(4,5,1,0.1),tcl=tcl,cex.lab=cex.axis)
     groupNames<-c("Sampled","All")
   } else {
     yLabel <- qUnit@qUnitExpress
-    if (!customPar) par(mar=c(5,6,4,2)+0.1,tcl=tcl,cex.lab=cex.axis)
+    if (!customPar & !USGSstyle) par(mar=c(5,6,4,2)+0.1,tcl=tcl,cex.lab=cex.axis)
     groupNames<-c("Sampled Days","All Days")
   }
-    
-#   numYTicks <- length(yTicks)
-#   yBottom <- yTicks[1]
-#   yTop <- yTicks[numYTicks]
   
   yInfo <- generalAxis(x=bigQ, maxVal=yMax, minVal=yMin, tinyPlot=tinyPlot,logScale=logScale)
   yTicksLab <- prettyNum(yInfo$ticks)
@@ -102,15 +105,30 @@ boxQTwice<-function(eList,
     logScaleText <- ""
   }
   
-  boxplot(bigQ~index,varwidth=TRUE,
-          names=groupNames,xlab="",
-          ylim=c(yInfo$bottom,yInfo$top),
-          main=plotTitle,cex=cex,ylab=yLabel,
-          cex.main=cex.main,
-          cex.axis=cex.axis, las=las,yaxt = "n",yaxs="i",
-          log=logScaleText,yaxt="n",
-          ...)
-  axis(2,tcl=tcl,las=las,at=yInfo$ticks,cex.axis=cex.axis,labels=yTicksLab)
-  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
-  
+  if(USGSstyle){
+    currentPlot <- boxPlot(bigQ, group=charIndex, 
+                           Box=list(type="tukey"),
+                           ytitle=yLabel,
+#                            yaxis.range=c(yInfo$bottom,yInfo$top),
+                           yaxis.log=logScale, ...)
+    
+    xMid <- 6
+    
+    yTop <- 0.9*max(currentPlot$yax$range)
+    
+    if (!tinyPlot) currentPlot <- addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=title2, current=currentPlot,size=10)
+    invisible(currentPlot)
+  } else {
+    boxplot(bigQ~index,varwidth=TRUE,
+            names=groupNames,xlab="",
+            ylim=c(yInfo$bottom,yInfo$top),
+            main=plotTitle,cex=cex,ylab=yLabel,
+            cex.main=cex.main,
+            cex.axis=cex.axis, las=las,yaxt = "n",yaxs="i",
+            log=logScaleText,yaxt="n",
+            ...)
+    axis(2,tcl=tcl,las=las,at=yInfo$ticks,cex.axis=cex.axis,labels=yTicksLab)
+    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  }
 }

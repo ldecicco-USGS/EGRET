@@ -29,7 +29,7 @@
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param lwd number line width.
 #' @param \dots arbitrary functions sent to the generic plotting function.  See ?par for details on possible parameters.
-#' @param USGSsytle logical use USGSwsGraph package for USGS style
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @keywords graphics water-quality statistics
 #' @export
 #' @seealso \code{\link{selectDays}}, \code{\link{genericEGRETDotPlot}}
@@ -43,14 +43,14 @@
 #' plotConcTime(eList, logScale=TRUE)
 #' setPDF(basename = "test")
 #' layoutInfo <- setLayout(width=6, height=4)
-#' layoutStuff <- setGraph(1, layoutResponse)
+#' layoutStuff <- setGraph(1, layoutInfo)
 #' plotConcTime(eList, logScale=TRUE, USGSstyle=TRUE, margin=layoutStuff)
 #' graphics.off()
 plotConcTime<-function(eList, qUnit = 2, 
                        qLower = NA, qUpper = NA, 
                        tinyPlot = FALSE, concMax = NA, concMin = NA, printTitle = TRUE,logScale=FALSE, 
                        cex=0.8, cex.axis=1.1,cex.main=1.1, customPar=FALSE,
-                       col="black",lwd=1,USGSstyle=FALSE,...){
+                       col="black",lwd=1,USGSstyle=FALSE,legend=FALSE,...){
 
   localINFO <- getInfo(eList)
   localSample <- getSample(eList)
@@ -124,24 +124,35 @@ plotConcTime<-function(eList, qUnit = 2,
   
   if(USGSstyle){
     x <- as.Date(subSample$Date)
-    currentPlot <- timePlot(x, yHigh, Plot=list(what="points"),
+    
+    if(col == "black"){
+      col <- list("Uncensored"="black","Left-censored"="gray80")
+    }
+    
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    col <- col[unique(Uncen)]
+    
+    
+    currentPlot <- colorPlot(x, yHigh, Uncen, Plot=list(what="points", color=col),
                           yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yInfo$label,
                           xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
-                          yaxis.log=logScale, 
+                          yaxis.log=logScale,
                           ...)
-
-    currentPlot <- addBars(x[Uncen == 0], yHigh[Uncen == 0], base=min(currentPlot$yax$range), 
-                           current=currentPlot, Bars=list(width=0.01,fill="black"))
+    if(legend) addExplanation(currentPlot, where="ul", title="")
+    currentPlot <- addBars(x[Uncen == "Left-censored"], yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+                           current=currentPlot, Bars=list(width=0.01,fill="white",border="gray80"))
     #     addTitle(plotTitle, Justification = "center")
-    xMid <- exp(mean(c(log(xInfo$bottom), log(xInfo$top))))
+    xMid <- mean(currentPlot$xax$range)
+    
     if(logScale){
-      yTop <- exp(0.9*max(c(log(yInfo$bottom),log(yInfo$top))))
-    } else {   
-      yTop <- 0.9*max(c(yInfo$bottom,yInfo$top))
+      yTop <- 10^(0.9*(diff(currentPlot$yax$range))+min(currentPlot$yax$range))
+    } else {
+      yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
     }
+    
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    invisible(plotTitle)
+    invisible(currentPlot)
   } else {
     genericEGRETDotPlot(x=x, y=yHigh, 
                         xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),

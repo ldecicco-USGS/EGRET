@@ -21,6 +21,7 @@
 #' @param cex.axis magnification to be used for axis annotation relative to the current setting of cex
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param lwd number line width
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
@@ -37,7 +38,7 @@
 #' dev.off()
 fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS", 
                          cex = 0.7, cex.axis = 1.1,cex.main=1.1,
-                         col="black", lwd=1,...){
+                         col="black", lwd=1,USGSstyle=FALSE,...){
   
   localINFO <- getInfo(eList)
   localSample <- getSample(eList)

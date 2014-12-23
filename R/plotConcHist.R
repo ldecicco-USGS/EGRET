@@ -26,7 +26,7 @@
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param col.pred color of flow normalized line on plot, see ?par 'Color Specification'
-#' @param USGSsytle logical use USGSwsGraph package for USGS style
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export

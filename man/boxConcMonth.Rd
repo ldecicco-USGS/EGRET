@@ -7,7 +7,8 @@
 boxConcMonth(eList, printTitle = TRUE, cex = 0.8, cex.axis = 1.1,
   cex.main = 1.1, las = 1, logScale = FALSE, tcl = 0.5,
   tinyPlot = FALSE, customPar = FALSE, showYLabels = TRUE,
-  showXLabels = TRUE, showXAxis = TRUE, showYAxis = TRUE, ...)
+  showXLabels = TRUE, showXAxis = TRUE, showYAxis = TRUE,
+  USGSstyle = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Sample and INFO dataframes}
@@ -38,6 +39,8 @@ boxConcMonth(eList, printTitle = TRUE, cex = 0.8, cex.axis = 1.1,
 
 \item{showYAxis}{logical defaults to TRUE. If FALSE, the y axis is not plotted}
 
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -53,6 +56,10 @@ boxConcMonth(eList)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 boxConcMonth(eList)
+library(USGSwsGraphs)
+setPDF(basename="test")
+boxConcMonth(eList,USGSstyle=TRUE)
+graphics.off()
 }
 \seealso{
 \code{\link[graphics]{boxplot}}

@@ -7,7 +7,7 @@
 plotConcQ(eList, qUnit = 2, tinyPlot = FALSE, logScale = FALSE,
   concMax = NA, concMin = NA, printTitle = TRUE, cex = 0.8,
   cex.axis = 1.1, cex.main = 1.1, rmSciX = FALSE, rmSciY = FALSE,
-  customPar = FALSE, col = "black", lwd = 1, ...)
+  customPar = FALSE, col = "black", lwd = 1, USGSstyle = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Sample and INFO dataframes}
@@ -41,6 +41,8 @@ plotConcQ(eList, qUnit = 2, tinyPlot = FALSE, logScale = FALSE,
 
 \item{lwd}{number line width}
 
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -58,6 +60,12 @@ plotConcQ(eList, logScale=TRUE)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotConcQ(eList)
+library(USGSwsGraphs)
+setPDF(basename = "test")
+layoutInfo <- setLayout(width=6, height=4)
+layoutStuff <- setGraph(1, layoutInfo)
+plotConcQ(eList, logScale=TRUE, USGSstyle=TRUE, margin=layoutStuff)
+graphics.off()
 }
 \seealso{
 \code{\link{selectDays}}, \code{\link{genericEGRETDotPlot}}

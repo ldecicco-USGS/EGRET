@@ -5,7 +5,7 @@
 \title{Produces a 4 panel plot that gives an overview of the data set prior to any processing}
 \usage{
 multiPlotDataOverview(eList, qUnit = 2, cex.main = 1.2,
-  logScaleConc = TRUE, logScaleQ = TRUE)
+  logScaleConc = TRUE, logScaleQ = TRUE, USGSstyle = FALSE)
 }
 \arguments{
 \item{eList}{named list with at least Daily, Sample, and INFO dataframes}
@@ -17,6 +17,8 @@ multiPlotDataOverview(eList, qUnit = 2, cex.main = 1.2,
 \item{logScaleConc}{logical if TRUE y in concentration graphs plotted in log axis. Default is TRUE.}
 
 \item{logScaleQ}{logical if TRUE y in streamflow graphs plotted in log axis. Default is TRUE.}
+
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
 }
 \description{
 The four plots produced are 1) log concentration versus log discharge, 2) log concentration versus time
@@ -33,6 +35,12 @@ multiPlotDataOverview(eList, qUnit=1)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 multiPlotDataOverview(eList, qUnit=1)
+
+eList <- setPA(eList, paStart=10,paLong=12)
+library(USGSwsGraphs)
+setPDF(basename="test",layout="landscape")
+multiPlotDataOverview(eList, qUnit=1,USGSstyle=TRUE)
+graphics.off()
 }
 \seealso{
 \code{\link{plotConcQ}}, \code{\link{boxConcMonth}}, \code{\link{plotConcTime}}, \code{\link{boxQTwice}}

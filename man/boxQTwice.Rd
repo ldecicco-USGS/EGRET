@@ -6,7 +6,7 @@
 \usage{
 boxQTwice(eList, printTitle = TRUE, qUnit = 2, cex = 0.8,
   cex.main = 1.1, logScale = TRUE, cex.axis = 1.1, tcl = 0.5, las = 1,
-  tinyPlot = FALSE, customPar = FALSE, ...)
+  tinyPlot = FALSE, customPar = FALSE, USGSstyle = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Daily, Sample, and INFO dataframes}
@@ -31,6 +31,8 @@ boxQTwice(eList, printTitle = TRUE, qUnit = 2, cex = 0.8,
 
 \item{customPar}{logical defaults to FALSE. If TRUE, par() should be set by user before calling this function}
 
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -54,6 +56,10 @@ boxQTwice(eList, qUnit='cfs')
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 boxQTwice(eList)
+library(USGSwsGraphs)
+setPDF(basename="test")
+boxQTwice(eList,USGSstyle=TRUE)
+graphics.off()
 }
 \seealso{
 \code{\link[graphics]{boxplot}}

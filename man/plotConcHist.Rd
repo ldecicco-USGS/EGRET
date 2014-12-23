@@ -7,7 +7,7 @@
 plotConcHist(eList, yearStart = NA, yearEnd = NA, concMax = NA,
   printTitle = TRUE, tinyPlot = FALSE, plotFlowNorm = TRUE, cex = 0.8,
   cex.axis = 1.1, cex.main = 1.1, lwd = 2, col = "black",
-  col.pred = "green", customPar = FALSE, ...)
+  col.pred = "green", customPar = FALSE, USGSstyle = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Daily and INFO dataframes}
@@ -39,6 +39,8 @@ plotConcHist(eList, yearStart = NA, yearEnd = NA, concMax = NA,
 \item{customPar}{logical defaults to FALSE. If TRUE, par() should be set by user before calling this function
 (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.}
 
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -61,6 +63,19 @@ plotConcHist(eList, yearStart, yearEnd)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotConcHist(eList, yearStart, yearEnd)
+setPDF("test",layout="portrait")
+plotConcHist(eList, yearStart, yearEnd, USGSstyle=TRUE)
+graphics.off()
+
+setPDF(basename = "test")
+layoutResponse <- setLayout(num.rows=2)
+AA.gr <- setGraph(1, layoutResponse)
+title1 <- plotFluxHist(eList,customPar=TRUE, printTitle=FALSE, USGSstyle=TRUE, margin=AA.gr)
+addTitle(title1, Justification = "center")
+AA.gr <- setGraph(2, layoutResponse)
+title2 <- plotConcHist(eList,customPar=TRUE, printTitle=FALSE, USGSstyle=TRUE, margin=AA.gr)
+addTitle(title2, Justification="right")
+graphics.off()
 }
 \seealso{
 \code{\link{setupYears}}, \code{\link{genericEGRETDotPlot}}

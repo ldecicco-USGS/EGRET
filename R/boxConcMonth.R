@@ -21,7 +21,7 @@
 #' @param showXAxis logical defaults to TRUE. If FALSE, the x axis is not plotted
 #' @param showYAxis logical defaults to TRUE. If FALSE, the y axis is not plotted
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
-#' @param USGSsytle logical use USGSwsGraph package for USGS style
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @keywords graphics water-quality statistics
 #' @seealso \code{\link[graphics]{boxplot}}
 #' @export
@@ -33,6 +33,10 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' boxConcMonth(eList)
+#' library(USGSwsGraphs)
+#' setPDF(basename="test")
+#' boxConcMonth(eList,USGSstyle=TRUE)
+#' graphics.off()
 boxConcMonth<-function(eList, printTitle = TRUE,
                        cex=0.8, cex.axis=1.1, cex.main=1.1, las=1,logScale=FALSE,tcl=0.5,
                        tinyPlot = FALSE, customPar=FALSE,showYLabels=TRUE,
@@ -77,11 +81,11 @@ boxConcMonth<-function(eList, printTitle = TRUE,
   
   if (tinyPlot) {
     yLabel <- paste("Conc. (",localINFO$param.units,")",sep="")
-    if (!customPar) par(mar=c(4,5,1,0.1),cex.lab=cex.axis,tcl=0.5)
+    if (!customPar & !USGSstyle) par(mar=c(4,5,1,0.1),cex.lab=cex.axis,tcl=0.5)
     names <- c("J","F","M","A","M","J","J","A","S","O","N","D")
   } else {
     yLabel <- paste("Concentration in", localINFO$param.units)
-    if (!customPar) par(mar=c(5,6,4,2)+0.1,cex.lab=cex.axis,tcl=0.5)
+    if (!customPar & !USGSstyle) par(mar=c(5,6,4,2)+0.1,cex.lab=cex.axis,tcl=0.5)
     names <- sapply(c(1:12),function(x){monthInfo[[x]]@monthAbbrev})
   }
     
@@ -94,7 +98,10 @@ boxConcMonth<-function(eList, printTitle = TRUE,
     currentPlot <- boxPlot(tempDF$conc, group=tempDF$month, 
                            Box=list(type="tukey"),
                            ytitle=if(showYLabels) yInfo$label else "",
-                           xtitle=if(showXLabels) "Month" else "")
+                           xtitle=if(showXLabels) "Month" else "",
+                           yaxis.range = c(yInfo$bottom,yInfo$top),
+                           ylabels = yInfo$ticks,
+                           yaxis.log=logScale, ...)
     
     xMid <- 6
  
@@ -102,7 +109,7 @@ boxConcMonth<-function(eList, printTitle = TRUE,
 
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    invisible(plotTitle)
+    invisible(currentPlot)
     
   } else {
     boxplot(tempDF$conc ~ tempDF$month,

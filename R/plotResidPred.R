@@ -22,6 +22,7 @@
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param lwd number line width
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords water-quality statistics graphics
 #' @export
@@ -33,9 +34,16 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotResidPred(eList)
+#' library(USGSwsGraphs)
+#' setPDF(basename = "test")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutInfo)
+#' plotResidPred(eList, USGSstyle=TRUE, margin=layoutStuff)
+#' graphics.off()
 plotResidPred<-function(eList, stdResid = FALSE, 
                         tinyPlot = FALSE, printTitle = TRUE, col="black",lwd=1,
-                        cex=0.8, cex.axis=1.1,cex.main=1.1, customPar=FALSE,...){
+                        cex=0.8, cex.axis=1.1,cex.main=1.1, customPar=FALSE,
+                        USGSstyle=FALSE,legend=FALSE,...){
   # this function shows residual versus estimated in log space
   # estimated log concentration on the x-axis (these are prior to bias correction), 
   # observed log concentration on y-axis 
@@ -79,14 +87,45 @@ plotResidPred<-function(eList, stdResid = FALSE,
   xInfo <- generalAxis(x=log(x), minVal=NA, maxVal=NA, tinyPlot=tinyPlot)
   yInfo <- generalAxis(x=yHigh, minVal=NA, maxVal=NA, tinyPlot=tinyPlot)
   
-  genericEGRETDotPlot(x=log(x), y=yHigh,
-                      xTicks=xInfo$ticks, yTicks=yInfo$ticks,col=col,
-                      xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
-                      xlab=xLab, ylab=yLab, plotTitle=plotTitle, customPar=customPar,cex=cex,
-                      hLine=TRUE,cex.axis=cex.axis,cex.main=cex.main, tinyPlot=tinyPlot,...
-    )
-
-  censoredSegments(yInfo$bottom, yLow, yHigh, log(x), Uncen, col=col, lwd=lwd )
-  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  if(USGSstyle){
+    if(col == "black"){
+      col <- list("Uncensored"="black","Left-censored"="gray80")
+    }
+    
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    col <- col[unique(Uncen)]
+    currentPlot <- colorPlot(log(x), yHigh, color= Uncen, Plot=list(what="points",color=col),
+                             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yLab,
+                             xaxis.range=c(xInfo$bottom, xInfo$top), xtitle=xLab,
+                             ...)
+    refLine(horizontal=0, current=currentPlot)
+    xMid <- mean(currentPlot$xax$range)
+    
+    yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
+    
+    if(legend) addExplanation(currentPlot, where="ul",title="")
+    
+    newX <- transData(data = x[Uncen == "Left-censored"], TRUE, FALSE)
+    
+    addBars(newX, yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+            current=currentPlot, 
+            Bars=list(width=0.01,fill="white",border="gray80"))
+    
+    
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=title2, current=currentPlot,size=10)
+    invisible(currentPlot)
+  } else {
+  
+    genericEGRETDotPlot(x=log(x), y=yHigh,
+                        xTicks=xInfo$ticks, yTicks=yInfo$ticks,col=col,
+                        xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
+                        xlab=xLab, ylab=yLab, plotTitle=plotTitle, customPar=customPar,cex=cex,
+                        hLine=TRUE,cex.axis=cex.axis,cex.main=cex.main, tinyPlot=tinyPlot,...
+      )
+  
+    censoredSegments(yInfo$bottom, yLow, yHigh, log(x), Uncen, col=col, lwd=lwd )
+    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  }
 
 }

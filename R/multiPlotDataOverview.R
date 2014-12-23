@@ -13,6 +13,7 @@
 #' @param cex.main magnification to be used for main titles relative to the current setting of cex
 #' @param logScaleConc logical if TRUE y in concentration graphs plotted in log axis. Default is TRUE.
 #' @param logScaleQ logical if TRUE y in streamflow graphs plotted in log axis. Default is TRUE.
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @keywords graphics water-quality statistics
 #' @seealso \code{\link{plotConcQ}}, \code{\link{boxConcMonth}}, \code{\link{plotConcTime}}, \code{\link{boxQTwice}}
 #' @export
@@ -23,8 +24,15 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' multiPlotDataOverview(eList, qUnit=1) 
+#' 
+#' eList <- setPA(eList, paStart=10,paLong=12)
+#' library(USGSwsGraphs)
+#' setPDF(basename="test",layout="landscape")
+#' multiPlotDataOverview(eList, qUnit=1,USGSstyle=TRUE) 
+#' graphics.off()
 multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
-                                 logScaleConc=TRUE, logScaleQ=TRUE){
+                                 logScaleConc=TRUE, logScaleQ=TRUE,
+                                 USGSstyle=FALSE){
   
   localINFO <- getInfo(eList)
   
@@ -37,22 +45,53 @@ multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
   }
   
   title2<-if(paLong==12) "" else setSeasonLabelByUser(paStartInput=paStart,paLongInput=paLong)
-  
-  par(mfcol=c(2,2),oma=c(0,2.4,4.5,2.4),tcl=0.5)
-  plotConcQ(eList, qUnit = qUnit, tinyPlot = TRUE, printTitle = FALSE,rmSciX=TRUE,logScale=logScaleConc)
-  boxConcMonth(eList, printTitle = FALSE, tinyPlot=TRUE,logScale=logScaleConc)
-  plotConcTime(eList, printTitle = FALSE, tinyPlot = TRUE,logScale=logScaleConc)
-  boxQTwice(eList, printTitle = FALSE, qUnit = qUnit, tinyPlot=TRUE,logScale=logScaleQ)
   title<-paste(localINFO$shortName,"\n",localINFO$paramShortName)
   
-  if("" == title2){
-    mtext(title,cex=cex.main,outer=TRUE,font=2)
+  if(USGSstyle){
+    layoutResponse <- setLayout(num.rows=2,num.cols = 3, 
+                                num.graphs = 5, explanation = list(grid=c(6)))
+    graph1 <- setGraph(1, layoutResponse)
+    plotConcQ(eList, qUnit = qUnit, printTitle = FALSE,rmSciX=TRUE,
+              logScale=logScaleConc,USGSstyle=USGSstyle,legend=FALSE, 
+              margin=graph1)
+    if("" != title2){
+      title <- paste(title, title2, sep="\n")   
+    }
+    addTitle(Main = title)
+    graph2 <- setGraph(2, layoutResponse)
+    concTimeOut <- plotConcTime(eList, printTitle = FALSE, 
+                 logScale=logScaleConc,USGSstyle=USGSstyle,legend=TRUE, 
+                 margin=graph2)
+
+    graph3 <- setGraph(3, layoutResponse)
+    xyPlot(x = 1:10, y = 1:10, margin=graph3)
+    graph4 <- setGraph(4, layoutResponse)
+    boxConcOut <- boxConcMonth(eList, printTitle = FALSE, 
+                 logScale=logScaleConc,USGSstyle=USGSstyle, margin=graph4)
+    graph5 <- setGraph(5, layoutResponse)
+    boxOut <- boxQTwice(eList, printTitle = FALSE, qUnit = qUnit, 
+              logScale=logScaleQ,USGSstyle=USGSstyle, margin=graph5)
+    graphExplain <- setGraph("explanation", layoutResponse)
+    addExplanation(boxOut,title = "Boxplot description")
   } else {
-    title <- paste(title, title2, sep="\n")
-    mtext(title, cex = cex.main*.75, outer = TRUE, font = 2)    
+    par(mfcol=c(2,2),oma=c(0,2.4,4.5,2.4),tcl=0.5)
+    plotConcQ(eList, qUnit = qUnit, tinyPlot = TRUE, printTitle = FALSE,rmSciX=TRUE,
+              logScale=logScaleConc,USGSstyle=USGSstyle)
+    boxConcMonth(eList, printTitle = FALSE, tinyPlot=TRUE,
+                 logScale=logScaleConc,USGSstyle=USGSstyle)
+    plotConcTime(eList, printTitle = FALSE, tinyPlot = TRUE,
+                 logScale=logScaleConc,USGSstyle=USGSstyle)
+    boxQTwice(eList, printTitle = FALSE, qUnit = qUnit, tinyPlot=TRUE,
+              logScale=logScaleQ,USGSstyle=USGSstyle)
+   
+    
+    if("" == title2){
+      mtext(title,cex=cex.main,outer=TRUE,font=2)
+    } else {
+      title <- paste(title, title2, sep="\n")
+      mtext(title, cex = cex.main*.75, outer = TRUE, font = 2)    
+    }
+    par(mfcol=c(1,1),oma=c(0,0,0,0))
   }
-  
-  
-  
-  par(mfcol=c(1,1),oma=c(0,0,0,0))
+
 }

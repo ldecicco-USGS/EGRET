@@ -36,15 +36,16 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotConcQ(eList)
+#' library(USGSwsGraphs)
 #' setPDF(basename = "test")
 #' layoutInfo <- setLayout(width=6, height=4)
-#' layoutStuff <- setGraph(1, layoutResponse)
-#' plotConcQ(eList, logScale=TRUE, USGSstyle=TRUE, margin=layoutStuff)
+#' layoutStuff <- setGraph(1, layoutInfo)
+#' plotConcQ(eList, logScale=TRUE, USGSstyle=TRUE, margin=layoutStuff, legend=TRUE)
 #' graphics.off()
 plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
                     concMax = NA, concMin =NA, printTitle = TRUE, cex=0.8, cex.axis=1.1,cex.main=1.1,
                     rmSciX=FALSE,rmSciY=FALSE, customPar=FALSE,col="black",
-                    lwd=1,USGSstyle=FALSE,...){
+                    lwd=1,USGSstyle=FALSE,legend=FALSE,...){
   # this function shows the sample data,
   # discharge on x-axis on a log scale, concentration on y-axis
   
@@ -97,25 +98,45 @@ plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
   xInfo <- generalAxis(x=x, maxVal=NA, minVal=NA, logScale=TRUE, tinyPlot=tinyPlot)
   
   if(USGSstyle){
-        
-    currentPlot <- xyPlot(x, yHigh, Plot=list(what="points"),
+    
+#     matchReturn <- list(...)
+#     
+#     if("legend" %in% names(matchReturn)){
+#       legend <- matchReturn['legend']
+#       matchReturn <-  matchReturn[-(which('legend' == names(matchReturn)))]
+#     }
+    
+    if(col == "black"){
+      col <- list("Uncensored"="black","Left-censored"="gray80")
+    }
+    
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    col <- col[unique(Uncen)]
+    currentPlot <- colorPlot(x, yHigh, color= Uncen, Plot=list(what="points",color=col),
              yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yInfo$label,
              xaxis.range=c(xInfo$bottom, xInfo$top), xtitle=xLab,
              yaxis.log=logScale, xaxis.log=TRUE,
              ...)
-    newX <- transData(data = x[Uncen == 0], TRUE, FALSE)
-    currentPlot <- addBars(newX, yHigh[Uncen == 0], base=min(currentPlot$yax$range), 
-                           current=currentPlot, Bars=list(width=0.01,fill="black"))
-#     addTitle(plotTitle, Justification = "center")
-    xMid <- exp(mean(c(log(xInfo$bottom), log(xInfo$top))))
-    if(logScale){
-      yTop <- exp(0.9*max(c(log(yInfo$bottom),log(yInfo$top))))
-    } else {   
-      yTop <- 0.9*max(c(yInfo$bottom,yInfo$top))
+    
+    xMid <- 10^(mean(currentPlot$xax$range))
+
+    yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
+    if(logScale) {
+      yTop <- 10^yTop
     }
+    
+    if(legend) addExplanation(currentPlot, where="ul",title="")
+
+    newX <- transData(data = x[Uncen == "Left-censored"], TRUE, FALSE)
+
+    addBars(newX, yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+                           current=currentPlot, 
+                           Bars=list(width=0.01,fill="white",border="gray80"))
+
+
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    invisible(plotTitle)
+    invisible(currentPlot)
   } else {
     genericEGRETDotPlot(x=x, y=yHigh, 
                         xlim=c(xInfo$bottom, xInfo$top), ylim=c(yInfo$bottom,yInfo$top),

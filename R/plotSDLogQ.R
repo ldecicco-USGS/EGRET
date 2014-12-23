@@ -23,6 +23,7 @@
 #' @param customPar logical defaults to FALSE. If TRUE, par() should be set by user before calling this function 
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
 #' @param lwd line width, a positive number, defaulting to 1
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics streamflow statistics
 #' @export
@@ -36,11 +37,19 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotSDLogQ(eList) 
+#' library(USGSwsGraphs)
+#' setPDF(basename="test2")
+#' layoutInfo <- setLayout(width=4, height=4)
+#' layoutStuff <- setGraph(1, layoutInfo)
+#' plotSDLogQ(eList, USGSstyle=TRUE) 
+#' graphics.off()
+#' 
 #' }
 plotSDLogQ<-function(eList, yearStart=NA,yearEnd=NA,window=15,sdMax=NA,
                      printTitle = TRUE, tinyPlot = FALSE, 
                      printStaName = TRUE, printPA = TRUE, cex=0.8,
-                     cex.main=1.1,cex.axis = 1.1,lwd=2, customPar=FALSE, ...){
+                     cex.main=1.1,cex.axis = 1.1,lwd=2, 
+                     customPar=FALSE, USGSstyle=FALSE,...){
 
   localINFO <- getInfo(eList)
   localDaily <- getDaily(eList)
@@ -63,12 +72,14 @@ plotSDLogQ<-function(eList, yearStart=NA,yearEnd=NA,window=15,sdMax=NA,
   numResults<-length(startDays)
   y<-rep(NA,numResults)
   xmid<-startDays+(window/2)
+  xDates <- rep(NA, numResults)
   
   for (i in 1:numResults){
     firstDay<-startDays[i]
     lastDay<-startDays[i]+window
     smallDaily<-localDaily[localDaily$DecYear >= firstDay & localDaily$DecYear <= lastDay,]
     y[i]<-sd(smallDaily$LogQ,na.rm=TRUE)
+    xDates[i] <- mean(as.Date(smallDaily$Date))
   }
 
 
@@ -89,13 +100,28 @@ plotSDLogQ<-function(eList, yearStart=NA,yearEnd=NA,window=15,sdMax=NA,
   xInfo <- generalAxis(x=xmid, minVal=yearStart, maxVal=yearEnd, tinyPlot=tinyPlot,padPercent=0)
   yInfo <- generalAxis(x=y, minVal=0, maxVal=sdMax, tinyPlot=tinyPlot,padPercent=5)
 
-  genericEGRETDotPlot(x=xmid,#localDaily$DecYear,
-                      y=y,
-                      xlim=c(xInfo$bottom,xInfo$top),ylim=c(yInfo$bottom,yInfo$top),
-                      xlab="",ylab="Dimensionless",xDate=TRUE,
-                      xTicks=xInfo$ticks,yTicks=yInfo$ticks,cex=cex,tinyPlot=tinyPlot,
-                      plotTitle=title, cex.main=cex.main, cex.axis = cex.axis,
-                      type="l", lwd=lwd, customPar=customPar, ...
-  )
+  if(USGSstyle){
+
+    currentPlot <- timePlot(xDates, y, Plot=list(what="line"),
+                            yaxis.range=c(yInfo$bottom,yInfo$top), ytitle="Dimensionless",
+                            xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
+                            ...)
+    
+    xMid <- mean(currentPlot$xax$range)    
+    yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
+    
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=line2, current=currentPlot,size=10)
+    invisible(title)
+  } else {
+    genericEGRETDotPlot(x=xmid,#localDaily$DecYear,
+                        y=y,
+                        xlim=c(xInfo$bottom,xInfo$top),ylim=c(yInfo$bottom,yInfo$top),
+                        xlab="",ylab="Dimensionless",xDate=TRUE,
+                        xTicks=xInfo$ticks,yTicks=yInfo$ticks,cex=cex,tinyPlot=tinyPlot,
+                        plotTitle=title, cex.main=cex.main, cex.axis = cex.axis,
+                        type="l", lwd=lwd, customPar=customPar, ...
+    )
+  }
 
 }

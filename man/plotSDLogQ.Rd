@@ -7,7 +7,7 @@
 plotSDLogQ(eList, yearStart = NA, yearEnd = NA, window = 15, sdMax = NA,
   printTitle = TRUE, tinyPlot = FALSE, printStaName = TRUE,
   printPA = TRUE, cex = 0.8, cex.main = 1.1, cex.axis = 1.1, lwd = 2,
-  customPar = FALSE, ...)
+  customPar = FALSE, USGSstyle = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Daily and INFO dataframes}
@@ -39,6 +39,8 @@ plotSDLogQ(eList, yearStart = NA, yearEnd = NA, window = 15, sdMax = NA,
 \item{customPar}{logical defaults to FALSE. If TRUE, par() should be set by user before calling this function
 (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.}
 
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -58,6 +60,13 @@ plotSDLogQ(eList, 1998,2000)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotSDLogQ(eList)
+library(USGSwsGraphs)
+setPDF(basename="test2")
+layoutInfo <- setLayout(width=4, height=4)
+layoutStuff <- setGraph(1, layoutInfo)
+plotSDLogQ(eList, USGSstyle=TRUE)
+graphics.off()
+
 }
 }
 \seealso{
