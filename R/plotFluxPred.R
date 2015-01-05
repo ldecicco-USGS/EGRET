@@ -92,7 +92,7 @@ plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA,
   yHigh<-localSample$ConcHigh*localSample$Q*fluxFactor
   Uncen<-localSample$Uncen
 
-  if (tinyPlot) {
+  if (tinyPlot & !USGSstyle) {
     xLab <- fluxUnit@unitEstimateTiny
 #     yLab <- paste("Obs.", fluxUnit@unitExpressTiny)
     yLab <- substitute(a ~ b, list(a="Obs.",b= fluxUnit@unitExpressTiny[[1]]))

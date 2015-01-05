@@ -67,7 +67,7 @@ plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
   yHigh<-localSample$ConcHigh
   Uncen<-localSample$Uncen
 
-  if(tinyPlot){
+  if(tinyPlot & !USGSstyle){
     xLab<-"Est. Conc."
     yLab<-"Obs. Conc."
   } else {

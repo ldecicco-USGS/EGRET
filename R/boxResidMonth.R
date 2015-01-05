@@ -60,12 +60,12 @@ boxResidMonth<-function(eList, stdResid = FALSE, las=1,
   
   title2<-if(paLong==12) "" else setSeasonLabelByUser(paStartInput=paStart,paLongInput=paLong)
   
-  if (tinyPlot){
+  if (tinyPlot & !USGSstyle){
     if (!customPar) par(mar=c(4,5,1,0.1),cex.lab=cex.axis,mgp=c(2.5,0.5,0),tcl=0.5)
     yLab<-if(stdResid) "Standardized Residuals" else "Residuals"
     names <- c("J","F","M","A","M","J","J","A","S","O","N","D")
   } else {
-    if (!customPar) par(mar=c(5,6,4,2) + 0.1,cex.lab=cex.axis,mgp=c(3,1,0),tcl=0.5)
+    if (!customPar & !USGSstyle) par(mar=c(5,6,4,2) + 0.1,cex.lab=cex.axis,mgp=c(3,1,0),tcl=0.5)
     yLab<-if(stdResid) "Standardized Residuals in natural log units" else "Residuals in natural log units"    
     names <- sapply(c(1:12),function(x){monthInfo[[x]]@monthAbbrev})
   }

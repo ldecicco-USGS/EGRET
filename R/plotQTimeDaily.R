@@ -41,7 +41,7 @@
 #' setPDF(basename="test")
 #' layoutInfo <- setLayout(width=4, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
-#' plotQTimeDaily(eList,USGSstyle=TRUE,margin=layoutStuff, qLower=1000000)
+#' plotQTimeDaily(eList,USGSstyle=TRUE,margin=layoutStuff, qLower=1500)
 #' graphics.off()
 plotQTimeDaily<-function (eList, startYear=NA, endYear=NA, qLower = NA, qUnit = 1, logScale=FALSE,
                           tinyPlot = FALSE, printTitle = TRUE, lwd = 3, col="red", 

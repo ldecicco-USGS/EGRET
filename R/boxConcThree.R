@@ -77,9 +77,9 @@ boxConcThree<-function (eList, tinyPlot=FALSE,
   yTicks<-yPretty(yMax)
   yTop<-yTicks[length(yTicks)]
   
-  if (tinyPlot) {
+  if (tinyPlot & !USGSstyle) {
     yLab <- paste("Conc. (",localINFO$param.units,")",sep="")
-    if (!customPar & !USGSstyle) par(mar=c(4,5,1,0.1),tcl=0.5,cex.lab=cex.axis)  
+    if (!customPar ) par(mar=c(4,5,1,0.1),tcl=0.5,cex.lab=cex.axis)  
 
   } else {
     yLab <- paste("Concentration in",localINFO$param.units)

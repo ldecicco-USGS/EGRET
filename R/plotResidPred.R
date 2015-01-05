@@ -73,7 +73,7 @@ plotResidPred<-function(eList, stdResid = FALSE,
   yHigh<-if(stdResid) yHigh/localSample$SE else yHigh
   Uncen<-localSample$Uncen
   
-  if (tinyPlot){
+  if (tinyPlot & !USGSstyle){
     xLab <- "Est. Conc. in natural log units"
     yLab <- if(stdResid) "Std. Residual" else "Residual"
   }  else {
@@ -94,6 +94,9 @@ plotResidPred<-function(eList, stdResid = FALSE,
     
     Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
     col <- col[unique(Uncen)]
+    
+#     newX <- transData(x, logT = TRUE, revT = FALSE)
+    
     currentPlot <- colorPlot(log(x), yHigh, color= Uncen, Plot=list(what="points",color=col),
                              yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yLab,
                              xaxis.range=c(xInfo$bottom, xInfo$top), xtitle=xLab,
@@ -105,9 +108,9 @@ plotResidPred<-function(eList, stdResid = FALSE,
     
     if(legend) addExplanation(currentPlot, where="ul",title="")
     
-    newX <- transData(data = x[Uncen == "Left-censored"], TRUE, FALSE)
+#     newX <- newX[Uncen == "Left-censored"]
     
-    addBars(newX, yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+    addBars(log(x)[Uncen == "Left-censored"], yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
             current=currentPlot, 
             Bars=list(width=0.01,fill="white",border="gray80"))
     

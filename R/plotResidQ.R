@@ -88,7 +88,7 @@ plotResidQ<-function (eList, qUnit = 2,
    
   Uncen <- localSample$Uncen
   
-  if (tinyPlot){
+  if (tinyPlot & !USGSstyle){
      xLab <- qUnit@qUnitTiny
      yLab <- ifelse(stdResid, "Standardized Residual", "Residual")
   } else {

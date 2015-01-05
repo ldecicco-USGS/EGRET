@@ -90,9 +90,6 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
                   printTitle = FALSE, tinyPlot=TRUE,cex=cex,
                   USGSstyle=USGSstyle,margin=graph4,...)
     graph5 <- setGraph(5, layoutResponse)
-#     boxResidMonth(eList, 
-#                   printTitle = FALSE, tinyPlot=TRUE,cex=cex,
-#                   USGSstyle=USGSstyle,margin=graph5,...)
     boxConcThree(eList, 
                  printTitle=FALSE, tinyPlot=TRUE,
                  USGSstyle=USGSstyle,margin=graph5,...)

@@ -77,7 +77,7 @@ plotResidTime<-function(eList, stdResid = FALSE,
   xMax<-max(x) + 0.2
 
   xLab<-""
-  if(tinyPlot){
+  if(tinyPlot & !USGSstyle){
     yLab<-if(stdResid) "Standardized Residual" else "Residual"     
   } else {
     yLab<-if(stdResid) "Standardized Residual in natural log units" else "Residual in natural log units"     
