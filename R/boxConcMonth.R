@@ -34,8 +34,10 @@
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' boxConcMonth(eList)
 #' library(USGSwsGraphs)
-#' setPDF(basename="test")
-#' boxConcMonth(eList,USGSstyle=TRUE)
+#' setPDF(basename = "test")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutInfo)
+#' boxConcMonth(eList,USGSstyle=TRUE, margin=layoutStuff)
 #' graphics.off()
 boxConcMonth<-function(eList, printTitle = TRUE,
                        cex=0.8, cex.axis=1.1, cex.main=1.1, las=1,logScale=FALSE,tcl=0.5,

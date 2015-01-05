@@ -18,6 +18,8 @@
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param lwd number line width
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param legend logical add legend
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @seealso \code{\link{selectDays}}, \code{\link{genericEGRETDotPlot}}
@@ -30,9 +32,16 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotConcPred(eList)
+#' library(USGSwsGraphs)
+#' setPDF(basename = "test")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutInfo)
+#' plotConcPred(eList, USGSstyle=TRUE, margin=layoutStuff)
+#' graphics.off()
 plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
                        printTitle = TRUE,tinyPlot=FALSE,cex=0.8, cex.axis=1.1,
-                       cex.main=1.1, customPar=FALSE,col="black",lwd=1,...){
+                       cex.main=1.1, customPar=FALSE,col="black",lwd=1,
+                       USGSstyle=FALSE,legend=FALSE,...){
   # this function shows observed versus predicted concentration
   # predicted concentration on the x-axis (these include the bias correction), 
   # observed concentration on y-axis 
@@ -82,17 +91,52 @@ plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
   yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, tinyPlot=tinyPlot,logScale=logScale)
   
   ############################
-
-  genericEGRETDotPlot(x=x, y=yHigh,
-                      xTicks=xInfo$ticks, yTicks=yInfo$ticks,
-                      xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
-                      xlab=xLab, ylab=yLab,log=logVariable,
-                      plotTitle=plotTitle, oneToOneLine=TRUE,
-                      cex.axis=cex.axis,cex.main=cex.main,cex=cex,
-                      tinyPlot=tinyPlot,customPar=customPar,col=col,lwd=lwd,...
-    )
-
-  censoredSegments(yBottom=yInfo$bottom, yLow=yLow, yHigh=yHigh, x=x, Uncen=Uncen,col=col,lwd=lwd)
-  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
-
+  if(USGSstyle){
+    if(col == "black"){
+      col <- list("Uncensored"="black","Left-censored"="gray80")
+    }
+    Uncen <- localSample$Uncen
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    col <- col[unique(Uncen)]
+    currentPlot <- colorPlot(x, yHigh, color= Uncen, Plot=list(what="points",color=col),
+                             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yLab,
+                             xaxis.range=c(xInfo$bottom, xInfo$top), xtitle=xLab,
+                             xaxis.log=logScale,yaxis.log=logScale,
+                             ...)
+    refLine(coefficients=c(0,1), current=currentPlot)
+    
+    yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
+    
+    if(legend) addExplanation(currentPlot, where="ul",title="")
+    
+    if(logScale){
+      x <- transData(data = x[Uncen == "Left-censored"], TRUE, FALSE)
+      xMid <- 10^mean(currentPlot$xax$range)
+    } else {
+      xMid <- mean(currentPlot$xax$range)
+      x <- x[Uncen == "Left-censored"]
+    }
+    
+    addBars(x, 
+            yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+            current=currentPlot, 
+            Bars=list(width=0.01,fill="white",border="gray80"))
+    
+    
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=title2, current=currentPlot,size=10)
+    invisible(currentPlot)
+  } else {
+    genericEGRETDotPlot(x=x, y=yHigh,
+                  xTicks=xInfo$ticks, yTicks=yInfo$ticks,
+                  xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
+                  xlab=xLab, ylab=yLab,log=logVariable,
+                  plotTitle=plotTitle, oneToOneLine=TRUE,
+                  cex.axis=cex.axis,cex.main=cex.main,cex=cex,
+                  tinyPlot=tinyPlot,customPar=customPar,col=col,lwd=lwd,...
+      )
+  
+    censoredSegments(yBottom=yInfo$bottom, yLow=yLow, yHigh=yHigh, x=x, Uncen=Uncen,col=col,lwd=lwd)
+    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  }
 }

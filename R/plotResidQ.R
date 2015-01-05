@@ -23,6 +23,8 @@
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param lwd number line width
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param legend logical add legend
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
@@ -34,9 +36,16 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotResidQ(eList)
+#' library(USGSwsGraphs)
+#' setPDF(basename = "test")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutInfo)
+#' plotResidQ(eList, USGSstyle=TRUE, margin=layoutStuff)
+#' graphics.off()
 plotResidQ<-function (eList, qUnit = 2, 
                       tinyPlot = FALSE, stdResid = FALSE, printTitle = TRUE,col="black",lwd=1,
-                      cex=0.8, cex.axis=1.1,cex.main=1.1,rmSciX=FALSE, customPar=FALSE,...){  
+                      cex=0.8, cex.axis=1.1,cex.main=1.1,rmSciX=FALSE, 
+                      customPar=FALSE,USGSstyle=FALSE,legend=FALSE,...){  
    
   localINFO <- getInfo(eList)
   localSample <- getSample(eList)
@@ -96,15 +105,49 @@ plotResidQ<-function (eList, qUnit = 2,
   #    yInfo <- generalAxis(x=yHigh, minVal=(min(yLow, na.rm = TRUE) - 0.5), maxVal=(max(yHigh) + 0.1), tinyPlot=tinyPlot)
   yInfo <- generalAxis(x=yHigh, minVal=NA, maxVal=NA, tinyPlot=tinyPlot,padPercent=5)
    
-  genericEGRETDotPlot(x=x, y=yHigh,
-                       xTicks=xInfo$ticks, yTicks=yInfo$ticks,hLine=TRUE,
-                       xlim = c(xInfo$bottom, xInfo$top), ylim = c(yInfo$bottom, yInfo$top),
-                       xlab = xLab, ylab = yLab, plotTitle=plotTitle,cex=cex,
-                       log = "x", cex.axis=cex.axis,cex.main=cex.main, col=col,
-                       tinyPlot=tinyPlot,rmSciX=rmSciX, customPar=customPar,...
-  )
+  if(USGSstyle){
+    if(col == "black"){
+      col <- list("Uncensored"="black","Left-censored"="gray80")
+    }
+    Uncen <- localSample$Uncen
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    col <- col[unique(Uncen)]
+    currentPlot <- colorPlot(x, yHigh, color= Uncen, Plot=list(what="points",color=col),
+                             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yLab,
+                             xaxis.range=c(xInfo$bottom, xInfo$top), xtitle=xLab,
+                             xaxis.log=TRUE,
+                             ...)
+    refLine(horizontal=0, current=currentPlot)
+    xMid <- 10^mean(currentPlot$xax$range)
+    
+    yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
+    
+    if(legend) addExplanation(currentPlot, where="ul",title="")
+    
+    newX <- transData(data = x[Uncen == "Left-censored"], TRUE, FALSE)
+    
+    addBars(newX, 
+            yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+            current=currentPlot, 
+            Bars=list(width=0.01,fill="white",border="gray80"))
+    
+    
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=title2, current=currentPlot,size=10)
+    invisible(currentPlot)
+    
+  } else {
+    genericEGRETDotPlot(x=x, y=yHigh,
+                         xTicks=xInfo$ticks, yTicks=yInfo$ticks,hLine=TRUE,
+                         xlim = c(xInfo$bottom, xInfo$top), ylim = c(yInfo$bottom, yInfo$top),
+                         xlab = xLab, ylab = yLab, plotTitle=plotTitle,cex=cex,
+                         log = "x", cex.axis=cex.axis,cex.main=cex.main, col=col,
+                         tinyPlot=tinyPlot,rmSciX=rmSciX, customPar=customPar,...
+    )
+    
+    censoredSegments(yInfo$bottom, yLow, yHigh, x, Uncen,col=col, lwd=lwd )
+    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  }
   
-  censoredSegments(yInfo$bottom, yLow, yHigh, x, Uncen,col=col, lwd=lwd )
-  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
    
 }

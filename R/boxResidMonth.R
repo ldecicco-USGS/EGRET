@@ -22,6 +22,7 @@
 #' @param font.main font to be used for plot main titles
 #' @param customPar logical defaults to FALSE. If TRUE, par() should be set by user before calling this function 
 #' @param las numeric in {0,1,2,3}; the style of axis labels
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @seealso \code{\link[graphics]{boxplot}}
@@ -33,9 +34,16 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' boxResidMonth(eList)
+#' library(USGSwsGraphs)
+#' setPDF(basename = "test")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutInfo)
+#' boxResidMonth(eList,USGSstyle=TRUE, margin=layoutStuff)
+#' graphics.off()
 boxResidMonth<-function(eList, stdResid = FALSE, las=1,
                         printTitle = TRUE, cex=0.8, cex.axis=1.1, cex.main=1.1,
-                        font.main=2, tinyPlot=FALSE, customPar=FALSE,...) {
+                        font.main=2, tinyPlot=FALSE, customPar=FALSE,
+                        USGSstyle=FALSE,...) {
   
   localINFO <- getInfo(eList)
   localSample <- getSample(eList)
@@ -74,16 +82,33 @@ boxResidMonth<-function(eList, stdResid = FALSE, las=1,
   
   tempDF <- data.frame(month=monthList, resid=resid)  
   
-  boxplot(tempDF$resid ~ tempDF$month,
-          varwidth=TRUE,
-          xlab="Month",ylab=yLab,
-          main=plotTitle,
-          names=names,
-          cex=cex,
-          cex.main=cex.main,
-          cex.axis=cex.axis,
-          las=las,
-          ...)
-  abline(h=0)  
-  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  if(USGSstyle){
+    
+    currentPlot <- boxPlot(tempDF$resid, group=tempDF$month, 
+                           Box=list(type="tukey"),
+                           ytitle=yLab,
+                           xtitle="Month",...)
+    
+    xMid <- 6
+    
+    yTop <- 0.9*max(currentPlot$yax$range)
+    
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=title2, current=currentPlot,size=10)
+    invisible(currentPlot)
+    
+  } else {
+    boxplot(tempDF$resid ~ tempDF$month,
+            varwidth=TRUE,
+            xlab="Month",ylab=yLab,
+            main=plotTitle,
+            names=names,
+            cex=cex,
+            cex.main=cex.main,
+            cex.axis=cex.axis,
+            las=las,
+            ...)
+    abline(h=0)  
+    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  }
 }

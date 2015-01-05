@@ -22,6 +22,8 @@
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param lwd number line width
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param legend logical add legend
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
@@ -33,9 +35,16 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotResidTime(eList)
+#' library(USGSwsGraphs)
+#' setPDF(basename = "test")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutInfo)
+#' plotResidTime(eList, USGSstyle=TRUE, margin=layoutStuff)
+#' graphics.off()
 plotResidTime<-function(eList, stdResid = FALSE, 
                         printTitle = TRUE, hLine=TRUE, tinyPlot=FALSE,col="black",lwd=1,
-                        cex=0.8, cex.axis=1.1,cex.main=1.1, customPar=FALSE,...){
+                        cex=0.8, cex.axis=1.1,cex.main=1.1, customPar=FALSE,
+                        USGSstyle=FALSE,legend=FALSE,...){
   # this function shows residual versus Time
   # Time on the x-axis , 
   # residual on y-axis 
@@ -80,13 +89,44 @@ plotResidTime<-function(eList, stdResid = FALSE,
   xInfo <- generalAxis(x=x, maxVal=xMax, minVal=xMin,padPercent=0, tinyPlot=tinyPlot)
   
   ##########################
-  genericEGRETDotPlot(x=x, y=yHigh,
+  if(USGSstyle){
+    x <- as.Date(localSample$Date)
+    
+    if(col == "black"){
+      col <- list("Uncensored"="black","Left-censored"="gray80")
+    }
+    Uncen <- localSample$Uncen
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    col <- col[unique(Uncen)]
+    
+    
+    currentPlot <- colorPlot(x, yHigh, Uncen, Plot=list(what="points", color=col),
+                             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yLab,
+                             xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
+#                              yaxis.log=logScale,
+                             ...)
+    if(legend) addExplanation(currentPlot, where="ul", title="")
+    currentPlot <- addBars(x[Uncen == "Left-censored"], yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+                           current=currentPlot, Bars=list(width=0.01,fill="white",border="gray80"))
+    refLine(horizontal=0, current=currentPlot)
+    xMid <- mean(currentPlot$xax$range)
+
+    yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
+    
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=title2, current=currentPlot,size=10)
+    invisible(currentPlot)
+    
+  } else {
+    
+    genericEGRETDotPlot(x=x, y=yHigh,
                       xTicks=xInfo$ticks, yTicks=yInfo$ticks,col=col,
                       xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom, yInfo$top),
                       xlab=xLab, ylab=yLab, plotTitle=plotTitle, customPar=customPar, cex=cex,
                       cex.axis=cex.axis,cex.main=cex.main, hLine=hLine, tinyPlot=tinyPlot,...
-  )
-  censoredSegments(yInfo$bottom, yLow, yHigh, x, Uncen,col=col,lwd=lwd)
-  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
-
+  
+    )
+    censoredSegments(yInfo$bottom, yLow, yHigh, x, Uncen,col=col,lwd=lwd)
+    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  }
 }

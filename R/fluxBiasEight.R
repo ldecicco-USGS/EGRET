@@ -36,6 +36,10 @@
 #' pdf("fluxBiasMultiSummer.pdf", height=9, width=8)
 #' fluxBiasMulti(eList)
 #' dev.off()
+#' library(USGSwsGraphs)
+#' setPDF(basename="test")
+#' fluxBiasMulti(eList,USGSstyle=TRUE) 
+#' graphics.off()
 fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS", 
                          cex = 0.7, cex.axis = 1.1,cex.main=1.1,
                          col="black", lwd=1,USGSstyle=FALSE,...){
@@ -66,42 +70,93 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
   
   title2<-if(paLong==12) "" else setSeasonLabelByUser(paStartInput=paStart,paLongInput=paLong)
   
-  par(oma = c(0, 10, 4, 10),mfrow=c(4,2))
-  plotResidPred(eList, 
-                stdResid = FALSE, tinyPlot=TRUE, printTitle = FALSE,cex=cex, 
-                cex.axis = cex.axis, col=col,lwd=lwd,...)
-  plotResidQ(eList, 
-             qUnit, tinyPlot = TRUE, printTitle = FALSE,cex=cex, 
-             cex.axis = cex.axis, col=col,lwd=lwd,...)
-  plotResidTime(eList, 
-                printTitle = FALSE, tinyPlot=TRUE,cex=cex, 
-                cex.axis = cex.axis, col=col,lwd=lwd,...)
-  boxResidMonth(eList, 
-                printTitle = FALSE, tinyPlot=TRUE,cex=cex, 
-                cex.axis = cex.axis,lwd=lwd,...)
-  boxConcThree(eList, 
-               localINFO = localINFO, printTitle=FALSE, tinyPlot=TRUE,cex=cex, 
-               cex.axis = cex.axis, lwd=lwd,...)
-  plotConcPred(eList, printTitle=FALSE, 
-               tinyPlot=TRUE,cex=cex, 
-               cex.axis = cex.axis, col=col,lwd=lwd,...)
-  boxQTwice(eList, printTitle = FALSE, qUnit = qUnit,tinyPlot=TRUE,cex=cex, 
-            cex.axis = cex.axis, lwd=lwd,...)
-  plotFluxPred(eList, 
-               fluxUnit, tinyPlot = TRUE, printTitle = FALSE,cex=cex, 
-               cex.axis = cex.axis, col=col,lwd=lwd,...)
-  fluxBias <- fluxBiasStat(localSample)
-  fB <- as.numeric(fluxBias[3])
-  fB <- format(fB, digits = 3)
-  title <- paste(localINFO$shortName, ", ", localINFO$paramShortName, 
-                 "\nModel is ",moreTitle, " Flux Bias Statistic", fB, sep="")
-  if("" == title2){
-    mtext(title, cex = cex.main, outer = TRUE, font = 1.8)
+  if(USGSstyle){
+    layoutResponse <- setLayout(num.rows=4,num.cols = 2, 
+              num.graphs = 8)
+    graph1 <- setGraph(1, layoutResponse)
+    plotResidPred(eList, 
+                  stdResid = FALSE, tinyPlot=TRUE, printTitle = FALSE,
+                  USGSstyle=USGSstyle,margin=graph1,...)
+    graph2 <- setGraph(2, layoutResponse)
+    plotResidQ(eList, 
+               qUnit, tinyPlot = TRUE, printTitle = FALSE,
+               USGSstyle=USGSstyle,margin=graph2,...)
+    graph3 <- setGraph(3, layoutResponse)
+    plotResidTime(eList, 
+                  printTitle = FALSE, tinyPlot=TRUE,
+                  USGSstyle=USGSstyle,margin=graph3,...)
+    graph4 <- setGraph(4, layoutResponse)
+    boxResidMonth(eList, 
+                  printTitle = FALSE, tinyPlot=TRUE,cex=cex,
+                  USGSstyle=USGSstyle,margin=graph4,...)
+    graph5 <- setGraph(5, layoutResponse)
+#     boxResidMonth(eList, 
+#                   printTitle = FALSE, tinyPlot=TRUE,cex=cex,
+#                   USGSstyle=USGSstyle,margin=graph5,...)
+    boxConcThree(eList, 
+                 printTitle=FALSE, tinyPlot=TRUE,
+                 USGSstyle=USGSstyle,margin=graph5,...)
+    graph6 <- setGraph(6, layoutResponse)
+    plotConcPred(eList, printTitle=FALSE, 
+                 tinyPlot=TRUE,
+                 USGSstyle=USGSstyle,margin=graph6,...)
+    graph7 <- setGraph(7, layoutResponse)
+    boxQTwice(eList, printTitle = FALSE, qUnit = qUnit,tinyPlot=TRUE,
+              USGSstyle=USGSstyle,margin=graph7,...)
+    graph8 <- setGraph(8, layoutResponse)
+    plotFluxPred(eList, 
+                 fluxUnit, tinyPlot = TRUE, printTitle = FALSE,
+                 USGSstyle=USGSstyle,margin=graph8,...)
+#     fluxBias <- fluxBiasStat(localSample)
+#     fB <- as.numeric(fluxBias[3])
+#     fB <- format(fB, digits = 3)
+#     title <- paste(localINFO$shortName, ", ", localINFO$paramShortName, 
+#                    "\nModel is ",moreTitle, " Flux Bias Statistic", fB, sep="")
+#     if("" == title2){
+#       mtext(title, cex = cex.main, outer = TRUE, font = 1.8)
+#     } else {
+#       title <- paste(title, title2, sep="\n")
+#       mtext(title, cex = cex.main*.75, outer = TRUE, font = 1.8)    
+#     }
+    
   } else {
-    title <- paste(title, title2, sep="\n")
-    mtext(title, cex = cex.main*.75, outer = TRUE, font = 1.8)    
+    par(oma = c(0, 10, 4, 10),mfrow=c(4,2))
+    plotResidPred(eList, 
+                  stdResid = FALSE, tinyPlot=TRUE, printTitle = FALSE,cex=cex, 
+                  cex.axis = cex.axis, col=col,lwd=lwd,...)
+    plotResidQ(eList, 
+               qUnit, tinyPlot = TRUE, printTitle = FALSE,cex=cex, 
+               cex.axis = cex.axis, col=col,lwd=lwd,...)
+    plotResidTime(eList, 
+                  printTitle = FALSE, tinyPlot=TRUE,cex=cex, 
+                  cex.axis = cex.axis, col=col,lwd=lwd,...)
+    boxResidMonth(eList, 
+                  printTitle = FALSE, tinyPlot=TRUE,cex=cex, 
+                  cex.axis = cex.axis,lwd=lwd,...)
+    boxConcThree(eList, 
+                 localINFO = localINFO, printTitle=FALSE, tinyPlot=TRUE,cex=cex, 
+                 cex.axis = cex.axis, lwd=lwd,...)
+    plotConcPred(eList, printTitle=FALSE, 
+                 tinyPlot=TRUE,cex=cex, 
+                 cex.axis = cex.axis, col=col,lwd=lwd,...)
+    boxQTwice(eList, printTitle = FALSE, qUnit = qUnit,tinyPlot=TRUE,cex=cex, 
+              cex.axis = cex.axis, lwd=lwd,...)
+    plotFluxPred(eList, 
+                 fluxUnit, tinyPlot = TRUE, printTitle = FALSE,cex=cex, 
+                 cex.axis = cex.axis, col=col,lwd=lwd,...)
+    fluxBias <- fluxBiasStat(localSample)
+    fB <- as.numeric(fluxBias[3])
+    fB <- format(fB, digits = 3)
+    title <- paste(localINFO$shortName, ", ", localINFO$paramShortName, 
+                   "\nModel is ",moreTitle, " Flux Bias Statistic", fB, sep="")
+    if("" == title2){
+      mtext(title, cex = cex.main, outer = TRUE, font = 1.8)
+    } else {
+      title <- paste(title, title2, sep="\n")
+      mtext(title, cex = cex.main*.75, outer = TRUE, font = 1.8)    
+    }
+    
+    par(mfcol = c(1, 1), oma = c(0, 0, 0, 0))
   }
-  
-  par(mfcol = c(1, 1), oma = c(0, 0, 0, 0))
   
 }

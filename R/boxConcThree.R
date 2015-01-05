@@ -18,6 +18,7 @@
 #' @param cex numerical value giving the amount by which plotting symbols should be magnified
 #' @param tinyPlot logical variable, if TRUE plot is designed to be plotted small as part of a multi-plot figure, default is FALSE.
 #' @param customPar logical defaults to FALSE. If TRUE, par() should be set by user before calling this function 
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @seealso \code{\link[graphics]{boxplot}}
@@ -29,9 +30,16 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' boxConcThree(eList)
+#' library(USGSwsGraphs)
+#' setPDF(basename = "test")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutInfo)
+#' boxConcThree(eList,USGSstyle=TRUE, margin=layoutStuff)
+#' graphics.off()
 boxConcThree<-function (eList, tinyPlot=FALSE,
                         printTitle = TRUE, moreTitle = "WRTDS",customPar=FALSE,
-                        font.main=2,cex=0.8,cex.main = 1.1, cex.axis = 1.1,...){
+                        font.main=2,cex=0.8,cex.main = 1.1, cex.axis = 1.1,
+                        USGSstyle=FALSE,...){
   
   localINFO <- getInfo(eList)
   localSample <- getSample(eList)
@@ -71,11 +79,11 @@ boxConcThree<-function (eList, tinyPlot=FALSE,
   
   if (tinyPlot) {
     yLab <- paste("Conc. (",localINFO$param.units,")",sep="")
-    if (!customPar) par(mar=c(4,5,1,0.1),tcl=0.5,cex.lab=cex.axis)  
+    if (!customPar & !USGSstyle) par(mar=c(4,5,1,0.1),tcl=0.5,cex.lab=cex.axis)  
 
   } else {
     yLab <- paste("Concentration in",localINFO$param.units)
-    if (!customPar) par(mar=c(5,6,4,2)+0.1,tcl=0.5,cex.lab=cex.axis)
+    if (!customPar & !USGSstyle) par(mar=c(5,6,4,2)+0.1,tcl=0.5,cex.lab=cex.axis)
 
   }
   name1 <- "Sampled day\nvalues"
@@ -83,19 +91,36 @@ boxConcThree<-function (eList, tinyPlot=FALSE,
   name3 <- "All day\nestimates"
   groupNames <- c(name1,name2,name3)
   
-  boxplot(concV ~ index,varwidth=TRUE,
-          names=groupNames,xlab="",ylab=yLab,
-          ylim=c(0,yTop),axes=FALSE,
-          main=plotTitle,font.main=font.main,cex=cex,
-          cex.main=cex.main,
-          las=1,yaxs="i",
-          ...)
-  
-  axis(1,tcl=0.5,at=c(1,2,3),labels=groupNames,cex.axis=cex.axis*0.5454)
-  axis(2,tcl=0.5,las=1,at=yTicks,cex.axis=cex.axis)
-  axis(3,tcl=0.5,at=c(1,2,3),labels=FALSE)
-  axis(4,tcl=0.5,at=yTicks,labels=FALSE)
-  box()
-  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  if(USGSstyle){
+    charIndex <- c(rep(name1, length=nrow(localSample)),rep(name2, length=nrow(localSample)),rep(name3,nrow(localDaily)))
+    
+    currentPlot <- boxPlot(as.numeric(concV), group=charIndex, 
+                           Box=list(type="tukey"),
+                           ytitle = yLab,
+                           xtitle = "", ...)
+    
+    xMid <- mean(currentPlot$xax$range)
+    
+    yTop <- 0.9*max(currentPlot$yax$range)
+    
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=title2, current=currentPlot,size=10)
+    invisible(currentPlot)
+  } else {
+    boxplot(concV ~ index,varwidth=TRUE,
+            names=groupNames,xlab="",ylab=yLab,
+            ylim=c(0,yTop),axes=FALSE,
+            main=plotTitle,font.main=font.main,cex=cex,
+            cex.main=cex.main,
+            las=1,yaxs="i",
+            ...)
+    
+    axis(1,tcl=0.5,at=c(1,2,3),labels=groupNames,cex.axis=cex.axis*0.5454)
+    axis(2,tcl=0.5,las=1,at=yTicks,cex.axis=cex.axis)
+    axis(3,tcl=0.5,at=c(1,2,3),labels=FALSE)
+    axis(4,tcl=0.5,at=yTicks,labels=FALSE)
+    box()
+    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  }
 
 }
