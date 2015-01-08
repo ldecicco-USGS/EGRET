@@ -57,8 +57,10 @@ boxConcMonth(eList)
 eList <- setPA(eList, paStart=6,paLong=3)
 boxConcMonth(eList)
 library(USGSwsGraphs)
-setPDF(basename="test")
-boxConcMonth(eList,USGSstyle=TRUE)
+setPDF(basename = "test")
+layoutInfo <- setLayout(width=6, height=4)
+layoutStuff <- setGraph(1, layoutInfo)
+boxConcMonth(eList,USGSstyle=TRUE, margin=layoutStuff)
 graphics.off()
 }
 \seealso{

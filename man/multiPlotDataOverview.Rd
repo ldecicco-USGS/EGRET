@@ -38,8 +38,8 @@ multiPlotDataOverview(eList, qUnit=1)
 
 eList <- setPA(eList, paStart=10,paLong=12)
 library(USGSwsGraphs)
-setPDF(basename="test",layout="landscape")
-multiPlotDataOverview(eList, qUnit=1,USGSstyle=TRUE)
+setPDF(basename="multiPlotDataOverview",layout="landscape")
+multiPlotDataOverview(eList, qUnit=2,USGSstyle=TRUE)
 graphics.off()
 }
 \seealso{

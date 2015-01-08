@@ -8,7 +8,7 @@ plotFlowSingle(eList, istat, yearStart = NA, yearEnd = NA, qMax = NA,
   printTitle = TRUE, tinyPlot = FALSE, customPar = FALSE,
   runoff = FALSE, qUnit = 1, printStaName = TRUE, printPA = TRUE,
   printIstat = TRUE, cex = 0.8, cex.axis = 1.1, cex.main = 1.1,
-  lwd = 2, col = "black", ...)
+  lwd = 2, col = "black", USGSstyle = FALSE, legend = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Daily and INFO dataframes}
@@ -48,6 +48,10 @@ plotFlowSingle(eList, istat, yearStart = NA, yearEnd = NA, qMax = NA,
 
 \item{col}{color of points on plot, see ?par 'Color Specification'}
 
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
+\item{legend}{logical add USGS style legend}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -68,6 +72,13 @@ plotFlowSingle(eList, 1)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotFlowSingle(eList, 1)
+library(USGSwsGraphs)
+setPDF(basename="plotFlowSingle")
+layoutInfo <- setLayout(width=6, height=4)
+layoutStuff <- setGraph(1, layoutInfo)
+plotFlowSingle(eList, 2, USGSstyle=TRUE,
+        legend=TRUE, margin=layoutStuff)
+graphics.off()
 }
 \seealso{
 \code{\link{makeAnnualSeries}}, \code{\link{genericEGRETDotPlot}}

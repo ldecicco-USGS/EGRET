@@ -79,14 +79,14 @@ boxQTwice<-function(eList,
   index1<-rep(1,nS)
   index2<-rep(2,nD)
   index<-c(index1,index2)
-  charIndex <- c(rep("Sample", length=nrow(localSample)),rep("Daily",nrow(localDaily)))
+  charIndex <- c(rep("Sampled days", length=nrow(localSample)),rep("All days",nrow(localDaily)))
   
   plotTitle<-if(printTitle) paste(localINFO$shortName,",",localINFO$paramShortName,"\nComparison of distribution of\nSampled Discharges and All Daily Discharges") else ""
  
   yMin <- 0.99 * min(bigQ)
   yMax <- 1.01 * max(bigQ)
   
-  if (tinyPlot) {
+  if (tinyPlot & !USGSstyle) {
     yLabel <- qUnit@qUnitTiny
     if (!customPar & !USGSstyle) par(mar=c(4,5,1,0.1),tcl=tcl,cex.lab=cex.axis)
     groupNames<-c("Sampled","All")
@@ -106,12 +106,13 @@ boxQTwice<-function(eList,
   }
   
   if(USGSstyle){
+    groupNames<-c("Sampled days","All days")
+    yLab <- paste("Discharge in",tolower(qUnit@qUnitName))
     currentPlot <- boxPlot(bigQ, group=charIndex, 
-                           Box=list(type="tukey"),
-                           ytitle=yLabel,
+                           Box=list(type="simple"),
+                           ytitle=yLab,
 #                            yaxis.range=c(yInfo$bottom,yInfo$top),
                            yaxis.log=logScale, ...)
-    
     xMid <- 6
     
     yTop <- 0.9*max(currentPlot$yax$range)

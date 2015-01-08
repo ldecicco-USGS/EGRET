@@ -100,34 +100,48 @@ plotResidQ<-function (eList, qUnit = 2,
            "\n", "Residual versus Discharge"), "")
    
    #######################
-   
+  dotSize <- 0.09  
+  if(tinyPlot) {
+    dotSize <- 0.03
+  }
+  if(USGSstyle){
+    tinyPlot <- FALSE
+  }
   xInfo <- generalAxis(x=x, minVal=NA, maxVal=NA, logScale=TRUE, tinyPlot=tinyPlot,padPercent=5)   
   #    yInfo <- generalAxis(x=yHigh, minVal=(min(yLow, na.rm = TRUE) - 0.5), maxVal=(max(yHigh) + 0.1), tinyPlot=tinyPlot)
   yInfo <- generalAxis(x=yHigh, minVal=NA, maxVal=NA, tinyPlot=tinyPlot,padPercent=5)
    
   if(USGSstyle){
     if(col == "black"){
-      col <- list("Uncensored"="black","Left-censored"="gray80")
+      col <- list("Uncensored"="black","Censored"="gray80")
     }
     Uncen <- localSample$Uncen
-    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Censored")
     col <- col[unique(Uncen)]
-    currentPlot <- colorPlot(x, yHigh, color= Uncen, Plot=list(what="points",color=col),
-                             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yLab,
-                             xaxis.range=c(xInfo$bottom, xInfo$top), xtitle=xLab,
+
+    yLab <- ifelse(stdResid, "Standardized residual in natural log units", "Residual in natural log units")
+    
+    xLab <- paste("Discharge in",tolower(qUnit@qUnitName))
+    
+    currentPlot <- colorPlot(x, yHigh, color= Uncen, 
+                             Plot=list(what="points",
+                                       color=col,
+                                       size=dotSize),
+                             ytitle=yLab,
+                             xtitle=xLab,
                              xaxis.log=TRUE,
                              ...)
     refLine(horizontal=0, current=currentPlot)
-    xMid <- 10^mean(currentPlot$xax$range)
+    xMid <- 10^(mean(currentPlot$xax$range))
     
     yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
     
     if(legend) addExplanation(currentPlot, where="ul",title="")
     
-    newX <- transData(data = x[Uncen == "Left-censored"], TRUE, FALSE)
+    newX <- transData(data = x[Uncen == "Censored"], TRUE, FALSE)
     
     addBars(newX, 
-            yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+            yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
             current=currentPlot, 
             Bars=list(width=0.01,fill="white",border="gray80"))
     

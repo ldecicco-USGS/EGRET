@@ -42,6 +42,7 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotFluxHist(eList) 
+#' library(USGSwsGraphs)
 #' setPDF(basename = "test")
 #' layoutInfo <- setLayout(width=6, height=4)
 #' layoutStuff <- setGraph(1, layoutResponse)
@@ -116,16 +117,33 @@ plotFluxHist<-function(eList, yearStart = NA, yearEnd = NA, fluxUnit = 9,
   ###############################################
   if(USGSstyle){
     subAnnualResults$Date <- as.Date(paste0(as.character(as.integer(subAnnualResults$DecYear)),"-04-01"))
-    #     setPDF("test",layout="portrait")
-    timePlot(subAnnualResults$Date, annFlux, Plot=list(what="points"),
+    col <- list(points=col)
+    
+    ylabel <- paste("Flux in",fluxUnit@unitUSGS)
+    
+    currentPlot <-colorPlot(subAnnualResults$Date, annFlux, color=rep("points",length(annFlux)),
+                            Plot=list(what="points",color=col),
              yaxis.range=c(0,yInfo$top), ytitle=ylabel,
              xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
              ...)
+    
+    xMid <- mean(currentPlot$xax$range)
+    yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
+    
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=periodName, current=currentPlot,size=10)
+    
     if(plotFlowNorm) {
       addXY(subAnnualResults$Date, fnFlux, Plot=list(color="green"))
     }
-#     addTitle(title, Justification = "center")
-    invisible(title)
+    
+    title<-if(printTitle) paste(localINFO$shortName," ",localINFO$paramShortName,title3) else ""
+    
+    addTitle(title, Justification = "center")
+    
+
+    
+    invisible(currentPlot)
     
   } else {
     genericEGRETDotPlot(x=subAnnualResults$DecYear, y = annFlux,

@@ -7,7 +7,8 @@
 plotConcTime(eList, qUnit = 2, qLower = NA, qUpper = NA,
   tinyPlot = FALSE, concMax = NA, concMin = NA, printTitle = TRUE,
   logScale = FALSE, cex = 0.8, cex.axis = 1.1, cex.main = 1.1,
-  customPar = FALSE, col = "black", lwd = 1, USGSstyle = FALSE, ...)
+  customPar = FALSE, col = "black", lwd = 1, USGSstyle = FALSE,
+  legend = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Sample and INFO dataframes}
@@ -42,6 +43,8 @@ plotConcTime(eList, qUnit = 2, qLower = NA, qUpper = NA,
 \item{lwd}{number line width.}
 
 \item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
+\item{legend}{logical add USGS style legend}
 
 \item{\dots}{arbitrary functions sent to the generic plotting function.  See ?par for details on possible parameters.}
 }

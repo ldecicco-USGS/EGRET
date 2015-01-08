@@ -67,6 +67,7 @@ plotFluxHist(eList, yearStart, yearEnd, fluxUnit = 'kgDay')
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotFluxHist(eList)
+library(USGSwsGraphs)
 setPDF(basename = "test")
 layoutInfo <- setLayout(width=6, height=4)
 layoutStuff <- setGraph(1, layoutResponse)

@@ -6,7 +6,7 @@
 \usage{
 fluxBiasMulti(eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
   cex = 0.7, cex.axis = 1.1, cex.main = 1.1, col = "black", lwd = 1,
-  ...)
+  USGSstyle = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least Sample, Daily, and INFO dataframes}
@@ -26,6 +26,8 @@ fluxBiasMulti(eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
 \item{col}{color of points on plot, see ?par 'Color Specification'}
 
 \item{lwd}{number line width}
+
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
 
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
@@ -52,6 +54,10 @@ eList <- setPA(eList,paStart=6,paLong=3)
 pdf("fluxBiasMultiSummer.pdf", height=9, width=8)
 fluxBiasMulti(eList)
 dev.off()
+library(USGSwsGraphs)
+setPDF(basename="fluxBiasMulti",layout="landscape")
+fluxBiasMulti(eList,USGSstyle=TRUE)
+graphics.off()
 }
 \keyword{graphics}
 \keyword{statistics}

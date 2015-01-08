@@ -38,7 +38,7 @@
 #' plotQTimeDaily(eList)
 #' eList <- setPA(eList, paStart=10,paLong=10)
 #' library(USGSwsGraphs)
-#' setPDF(basename="test")
+#' setPDF(basename="plotQTimeDaily")
 #' layoutInfo <- setLayout(width=4, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
 #' plotQTimeDaily(eList,USGSstyle=TRUE,margin=layoutStuff, qLower=1500)

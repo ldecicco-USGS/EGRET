@@ -27,8 +27,8 @@
 #' 
 #' eList <- setPA(eList, paStart=10,paLong=12)
 #' library(USGSwsGraphs)
-#' setPDF(basename="test",layout="landscape")
-#' multiPlotDataOverview(eList, qUnit=1,USGSstyle=TRUE) 
+#' setPDF(basename="multiPlotDataOverview",layout="landscape")
+#' multiPlotDataOverview(eList, qUnit=2,USGSstyle=TRUE) 
 #' graphics.off()
 multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
                                  logScaleConc=TRUE, logScaleQ=TRUE,
@@ -51,7 +51,7 @@ multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
     layoutResponse <- setLayout(num.rows=2,num.cols = 3, 
                                 num.graphs = 5, explanation = list(grid=c(6)))
     graph1 <- setGraph(1, layoutResponse)
-    plotConcQ(eList, qUnit = qUnit, printTitle = FALSE,rmSciX=TRUE,
+    plotConcQ(eList, qUnit = qUnit, printTitle = FALSE,rmSciX=TRUE,tinyPlot = TRUE,
               logScale=logScaleConc,USGSstyle=USGSstyle,legend=FALSE, 
               margin=graph1)
     if("" != title2){
@@ -59,20 +59,21 @@ multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
     }
     addTitle(Main = title)
     graph2 <- setGraph(2, layoutResponse)
-    concTimeOut <- plotConcTime(eList, printTitle = FALSE, 
+    concTimeOut <- plotConcTime(eList, printTitle = FALSE, tinyPlot = TRUE,
                  logScale=logScaleConc,USGSstyle=USGSstyle,legend=TRUE, 
                  margin=graph2)
-
-    graph3 <- setGraph(3, layoutResponse)
-    xyPlot(x = 1:10, y = 1:10, margin=graph3)
+    
+    
+#     graph3 <- setGraph(3, layoutResponse)
+#     xyPlot(x = 1:10, y = 1:10, margin=graph3)
     graph4 <- setGraph(4, layoutResponse)
-    boxConcOut <- boxConcMonth(eList, printTitle = FALSE, 
+    boxConcOut <- boxConcMonth(eList, printTitle = FALSE, tinyPlot = TRUE,
                  logScale=logScaleConc,USGSstyle=USGSstyle, margin=graph4)
     graph5 <- setGraph(5, layoutResponse)
-    boxOut <- boxQTwice(eList, printTitle = FALSE, qUnit = qUnit, 
+    boxOut <- boxQTwice(eList, printTitle = FALSE, qUnit = qUnit, tinyPlot = TRUE,
               logScale=logScaleQ,USGSstyle=USGSstyle, margin=graph5)
     graphExplain <- setGraph("explanation", layoutResponse)
-    addExplanation(boxOut,title = "Boxplot description")
+    addExplanation(boxOut)
   } else {
     par(mfcol=c(2,2),oma=c(0,2.4,4.5,2.4),tcl=0.5)
     plotConcQ(eList, qUnit = qUnit, tinyPlot = TRUE, printTitle = FALSE,rmSciX=TRUE,

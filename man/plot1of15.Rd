@@ -4,7 +4,8 @@
 \alias{plot1of15}
 \title{plots 1 of the 15 graphs of streamflow statistics on a single page}
 \usage{
-plot1of15(eList, yearStart, yearEnd, qf, istat, isBottom = FALSE)
+plot1of15(eList, yearStart, yearEnd, qf, istat, isBottom = FALSE,
+  USGSstyle = FALSE, legend = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Daily and INFO dataframes}
@@ -18,6 +19,10 @@ plot1of15(eList, yearStart, yearEnd, qf, istat, isBottom = FALSE)
 \item{istat}{A numeric value selecting the flow statistic to be plotted, must be an integer from 1 to 8}
 
 \item{isBottom}{logical, if TRUE the graph is from the bottom row and thus needs x axis labels, if FALSE it does not need labels}
+
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
+\item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
 Part of the flowHistory system.  The 15 graphs include annual and four seasonal graphs
@@ -26,6 +31,8 @@ for each of 3 flow statistics: 1-day maximum, mean, and 7-day minimum
 \examples{
 eList <- Choptank_eList
 plot1of15(eList, 1990, 2000, 0.2938476,5)
+library(USGSwsGraphs)
+plot1of15(eList, 1990, 2000, 0.2938476,5, USGSstyle=TRUE, legend=TRUE)
 }
 \keyword{graphics}
 \keyword{streamflow}

@@ -6,7 +6,8 @@
 \usage{
 plotResidPred(eList, stdResid = FALSE, tinyPlot = FALSE,
   printTitle = TRUE, col = "black", lwd = 1, cex = 0.8,
-  cex.axis = 1.1, cex.main = 1.1, customPar = FALSE, ...)
+  cex.axis = 1.1, cex.main = 1.1, customPar = FALSE, USGSstyle = FALSE,
+  legend = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Sample and INFO dataframes}
@@ -30,6 +31,10 @@ plotResidPred(eList, stdResid = FALSE, tinyPlot = FALSE,
 \item{customPar}{logical defaults to FALSE. If TRUE, par() should be set by user before calling this function
 (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.}
 
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
+\item{legend}{logical add USGS style legend}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -50,6 +55,12 @@ plotResidPred(eList)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotResidPred(eList)
+library(USGSwsGraphs)
+setPDF(basename = "plotResidPred")
+layoutInfo <- setLayout(width=6, height=4)
+layoutStuff <- setGraph(1, layoutInfo)
+plotResidPred(eList, USGSstyle=TRUE, margin=layoutStuff)
+graphics.off()
 }
 \seealso{
 \code{\link{selectDays}}, \code{\link{genericEGRETDotPlot}}

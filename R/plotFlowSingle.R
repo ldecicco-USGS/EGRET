@@ -30,6 +30,8 @@
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param customPar logical defaults to FALSE. If TRUE, par() should be set by user before calling this function 
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
+#' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param legend logical add USGS style legend
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics streamflow statistics
 #' @export
@@ -41,10 +43,18 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotFlowSingle(eList, 1)
+#' library(USGSwsGraphs)
+#' setPDF(basename="plotFlowSingle")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutInfo)
+#' plotFlowSingle(eList, 2, USGSstyle=TRUE,
+#'         legend=TRUE, margin=layoutStuff)
+#' graphics.off()
 plotFlowSingle<-function(eList, istat,yearStart=NA, yearEnd = NA,
                   qMax = NA, printTitle = TRUE, tinyPlot = FALSE, customPar=FALSE,
                   runoff = FALSE, qUnit = 1, printStaName = TRUE, printPA = TRUE, 
-                  printIstat = TRUE,cex=0.8, cex.axis=1.1,cex.main=1.1, lwd=2, col="black",...) {
+                  printIstat = TRUE,cex=0.8, cex.axis=1.1,cex.main=1.1, lwd=2, 
+                  col="black",USGSstyle=FALSE,legend=FALSE,...) {
   
   localAnnualSeries <- makeAnnualSeries(eList)
   localINFO <- getInfo(eList)
@@ -91,7 +101,7 @@ plotFlowSingle<-function(eList, istat,yearStart=NA, yearEnd = NA,
   
   ##############################################
   
-  if(tinyPlot){
+  if(tinyPlot & !USGSstyle){
     yLab <- qUnit@qUnitTiny
     title<-if(printTitle) paste(nameIstat[istat]) else ""
   } else {
@@ -100,16 +110,52 @@ plotFlowSingle<-function(eList, istat,yearStart=NA, yearEnd = NA,
   
   yLab <- if(runoff) "Runoff in mm/day" else yLab
 
-  genericEGRETDotPlot(x=localSeries$years, y=localSeries$qActual, 
-                      xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
-                      xlab="", ylab=yLab, customPar=customPar,
-                      xTicks=xInfo$ticks, yTicks=yInfo$ticks,cex=cex,
-                      plotTitle=title, cex.axis=cex.axis,cex.main=cex.main, 
-                      tinyPlot=tinyPlot,lwd=lwd,col=col,...
-  )
-  
-  ##############################################
-  
-  lines(localSeries$years,localSeries$qSmooth,lwd=lwd,col=col)
+  if(USGSstyle){
+    x_year <- floor(localSeries$years)
+    x_seconds <-  localSeries$years - x_year
+    sec_per_year <- unclass(ISOdate(x_year+1,1,1,0,0,0)) - unclass(ISOdate(x_year,1,1,0,0,0)) 
+    
+    x <- ISOdate(x_year,1,1,0,0,0) + x_seconds * sec_per_year 
+    x <- as.Date(x)
+    y <- localSeries$qActual
+    line3 <- gsub(pattern = "\n ", "", line3)
+    
+    colorList <- list(stat="black", "Smooth"=col)
+    names(colorList) <- c(eval(line3),"Smooth")
+    colorsDots <- colorList[line3]
+    
+    currentPlot <- colorPlot(x, y, color=rep(line3, length(x)),Plot=list(what="points",color=colorsDots),
+             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yLab,
+             xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
+             ...)
+    
+    ySmooth <- localSeries$qSmooth
+    
+    currentPlot <- addXY(x, ySmooth, Plot=list(name="Smooth",color=col), 
+                         currentPlot )
+    
+    yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
+    xMid <- mean(currentPlot$xax$range)
+    
+    if(legend) addExplanation(currentPlot, where="ul",title="", box.off = TRUE )
+    
+    if(line2 == ""){
+      line2 <- "Water Year"
+    }
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=line2, current=currentPlot,size=10)
+  } else {
+    genericEGRETDotPlot(x=localSeries$years, y=localSeries$qActual, 
+                        xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
+                        xlab="", ylab=yLab, customPar=customPar,
+                        xTicks=xInfo$ticks, yTicks=yInfo$ticks,cex=cex,
+                        plotTitle=title, cex.axis=cex.axis,cex.main=cex.main, 
+                        tinyPlot=tinyPlot,lwd=lwd,col=col,...
+    )
+    
+    ##############################################
+    
+    lines(localSeries$years,localSeries$qSmooth,lwd=lwd,col=col)
+  }
 
 }

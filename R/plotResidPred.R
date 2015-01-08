@@ -23,6 +23,7 @@
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param lwd number line width
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param legend logical add USGS style legend
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords water-quality statistics graphics
 #' @export
@@ -35,7 +36,7 @@
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotResidPred(eList)
 #' library(USGSwsGraphs)
-#' setPDF(basename = "test")
+#' setPDF(basename = "plotResidPred")
 #' layoutInfo <- setLayout(width=6, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
 #' plotResidPred(eList, USGSstyle=TRUE, margin=layoutStuff)
@@ -83,38 +84,49 @@ plotResidPred<-function(eList, stdResid = FALSE,
   plotTitle<-if(printTitle) paste(localINFO$shortName,"\n",localINFO$paramShortName,"\n","Residual versus Estimated Concentration") else ""
   
   ####################
-  
+  dotSize <- 0.09  
+  if(tinyPlot) {
+    dotSize <- 0.03
+  }
+  if(USGSstyle){
+    tinyPlot <- FALSE
+  }
   xInfo <- generalAxis(x=log(x), minVal=NA, maxVal=NA, tinyPlot=tinyPlot)
   yInfo <- generalAxis(x=yHigh, minVal=NA, maxVal=NA, tinyPlot=tinyPlot)
   
   if(USGSstyle){
     if(col == "black"){
-      col <- list("Uncensored"="black","Left-censored"="gray80")
+      col <- list("Uncensored"="black","Censored"="gray80")
     }
     
-    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Censored")
     col <- col[unique(Uncen)]
-    
+
 #     newX <- transData(x, logT = TRUE, revT = FALSE)
-    
-    currentPlot <- colorPlot(log(x), yHigh, color= Uncen, Plot=list(what="points",color=col),
-                             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yLab,
-                             xaxis.range=c(xInfo$bottom, xInfo$top), xtitle=xLab,
+
+    yLab <- if(stdResid) "Standardized residuals in natural log units" else "Residuals in natural log units"
+
+    xLab <- paste("Estimated concentration in", localINFO$param.units)
+
+    currentPlot <- colorPlot(log(x), yHigh, color= Uncen, 
+                             Plot=list(what="points",
+                                       color=col,
+                                       size=dotSize),
+                             ytitle=yLab,
+                             xtitle=xLab,
                              ...)
     refLine(horizontal=0, current=currentPlot)
-    xMid <- mean(currentPlot$xax$range)
     
     yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
+
+    if(legend) addExplanation(currentPlot, where="ll",title="")
     
-    if(legend) addExplanation(currentPlot, where="ul",title="")
-    
-#     newX <- newX[Uncen == "Left-censored"]
-    
-    addBars(log(x)[Uncen == "Left-censored"], yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+    addBars(log(x[Uncen == "Censored"]), yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
             current=currentPlot, 
-            Bars=list(width=0.01,fill="white",border="gray80"))
+            Bars=list(width=0.001,fill="white",border="gray80"))
     
-    
+    xMid <- mean(currentPlot$xax$range)
+
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
     invisible(currentPlot)

@@ -38,7 +38,7 @@
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotSDLogQ(eList) 
 #' library(USGSwsGraphs)
-#' setPDF(basename="test2")
+#' setPDF(basename="plotSDLogQ")
 #' layoutInfo <- setLayout(width=4, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
 #' plotSDLogQ(eList, USGSstyle=TRUE) 

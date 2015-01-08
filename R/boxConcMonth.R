@@ -91,6 +91,10 @@ boxConcMonth<-function(eList, printTitle = TRUE,
     names <- sapply(c(1:12),function(x){monthInfo[[x]]@monthAbbrev})
   }
     
+  if(USGSstyle){
+    tinyPlot <- FALSE
+  }
+
   yInfo <- generalAxis(x=tempDF$conc, maxVal=maxY, minVal=min(localSample$ConcHigh, na.rm=TRUE), 
                        tinyPlot=tinyPlot,logScale=logScale,units=localINFO$param.units)
   yTicksLab <- prettyNum(yInfo$ticks)
@@ -98,10 +102,9 @@ boxConcMonth<-function(eList, printTitle = TRUE,
   if(USGSstyle){
     
     currentPlot <- boxPlot(tempDF$conc, group=tempDF$month, 
-                           Box=list(type="tukey"),
+                           Box=list(type="simple"),
                            ytitle=if(showYLabels) yInfo$label else "",
                            xtitle=if(showXLabels) "Month" else "",
-                           yaxis.range = c(yInfo$bottom,yInfo$top),
                            ylabels = yInfo$ticks,
                            yaxis.log=logScale, ...)
     

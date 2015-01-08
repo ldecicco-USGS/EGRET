@@ -6,7 +6,8 @@
 \usage{
 plotConcPred(eList, concMax = NA, logScale = FALSE, printTitle = TRUE,
   tinyPlot = FALSE, cex = 0.8, cex.axis = 1.1, cex.main = 1.1,
-  customPar = FALSE, col = "black", lwd = 1, ...)
+  customPar = FALSE, col = "black", lwd = 1, USGSstyle = FALSE,
+  legend = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Sample and INFO dataframes}
@@ -32,6 +33,10 @@ plotConcPred(eList, concMax = NA, logScale = FALSE, printTitle = TRUE,
 
 \item{lwd}{number line width}
 
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
+\item{legend}{logical add legend}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -48,6 +53,12 @@ plotConcPred(eList, logScale=TRUE)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotConcPred(eList)
+library(USGSwsGraphs)
+setPDF(basename = "test")
+layoutInfo <- setLayout(width=6, height=4)
+layoutStuff <- setGraph(1, layoutInfo)
+plotConcPred(eList, USGSstyle=TRUE, margin=layoutStuff)
+graphics.off()
 }
 \seealso{
 \code{\link{selectDays}}, \code{\link{genericEGRETDotPlot}}

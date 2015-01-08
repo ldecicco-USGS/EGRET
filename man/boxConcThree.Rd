@@ -6,7 +6,7 @@
 \usage{
 boxConcThree(eList, tinyPlot = FALSE, printTitle = TRUE,
   moreTitle = "WRTDS", customPar = FALSE, font.main = 2, cex = 0.8,
-  cex.main = 1.1, cex.axis = 1.1, ...)
+  cex.main = 1.1, cex.axis = 1.1, USGSstyle = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Daily, Sample, and INFO dataframes}
@@ -27,6 +27,8 @@ boxConcThree(eList, tinyPlot = FALSE, printTitle = TRUE,
 
 \item{cex.axis}{magnification to be used for axis annotation relative to the current setting of cex}
 
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -45,6 +47,12 @@ boxConcThree(eList)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 boxConcThree(eList)
+library(USGSwsGraphs)
+setPDF(basename = "test")
+layoutInfo <- setLayout(width=6, height=4)
+layoutStuff <- setGraph(1, layoutInfo)
+boxConcThree(eList,USGSstyle=TRUE, margin=layoutStuff)
+graphics.off()
 }
 \seealso{
 \code{\link[graphics]{boxplot}}

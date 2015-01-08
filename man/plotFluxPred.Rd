@@ -7,7 +7,7 @@
 plotFluxPred(eList, fluxUnit = 3, fluxMax = NA, printTitle = TRUE,
   oneToOneLine = TRUE, customPar = FALSE, col = "black", lwd = 1,
   cex = 0.8, cex.axis = 1.1, cex.main = 1.1, tinyPlot = FALSE,
-  logScale = FALSE, ...)
+  logScale = FALSE, USGSstyle = FALSE, legend = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Sample and INFO dataframes}
@@ -37,6 +37,10 @@ plotFluxPred(eList, fluxUnit = 3, fluxMax = NA, printTitle = TRUE,
 
 \item{logScale}{logical if TRUE x and y plotted in log axis}
 
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
+\item{legend}{logical add USGS style legend}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -54,6 +58,12 @@ plotFluxPred(eList, logScale=TRUE)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotFluxPred(eList)
+library(USGSwsGraphs)
+setPDF(basename = "test")
+layoutInfo <- setLayout(width=6, height=4)
+layoutStuff <- setGraph(1, layoutInfo)
+plotFluxPred(eList, USGSstyle=TRUE, margin=layoutStuff)
+graphics.off()
 }
 \seealso{
 \code{\link{selectDays}}, \code{\link{genericEGRETDotPlot}}

@@ -84,6 +84,13 @@ plotResidTime<-function(eList, stdResid = FALSE,
   }
   plotTitle<-if(printTitle) paste(localINFO$shortName,"\n",localINFO$paramShortName,"\n","Residual versus Time") else ""
   
+  dotSize <- 0.09  
+  if(tinyPlot) {
+    dotSize <- 0.03
+  }
+  if(USGSstyle){
+    tinyPlot <- FALSE
+  }
   yInfo <- generalAxis(x=yHigh, maxVal=NA, minVal=NA,padPercent=5, tinyPlot=tinyPlot)
 #   yInfo <- generalAxis(x=yHigh, maxVal=max(yHigh) + 0.1, minVal=min(yLow,na.rm=TRUE) - 0.5,padPercent=0, tinyPlot=tinyPlot)
   xInfo <- generalAxis(x=x, maxVal=xMax, minVal=xMin,padPercent=0, tinyPlot=tinyPlot)
@@ -93,20 +100,22 @@ plotResidTime<-function(eList, stdResid = FALSE,
     x <- as.Date(localSample$Date)
     
     if(col == "black"){
-      col <- list("Uncensored"="black","Left-censored"="gray80")
+      col <- list("Uncensored"="black","Censored"="gray80")
     }
     Uncen <- localSample$Uncen
-    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Censored")
     col <- col[unique(Uncen)]
     
+    yLab <- if(stdResid) "Standardized residuals in natural log units" else "Residuals in natural log units"
     
-    currentPlot <- colorPlot(x, yHigh, Uncen, Plot=list(what="points", color=col),
-                             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yLab,
-                             xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
-#                              yaxis.log=logScale,
+    currentPlot <- colorPlot(x, yHigh, Uncen, 
+                             Plot=list(what="points",
+                                        color=col,
+                                        size=dotSize),
+                             ytitle=yLab,
                              ...)
     if(legend) addExplanation(currentPlot, where="ul", title="")
-    currentPlot <- addBars(x[Uncen == "Left-censored"], yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+    currentPlot <- addBars(x[Uncen == "Censored"], yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
                            current=currentPlot, Bars=list(width=0.01,fill="white",border="gray80"))
     refLine(horizontal=0, current=currentPlot)
     xMid <- mean(currentPlot$xax$range)

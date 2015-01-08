@@ -44,15 +44,13 @@
 #' setPDF("test",layout="portrait")
 #' plotConcHist(eList, yearStart, yearEnd, USGSstyle=TRUE)
 #' graphics.off()
-#' 
-#' setPDF(basename = "test")
+#' library(USGSwsGraphs)
+#' setPDF(basename = "plotConcFluxHist")
 #' layoutResponse <- setLayout(num.rows=2)
 #' AA.gr <- setGraph(1, layoutResponse)
-#' title1 <- plotFluxHist(eList,customPar=TRUE, printTitle=FALSE, USGSstyle=TRUE, margin=AA.gr)
-#' addTitle(title1, Justification = "center")
+#' plotFluxHist(eList,customPar=TRUE, printTitle=TRUE, USGSstyle=TRUE, margin=AA.gr)
 #' AA.gr <- setGraph(2, layoutResponse)
-#' title2 <- plotConcHist(eList,customPar=TRUE, printTitle=FALSE, USGSstyle=TRUE, margin=AA.gr)
-#' addTitle(title2, Justification="right")
+#' plotConcHist(eList,customPar=TRUE, printTitle=TRUE, USGSstyle=TRUE, margin=AA.gr)
 #' graphics.off()
 plotConcHist<-function(eList, yearStart = NA, yearEnd = NA, 
                        concMax = NA, printTitle = TRUE, 
@@ -89,15 +87,30 @@ plotConcHist<-function(eList, yearStart = NA, yearEnd = NA,
   
   if(USGSstyle){
     localAnnualResults$Date <- as.Date(paste0(as.character(as.integer(localAnnualResults$DecYear)),"-04-01"))
-
-    timePlot(localAnnualResults$Date, localAnnualResults$Conc, Plot=list(what="points"),
+    col <- list(points=col)
+    
+    currentPlot <- colorPlot(localAnnualResults$Date, localAnnualResults$Conc, rep("points",nrow(localAnnualResults)),
+                             Plot=list(what="points",color=col),
              yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yInfo$label,
              xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
              ...)
+    
+    xMid <- mean(currentPlot$xax$range)
+    yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
+    
+    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+                                 annotation=periodName, current=currentPlot,size=10)
+    
     if(plotFlowNorm) {
       addXY(localAnnualResults$Date, localAnnualResults$FNConc, Plot=list(color="green"))
     }
-    invisible(title)
+    
+    title<-if(printTitle) paste(localINFO$shortName," ",localINFO$paramShortName,title3) else ""
+    
+    addTitle(title, Justification = "center")
+    
+    
+    invisible(currentPlot)
 #     addTitle(title, Justification = "center")
 
     

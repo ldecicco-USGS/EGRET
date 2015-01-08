@@ -7,7 +7,8 @@
 plotConcQ(eList, qUnit = 2, tinyPlot = FALSE, logScale = FALSE,
   concMax = NA, concMin = NA, printTitle = TRUE, cex = 0.8,
   cex.axis = 1.1, cex.main = 1.1, rmSciX = FALSE, rmSciY = FALSE,
-  customPar = FALSE, col = "black", lwd = 1, USGSstyle = FALSE, ...)
+  customPar = FALSE, col = "black", lwd = 1, USGSstyle = FALSE,
+  legend = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Sample and INFO dataframes}
@@ -42,6 +43,8 @@ plotConcQ(eList, qUnit = 2, tinyPlot = FALSE, logScale = FALSE,
 \item{lwd}{number line width}
 
 \item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
+\item{legend}{logical add USGS style legend}
 
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }

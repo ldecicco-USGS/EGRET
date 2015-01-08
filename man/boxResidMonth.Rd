@@ -6,7 +6,7 @@
 \usage{
 boxResidMonth(eList, stdResid = FALSE, las = 1, printTitle = TRUE,
   cex = 0.8, cex.axis = 1.1, cex.main = 1.1, font.main = 2,
-  tinyPlot = FALSE, customPar = FALSE, ...)
+  tinyPlot = FALSE, customPar = FALSE, USGSstyle = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Sample and INFO dataframes}
@@ -29,6 +29,8 @@ boxResidMonth(eList, stdResid = FALSE, las = 1, printTitle = TRUE,
 
 \item{customPar}{logical defaults to FALSE. If TRUE, par() should be set by user before calling this function}
 
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -50,6 +52,12 @@ boxResidMonth(eList)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 boxResidMonth(eList)
+library(USGSwsGraphs)
+setPDF(basename = "test")
+layoutInfo <- setLayout(width=6, height=4)
+layoutStuff <- setGraph(1, layoutInfo)
+boxResidMonth(eList,USGSstyle=TRUE, margin=layoutStuff)
+graphics.off()
 }
 \seealso{
 \code{\link[graphics]{boxplot}}

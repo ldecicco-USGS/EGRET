@@ -92,10 +92,12 @@ boxConcThree<-function (eList, tinyPlot=FALSE,
   groupNames <- c(name1,name2,name3)
   
   if(USGSstyle){
-    charIndex <- c(rep(name1, length=nrow(localSample)),rep(name2, length=nrow(localSample)),rep(name3,nrow(localDaily)))
+    charIndex <- c(rep("Sampled-day\nvalues", length=nrow(localSample)),
+                   rep("Sampled-day\nestimates", length=nrow(localSample)),
+                   rep("All-day\nestimates",nrow(localDaily)))
     
     currentPlot <- boxPlot(as.numeric(concV), group=charIndex, 
-                           Box=list(type="tukey"),
+                           Box=list(type="simple"),
                            ytitle = yLab,
                            xtitle = "", ...)
     
@@ -103,7 +105,7 @@ boxConcThree<-function (eList, tinyPlot=FALSE,
     
     yTop <- 0.9*max(currentPlot$yax$range)
     
-    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
+    if (!tinyPlot) currentPlot <- addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
     invisible(currentPlot)
   } else {

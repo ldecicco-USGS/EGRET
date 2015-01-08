@@ -92,13 +92,20 @@ plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
   
   ############################
   if(USGSstyle){
+    xLab<-paste("Estimated concentration in",localINFO$param.units)
+    yLab<-paste("Observed concentration in",localINFO$param.units)
+    
     if(col == "black"){
-      col <- list("Uncensored"="black","Left-censored"="gray80")
+      col <- list("Uncensored"="black","Censored"="gray80")
     }
     Uncen <- localSample$Uncen
-    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Censored")
     col <- col[unique(Uncen)]
-    currentPlot <- colorPlot(x, yHigh, color= Uncen, Plot=list(what="points",color=col),
+    dotSize <- 0.09
+    if(tinyPlot){
+      dotSize <- 0.03
+    }
+    currentPlot <- colorPlot(x, yHigh, color= Uncen, Plot=list(what="points",color=col,size=dotSize),
                              yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yLab,
                              xaxis.range=c(xInfo$bottom, xInfo$top), xtitle=xLab,
                              xaxis.log=logScale,yaxis.log=logScale,
@@ -110,15 +117,15 @@ plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
     if(legend) addExplanation(currentPlot, where="ul",title="")
     
     if(logScale){
-      x <- transData(data = x[Uncen == "Left-censored"], TRUE, FALSE)
+      x <- transData(data = x[Uncen == "Censored"], TRUE, FALSE)
       xMid <- 10^mean(currentPlot$xax$range)
     } else {
       xMid <- mean(currentPlot$xax$range)
-      x <- x[Uncen == "Left-censored"]
+      x <- x[Uncen == "Censored"]
     }
     
     addBars(x, 
-            yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+            yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
             current=currentPlot, 
             Bars=list(width=0.01,fill="white",border="gray80"))
     

@@ -37,7 +37,7 @@
 #' fluxBiasMulti(eList)
 #' dev.off()
 #' library(USGSwsGraphs)
-#' setPDF(basename="test")
+#' setPDF(basename="fluxBiasMulti",layout="landscape")
 #' fluxBiasMulti(eList,USGSstyle=TRUE) 
 #' graphics.off()
 fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS", 
@@ -67,20 +67,32 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
     warning("Expected concentration units are mg/l, \nThe INFO dataframe indicates:",localINFO$param.units,
             "\nFlux calculations will be wrong if units are not consistent")
   }
+  fluxBias <- fluxBiasStat(localSample)
+  fB <- as.numeric(fluxBias[3])
+  fB <- format(fB, digits = 3)
+  title <- paste(localINFO$shortName, ", ", localINFO$paramShortName, 
+                 "\nModel is ",moreTitle, " Flux Bias Statistic", fB, sep="")
   
   title2<-if(paLong==12) "" else setSeasonLabelByUser(paStartInput=paStart,paLongInput=paLong)
   
   if(USGSstyle){
-    layoutResponse <- setLayout(num.rows=4,num.cols = 2, 
-              num.graphs = 8)
+    
+    if("" != title2){
+      title <- paste(title, title2, sep="\n")   
+    }
+    
+    layoutResponse <- setLayout(num.rows=3,num.cols = 3, 
+              num.graphs = 8, explanation = list(grid=c(9)))
     graph1 <- setGraph(1, layoutResponse)
     plotResidPred(eList, 
                   stdResid = FALSE, tinyPlot=TRUE, printTitle = FALSE,
-                  USGSstyle=USGSstyle,margin=graph1,...)
+                  USGSstyle=USGSstyle,margin=graph1,legend=TRUE,...)
+    
     graph2 <- setGraph(2, layoutResponse)
     plotResidQ(eList, 
                qUnit, tinyPlot = TRUE, printTitle = FALSE,
                USGSstyle=USGSstyle,margin=graph2,...)
+    addTitle(Main = title, Justification = "center")
     graph3 <- setGraph(3, layoutResponse)
     plotResidTime(eList, 
                   printTitle = FALSE, tinyPlot=TRUE,
@@ -89,32 +101,25 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
     boxResidMonth(eList, 
                   printTitle = FALSE, tinyPlot=TRUE,cex=cex,
                   USGSstyle=USGSstyle,margin=graph4,...)
+
     graph5 <- setGraph(5, layoutResponse)
-    boxConcThree(eList, 
-                 printTitle=FALSE, tinyPlot=TRUE,
-                 USGSstyle=USGSstyle,margin=graph5,...)
-    graph6 <- setGraph(6, layoutResponse)
     plotConcPred(eList, printTitle=FALSE, 
                  tinyPlot=TRUE,
+                 USGSstyle=USGSstyle,margin=graph5,...)
+    graph6 <- setGraph(6, layoutResponse)
+    plotFluxPred(eList, 
+                 fluxUnit, tinyPlot = TRUE, printTitle = FALSE,
                  USGSstyle=USGSstyle,margin=graph6,...)
     graph7 <- setGraph(7, layoutResponse)
     boxQTwice(eList, printTitle = FALSE, qUnit = qUnit,tinyPlot=TRUE,
               USGSstyle=USGSstyle,margin=graph7,...)
+    
     graph8 <- setGraph(8, layoutResponse)
-    plotFluxPred(eList, 
-                 fluxUnit, tinyPlot = TRUE, printTitle = FALSE,
+    boxOut <- boxConcThree(eList, 
+                 printTitle=FALSE, tinyPlot=TRUE,
                  USGSstyle=USGSstyle,margin=graph8,...)
-#     fluxBias <- fluxBiasStat(localSample)
-#     fB <- as.numeric(fluxBias[3])
-#     fB <- format(fB, digits = 3)
-#     title <- paste(localINFO$shortName, ", ", localINFO$paramShortName, 
-#                    "\nModel is ",moreTitle, " Flux Bias Statistic", fB, sep="")
-#     if("" == title2){
-#       mtext(title, cex = cex.main, outer = TRUE, font = 1.8)
-#     } else {
-#       title <- paste(title, title2, sep="\n")
-#       mtext(title, cex = cex.main*.75, outer = TRUE, font = 1.8)    
-#     }
+    graphExplain <- setGraph("explanation", layoutResponse)
+    addExplanation(boxOut)
     
   } else {
     par(oma = c(0, 10, 4, 10),mfrow=c(4,2))
@@ -141,11 +146,7 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
     plotFluxPred(eList, 
                  fluxUnit, tinyPlot = TRUE, printTitle = FALSE,cex=cex, 
                  cex.axis = cex.axis, col=col,lwd=lwd,...)
-    fluxBias <- fluxBiasStat(localSample)
-    fB <- as.numeric(fluxBias[3])
-    fB <- format(fB, digits = 3)
-    title <- paste(localINFO$shortName, ", ", localINFO$paramShortName, 
-                   "\nModel is ",moreTitle, " Flux Bias Statistic", fB, sep="")
+
     if("" == title2){
       mtext(title, cex = cex.main, outer = TRUE, font = 1.8)
     } else {

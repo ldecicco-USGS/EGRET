@@ -4,7 +4,7 @@
 \alias{plot15}
 \title{Makes 15 graphs of streamflow statistics on a single page}
 \usage{
-plot15(eList, yearStart, yearEnd)
+plot15(eList, yearStart, yearEnd, USGSstyle = FALSE)
 }
 \arguments{
 \item{eList}{named list with at least the Daily and INFO dataframes}
@@ -12,6 +12,8 @@ plot15(eList, yearStart, yearEnd)
 \item{yearStart}{A numeric value for year in which the graph should start, default is NA, which indicates that the graph should start with first annual value}
 
 \item{yearEnd}{A numeric value for year in which the graph should end, default is NA, which indicates that the graph should end with last annual value}
+
+\item{USGSstyle}{logical use USGSwsGraph package for USGS style}
 }
 \description{
 Part of flowHistory system.
@@ -19,9 +21,13 @@ Part of flowHistory system.
 \examples{
 eList <- Choptank_eList
 \dontrun{
-pdf("plot15.pdf",heigh=10,width=8)
+pdf("plot15.pdf",height=10,width=8)
 plot15(eList, yearStart=1990,yearEnd=2000)
 dev.off()
+
+setPDF(basename="plot15_USGS", layout="portrait")
+plot15(eList, yearStart=1990,yearEnd=2000,USGSstyle=TRUE)
+graphics.off()
 }
 }
 \seealso{

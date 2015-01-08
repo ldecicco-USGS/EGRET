@@ -83,9 +83,9 @@ boxResidMonth<-function(eList, stdResid = FALSE, las=1,
   tempDF <- data.frame(month=monthList, resid=resid)  
   
   if(USGSstyle){
-    
+    yLab <- if(stdResid) "Standardized residuals in natural log units" else "Residuals in natural log units"
     currentPlot <- boxPlot(tempDF$resid, group=tempDF$month, 
-                           Box=list(type="tukey"),
+                           Box=list(type="simple"),
                            ytitle=yLab,
                            xtitle="Month",...)
     

@@ -25,6 +25,7 @@
 #' @param lwd number line width
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param legend logical add USGS style legend
 #' @keywords graphics water-quality statistics
 #' @export
 #' @seealso \code{\link{selectDays}}, \code{\link{genericEGRETDotPlot}}
@@ -80,7 +81,7 @@ plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
 
   plotTitle<-if(printTitle) paste(localINFO$shortName,"\n",localINFO$paramShortName,"\n","Concentration versus Discharge") else ""
   
-  if (tinyPlot){
+  if (tinyPlot & !USGSstyle){
     xLab<-qUnit@qUnitTiny
   } else {
     xLab<-qUnit@qUnitExpress
@@ -94,25 +95,29 @@ plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
     yMin <- 0
   }
   
+  dotSize <- 0.09  
+  if(tinyPlot) {
+    dotSize <- 0.03
+  }
+  if(USGSstyle){
+    tinyPlot <- FALSE
+  }
   yInfo <- generalAxis(x=yHigh, maxVal=concMax, minVal=yMin, tinyPlot=tinyPlot,logScale=logScale,units=localINFO$param.units)
   xInfo <- generalAxis(x=x, maxVal=NA, minVal=NA, logScale=TRUE, tinyPlot=tinyPlot)
   
   if(USGSstyle){
-    
-#     matchReturn <- list(...)
-#     
-#     if("legend" %in% names(matchReturn)){
-#       legend <- matchReturn['legend']
-#       matchReturn <-  matchReturn[-(which('legend' == names(matchReturn)))]
-#     }
-    
+  
     if(col == "black"){
-      col <- list("Uncensored"="black","Left-censored"="gray80")
+      col <- list("Uncensored"="black","Censored"="gray80")
     }
     
-    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Censored")
     col <- col[unique(Uncen)]
-    currentPlot <- colorPlot(x, yHigh, color= Uncen, Plot=list(what="points",color=col),
+    xLab <- paste("Discharge in",tolower(qUnit@qUnitName))
+    currentPlot <- colorPlot(x, yHigh, color= Uncen, 
+                             Plot=list(what="points",
+                                       color=col,
+                                       size=dotSize),
              yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yInfo$label,
              xaxis.range=c(xInfo$bottom, xInfo$top), xtitle=xLab,
              yaxis.log=logScale, xaxis.log=TRUE,
@@ -127,9 +132,9 @@ plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
     
     if(legend) addExplanation(currentPlot, where="ul",title="")
 
-    newX <- transData(data = x[Uncen == "Left-censored"], TRUE, FALSE)
+    newX <- transData(data = x[Uncen == "Censored"], TRUE, FALSE)
 
-    addBars(newX, yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+    addBars(newX, yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
                            current=currentPlot, 
                            Bars=list(width=0.01,fill="white",border="gray80"))
 

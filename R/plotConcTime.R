@@ -30,6 +30,7 @@
 #' @param lwd number line width.
 #' @param \dots arbitrary functions sent to the generic plotting function.  See ?par for details on possible parameters.
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param legend logical add USGS style legend
 #' @keywords graphics water-quality statistics
 #' @export
 #' @seealso \code{\link{selectDays}}, \code{\link{genericEGRETDotPlot}}
@@ -115,8 +116,17 @@ plotConcTime<-function(eList, qUnit = 2,
     logVariable <- ""
   }  
   #########################################################
+  dotSize <- 0.09
+  
+  if(tinyPlot){
+    dotSize <- 0.03
+  }
 
   plotTitle<-if(printTitle) paste(localINFO$shortName,"\n",localINFO$paramShortName,"\n",title3,sep="") else ""
+  
+  if(USGSstyle){
+    tinyPlot <- FALSE
+  }
   
   xInfo <- generalAxis(x=x, minVal=min(x), maxVal=max(x), tinyPlot=tinyPlot)  
   yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, logScale=logScale, 
@@ -126,20 +136,18 @@ plotConcTime<-function(eList, qUnit = 2,
     x <- as.Date(subSample$Date)
     
     if(col == "black"){
-      col <- list("Uncensored"="black","Left-censored"="gray80")
+      col <- list("Uncensored"="black","Censored"="gray80")
     }
     
-    Uncen <- ifelse(Uncen==1, "Uncensored", "Left-censored")
+    Uncen <- ifelse(Uncen==1, "Uncensored", "Censored")
     col <- col[unique(Uncen)]
     
-    
-    currentPlot <- colorPlot(x, yHigh, Uncen, Plot=list(what="points", color=col),
-                          yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yInfo$label,
-                          xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
+    currentPlot <- colorPlot(x, yHigh, Uncen, Plot=list(what="points", color=col, size=dotSize),
+                          ytitle=yInfo$label,
                           yaxis.log=logScale,
                           ...)
     if(legend) addExplanation(currentPlot, where="ul", title="")
-    currentPlot <- addBars(x[Uncen == "Left-censored"], yHigh[Uncen == "Left-censored"], base=min(currentPlot$yax$range), 
+    currentPlot <- addBars(x[Uncen == "Censored"], yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
                            current=currentPlot, Bars=list(width=0.01,fill="white",border="gray80"))
     #     addTitle(plotTitle, Justification = "center")
     xMid <- mean(currentPlot$xax$range)
