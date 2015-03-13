@@ -45,7 +45,9 @@ and an INFO dataframe with metadata
 }
 \examples{
 eList <- Choptank_eList
+fluxBiasMulti(eList)
 # Water year:
+\dontrun{
 pdf("fluxBiasMulti.pdf", height=9, width=8)
 fluxBiasMulti(eList)
 dev.off()
@@ -54,10 +56,12 @@ eList <- setPA(eList,paStart=6,paLong=3)
 pdf("fluxBiasMultiSummer.pdf", height=9, width=8)
 fluxBiasMulti(eList)
 dev.off()
+
 library(USGSwsGraphs)
 setPDF(basename="fluxBiasMulti",layout="landscape")
 fluxBiasMulti(eList,USGSstyle=TRUE)
 graphics.off()
+}
 }
 \keyword{graphics}
 \keyword{statistics}

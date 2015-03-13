@@ -24,6 +24,7 @@
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
 #' @param logScale logical whether or not to use a log scale in the y axis. Default is FALSE.
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param prettyDate logical use 'pretty' limits for date axis if TRUE, or force the startYear/endYear as limits if FALSE
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics streamflow
 #' @export
@@ -33,6 +34,7 @@
 #' # Water year:
 #' plotQTimeDaily(eList)
 #' plotQTimeDaily(eList, startYear=1990, endYear=2000,qLower=1500)
+#' plotQTimeDaily(eList, prettyDate=FALSE)
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotQTimeDaily(eList)
@@ -46,7 +48,8 @@
 plotQTimeDaily<-function (eList, startYear=NA, endYear=NA, qLower = NA, qUnit = 1, logScale=FALSE,
                           tinyPlot = FALSE, printTitle = TRUE, lwd = 3, col="red", 
                           cex.main = 1.2, cex.lab = 1.2, 
-                          customPar=FALSE,USGSstyle=FALSE,...){
+                          customPar=FALSE, USGSstyle=FALSE, prettyDate=TRUE,...){
+
   
   localINFO <- getInfo(eList)
   localDailyOrig <- getDaily(eList)
@@ -109,7 +112,7 @@ plotQTimeDaily<-function (eList, startYear=NA, endYear=NA, qLower = NA, qUnit = 
   }
   
   xInfo <- generalAxis(x=xDaily, minVal=startYear, maxVal=endYear, 
-                       tinyPlot=tinyPlot, units=localINFO$param.units)
+                       tinyPlot=tinyPlot, units=localINFO$param.units, prettyDate=prettyDate)
   yInfo <- generalAxis(x=yDaily, minVal=qLower, maxVal=1.05*max(yDaily), 
                        tinyPlot=tinyPlot,padPercent=0,logScale=logScale, units=localINFO$param.units)
 

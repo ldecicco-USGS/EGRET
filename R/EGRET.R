@@ -3,8 +3,6 @@
 #' \tabular{ll}{
 #' Package: \tab EGRET\cr
 #' Type: \tab Package\cr
-#' Version: \tab 2.0.2\cr
-#' Date: \tab 2014-11-24\cr
 #' License: \tab Unlimited for this package, dependencies have more restrictive licensing.\cr
 #' Copyright: \tab This software is in the public domain because it contains materials
 #' that originally came from the United States Geological Survey, an agency of
@@ -36,4 +34,24 @@ NULL
 #' @keywords water quality data
 NULL
 
-
+#' Constants included with EGRET
+#' 
+#'\itemize{
+#'  \item{fluxConst}{Flux conversion object}
+#'  \item{qConst}{Flow conversion object}
+#'  \item{monthInfo}{Month object}
+#'}
+#'
+#'@aliases fluxConst qConst monthInfo
+#'@name Constants
+#'@docType data
+#'@export fluxConst qConst monthInfo
+#'@keywords datasets
+#'@examples
+#'fluxConst
+#'fluxConst[['kgDay']]
+#'fluxConst[['kgDay']]@@unitName
+#'qConst
+#'qConst[['cfs']]
+#'qConst[['cfs']]@@qUnitName
+NULL

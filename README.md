@@ -1,7 +1,7 @@
 `EGRET`
 =============
 
-Linix: [![travis](https://travis-ci.org/USGS-R/EGRET.svg?branch=master)](https://travis-ci.org/USGS-R/EGRET)
+Linux and Mac: [![travis](https://travis-ci.org/USGS-R/EGRET.svg?branch=master)](https://travis-ci.org/USGS-R/EGRET)
 
 Windows: [![Build status](https://ci.appveyor.com/api/projects/status/a2kogyfplo3valdg?svg=true)](https://ci.appveyor.com/project/ldecicco-USGS/egret)
 
@@ -15,9 +15,7 @@ The link for the official USGS publication user guide is here:
 
 [http://pubs.usgs.gov/tm/04/a10/](http://pubs.usgs.gov/tm/04/a10/)
 
-Note: The "official EGRET User Guide" currently (2014-11-12) shows a workflow that has been superseded by
-the workflow shown in this vignette. However the science and math is the User Guide is correct. The User
-Guide is in the process of being updated and will be available at the URL shown above in the near future.
+Note: As of February 5, 2015 a new version of the user guide has been posted at the URL given above.  If you were using previous versions of EGRET you should take a look [here](https://github.com/USGS-R/EGRET/wiki/Note-to-users-of-earlier-versions-of-EGRET) to see a list of the major changes in the workflow and some function names.
 
 Please visit the wiki for more information:
 [EGRET Wiki](https://github.com/USGS-R/EGRET/wiki)

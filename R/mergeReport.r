@@ -57,6 +57,9 @@ mergeReport<-function(INFO, Daily, Sample, surfaces=NA, interactive=TRUE){
             
     }
     Sample <- merge(Daily[,c("Date","Q","LogQ")],Sample,by = "Date",all.y = TRUE)
+    if(any(is.na(Sample$Q))){
+      message("Some Sample dates do not have corresponding flow data. Not all EGRET functions will work correctly.")
+    }
   }
   
   eList <- as.egret(INFO, Daily, Sample, surfaces)
@@ -187,7 +190,7 @@ is.egret <- function(x) {
 #' @seealso \code{\link{readNWISDaily}}, \code{\link{readNWISSample}}
 #' @examples
 #' eList <- Choptank_eList
-#' getDaily(eList)
+#' Daily <- getDaily(eList)
 getDaily <- function(x, ...){
   UseMethod("getDaily")
 }
@@ -222,7 +225,7 @@ getDaily.default <- function(x, ...){
 #' @seealso \code{\link{readNWISDaily}}, \code{\link{readNWISSample}}
 #' @examples
 #' eList <- Choptank_eList
-#' getInfo(eList)
+#' INFO <- getInfo(eList)
 getInfo <- function(x, ...){
   UseMethod("getInfo")
 }
@@ -257,7 +260,7 @@ getInfo.default <- function(x, ...){
 #' @seealso \code{\link{readNWISDaily}}, \code{\link{readNWISSample}}
 #' @examples
 #' eList <- Choptank_eList
-#' getSample(eList)
+#' Sample <- getSample(eList)
 getSample <- function(x, ...){
   UseMethod("getSample")
 }
@@ -292,7 +295,7 @@ getSample.default <- function(x, ...){
 #' @seealso \code{\link{readNWISDaily}}, \code{\link{readNWISSample}}
 #' @examples
 #' eList <- Choptank_eList
-#' getSurfaces(eList)
+#' surfaces <- getSurfaces(eList)
 getSurfaces <- function(x, ...){
   UseMethod("getSurfaces")
 }
