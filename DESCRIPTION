@@ -20,7 +20,7 @@ Imports:
     stats,
     lubridate,
     methods,
-    USGSwsGraphs
+    smwrGraphs
 Suggests:
     xtable,
     knitr,
