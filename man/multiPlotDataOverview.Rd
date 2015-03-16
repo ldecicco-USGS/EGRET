@@ -37,7 +37,7 @@ eList <- setPA(eList, paStart=6,paLong=3)
 multiPlotDataOverview(eList, qUnit=1)
 
 eList <- setPA(eList, paStart=10,paLong=12)
-library(USGSwsGraphs)
+library(smwrGraphs)
 setPDF(basename="multiPlotDataOverview",layout="landscape")
 multiPlotDataOverview(eList, qUnit=2,USGSstyle=TRUE)
 graphics.off()

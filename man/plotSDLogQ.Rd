@@ -60,7 +60,7 @@ plotSDLogQ(eList, 1998,2000)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotSDLogQ(eList)
-library(USGSwsGraphs)
+library(smwrGraphs)
 setPDF(basename="plotSDLogQ")
 layoutInfo <- setLayout(width=4, height=4)
 layoutStuff <- setGraph(1, layoutInfo)

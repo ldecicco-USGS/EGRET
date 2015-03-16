@@ -56,7 +56,7 @@ boxQTwice(eList, qUnit='cfs')
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 boxQTwice(eList)
-library(USGSwsGraphs)
+library(smwrGraphs)
 setPDF(basename="test")
 boxQTwice(eList,USGSstyle=TRUE)
 graphics.off()

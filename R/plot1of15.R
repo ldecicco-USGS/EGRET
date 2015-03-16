@@ -15,7 +15,7 @@
 #' @examples
 #' eList <- Choptank_eList
 #' plot1of15(eList, 1990, 2000, 0.2938476,5)
-#' library(USGSwsGraphs)
+#' library(smwrGraphs)
 #' plot1of15(eList, 1990, 2000, 0.2938476,5, USGSstyle=TRUE, legend=TRUE)
 plot1of15<-function(eList, yearStart,yearEnd,qf,istat,
                     isBottom=FALSE, USGSstyle=FALSE, legend=FALSE, ...) {

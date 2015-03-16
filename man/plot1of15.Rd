@@ -31,7 +31,7 @@ for each of 3 flow statistics: 1-day maximum, mean, and 7-day minimum
 \examples{
 eList <- Choptank_eList
 plot1of15(eList, 1990, 2000, 0.2938476,5)
-library(USGSwsGraphs)
+library(smwrGraphs)
 plot1of15(eList, 1990, 2000, 0.2938476,5, USGSstyle=TRUE, legend=TRUE)
 }
 \keyword{graphics}

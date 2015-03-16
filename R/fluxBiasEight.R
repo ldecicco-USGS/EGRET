@@ -39,7 +39,7 @@
 #' fluxBiasMulti(eList)
 #' dev.off()
 #' 
-#' library(USGSwsGraphs)
+#' library(smwrGraphs)
 #' setPDF(basename="fluxBiasMulti",layout="landscape")
 #' fluxBiasMulti(eList,USGSstyle=TRUE) 
 #' graphics.off()

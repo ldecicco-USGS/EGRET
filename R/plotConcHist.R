@@ -30,7 +30,7 @@
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
-#' @import USGSwsGraphs
+#' @import smwrGraphs
 #' @seealso \code{\link{setupYears}}, \code{\link{genericEGRETDotPlot}}
 #' @examples
 #' yearStart <- 2001
@@ -44,7 +44,7 @@
 #' setPDF("test",layout="portrait")
 #' plotConcHist(eList, yearStart, yearEnd, USGSstyle=TRUE)
 #' graphics.off()
-#' library(USGSwsGraphs)
+#' library(smwrGraphs)
 #' setPDF(basename = "plotConcFluxHist")
 #' layoutResponse <- setLayout(num.rows=2)
 #' AA.gr <- setGraph(1, layoutResponse)

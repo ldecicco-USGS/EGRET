@@ -57,7 +57,7 @@ pdf("fluxBiasMultiSummer.pdf", height=9, width=8)
 fluxBiasMulti(eList)
 dev.off()
 
-library(USGSwsGraphs)
+library(smwrGraphs)
 setPDF(basename="fluxBiasMulti",layout="landscape")
 fluxBiasMulti(eList,USGSstyle=TRUE)
 graphics.off()
