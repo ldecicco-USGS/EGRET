@@ -43,6 +43,7 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotFlowSingle(eList, 1)
+#'
 #' library(smwrGraphs)
 #' setPDF(basename="plotFlowSingle")
 #' layoutInfo <- setLayout(width=6, height=4)
@@ -50,6 +51,16 @@
 #' plotFlowSingle(eList, 2, USGSstyle=TRUE,
 #'         legend=TRUE, margin=layoutStuff)
 #' graphics.off()
+=======
+#' \dontrun{
+#' siteNumber <- '01010000'
+#' StartDate <- ''
+#' EndDate <- '2014-10-01'
+#' Daily <- readNWISDaily(siteNumber, '00060', StartDate, EndDate)
+#' INFO <- readNWISInfo(siteNumber, '00060', interactive = FALSE)
+#' eList <- as.egret(INFO, Daily)
+#' plotFlowSingle(eList, 5)
+#' }
 plotFlowSingle<-function(eList, istat,yearStart=NA, yearEnd = NA,
                   qMax = NA, printTitle = TRUE, tinyPlot = FALSE, customPar=FALSE,
                   runoff = FALSE, qUnit = 1, printStaName = TRUE, printPA = TRUE, 
