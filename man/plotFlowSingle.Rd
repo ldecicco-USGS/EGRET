@@ -80,7 +80,6 @@ layoutStuff <- setGraph(1, layoutInfo)
 plotFlowSingle(eList, 2, USGSstyle=TRUE,
         legend=TRUE, margin=layoutStuff)
 graphics.off()
-=======
 \dontrun{
 siteNumber <- '01010000'
 StartDate <- ''
@@ -90,7 +89,6 @@ INFO <- readNWISInfo(siteNumber, '00060', interactive = FALSE)
 eList <- as.egret(INFO, Daily)
 plotFlowSingle(eList, 5)
 }
-
 }
 \seealso{
 \code{\link{makeAnnualSeries}}, \code{\link{genericEGRETDotPlot}}

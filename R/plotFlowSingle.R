@@ -51,7 +51,6 @@
 #' plotFlowSingle(eList, 2, USGSstyle=TRUE,
 #'         legend=TRUE, margin=layoutStuff)
 #' graphics.off()
-=======
 #' \dontrun{
 #' siteNumber <- '01010000'
 #' StartDate <- ''
