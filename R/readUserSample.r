@@ -31,7 +31,7 @@
 #' CosDY \tab numeric \tab Cosine of the DecYear
 #' }
 #' @examples
-#' filePath <- system.file("extdata", package="EGRET")
+#' filePath <- system.file("extdata", package="usgsEGRET")
 #' fileName <- 'ChoptankRiverNitrate.csv'
 #' Sample <- readUserSample(filePath,fileName, separator=";",interactive=FALSE)
 readUserSample <- function (filePath,fileName,hasHeader=TRUE,separator=",", interactive=TRUE){

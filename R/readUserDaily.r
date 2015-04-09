@@ -28,7 +28,7 @@
 #' Q30 \tab numeric \tab 30 day running average of Q \cr
 #' }
 #' @examples
-#' filePath <- system.file("extdata", package="EGRET")
+#' filePath <- system.file("extdata", package="usgsEGRET")
 #' fileName <- "ChoptankRiverFlow.txt"
 #' Daily <- readUserDaily(filePath,fileName,separator="\t")
 readUserDaily <- function (filePath,fileName,hasHeader=TRUE,separator=",",qUnit=1,interactive=TRUE){

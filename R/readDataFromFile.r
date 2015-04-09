@@ -13,7 +13,7 @@
 #' @return retval dataframe with dateTime, value, and code columns
 #' @export
 #' @examples
-#' filePath <- system.file("extdata", package="EGRET")
+#' filePath <- system.file("extdata", package="usgsEGRET")
 #' fileName <- 'ChoptankRiverFlow.txt'
 #' ChopData <- readDataFromFile(filePath,fileName, separator="\t")
 readDataFromFile <- function (filePath,fileName,hasHeader=TRUE,separator=","){

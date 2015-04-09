@@ -8,6 +8,7 @@
 #' @param istat A numeric value selecting the flow statistic to be plotted, must be an integer from 1 to 8
 #' @param eList named list with at least the Daily and INFO dataframes
 #' @param isBottom logical, if TRUE the graph is from the bottom row and thus needs x axis labels, if FALSE it does not need labels
+#' @param legend logical, if TRUE add legend.
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics streamflow

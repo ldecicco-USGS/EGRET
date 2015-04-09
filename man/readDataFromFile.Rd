@@ -25,7 +25,7 @@ expected to be the measured values. If the data is sampled data, the next column
 column is values.
 }
 \examples{
-filePath <- system.file("extdata", package="EGRET")
+filePath <- system.file("extdata", package="usgsEGRET")
 fileName <- 'ChoptankRiverFlow.txt'
 ChopData <- readDataFromFile(filePath,fileName, separator="\\t")
 }

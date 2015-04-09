@@ -44,7 +44,7 @@ are to be combinded with interval censoring, additional columns can be inserted,
 remark code (specifically looking for <), and values.
 }
 \examples{
-filePath <- system.file("extdata", package="EGRET")
+filePath <- system.file("extdata", package="usgsEGRET")
 fileName <- 'ChoptankRiverNitrate.csv'
 Sample <- readUserSample(filePath,fileName, separator=";",interactive=FALSE)
 }

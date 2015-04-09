@@ -42,7 +42,7 @@ Q30 \tab numeric \tab 30 day running average of Q \cr
 Imports data from a user-supplied file, and converts it to a Daily data frame, appropriate for WRTDS calculations.
 }
 \examples{
-filePath <- system.file("extdata", package="EGRET")
+filePath <- system.file("extdata", package="usgsEGRET")
 fileName <- "ChoptankRiverFlow.txt"
 Daily <- readUserDaily(filePath,fileName,separator="\\t")
 }

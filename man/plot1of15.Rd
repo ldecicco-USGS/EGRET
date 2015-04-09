@@ -22,6 +22,8 @@ plot1of15(eList, yearStart, yearEnd, qf, istat, isBottom = FALSE,
 
 \item{USGSstyle}{logical use USGSwsGraph package for USGS style}
 
+\item{legend}{logical, if TRUE add legend.}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
