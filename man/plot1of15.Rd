@@ -34,7 +34,9 @@ for each of 3 flow statistics: 1-day maximum, mean, and 7-day minimum
 eList <- Choptank_eList
 plot1of15(eList, 1990, 2000, 0.2938476,5)
 library(smwrGraphs)
+setPDF(basename="plot1")
 plot1of15(eList, 1990, 2000, 0.2938476,5, USGSstyle=TRUE, legend=TRUE)
+graphics.off()
 }
 \keyword{graphics}
 \keyword{streamflow}

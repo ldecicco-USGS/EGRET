@@ -61,9 +61,13 @@
 #'        contourLevels = clevel,color.palette=colors2,lwd=2,flowDuration=FALSE)
 #' plotContours(eList, yearStart,yearEnd,qBottom,qTop, 
 #'        contourLevels = clevel,cex.axis=2,flowDuration=FALSE)
-#' par(mar=c(5,8,5,8))
-#' plotContours(eList, yearStart,yearEnd,qBottom,qTop, 
+#' \dontrun{
+#' pdf("test.pdf")
+#'  par(mar=c(5,8,5,8))
+#'  plotContours(eList, yearStart,yearEnd,qBottom,qTop, 
 #'        contourLevels = clevel,customPar=TRUE,printTitle=FALSE,flowDuration=FALSE)
+#' dev.off()
+#' }
 plotContours<-function(eList, yearStart, yearEnd, qBottom, qTop, whatSurface = 3, 
                        qUnit = 2, contourLevels = NA, span = 60, pval = 0.05,
                        printTitle = TRUE, vert1 = NA, vert2 = NA, horiz = NA, tcl=0.1,

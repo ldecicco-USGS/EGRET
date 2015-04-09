@@ -95,9 +95,13 @@ plotContours(eList, yearStart,yearEnd,qBottom,qTop,
        contourLevels = clevel,color.palette=colors2,lwd=2,flowDuration=FALSE)
 plotContours(eList, yearStart,yearEnd,qBottom,qTop,
        contourLevels = clevel,cex.axis=2,flowDuration=FALSE)
-par(mar=c(5,8,5,8))
-plotContours(eList, yearStart,yearEnd,qBottom,qTop,
+\dontrun{
+pdf("test.pdf")
+ par(mar=c(5,8,5,8))
+ plotContours(eList, yearStart,yearEnd,qBottom,qTop,
        contourLevels = clevel,customPar=TRUE,printTitle=FALSE,flowDuration=FALSE)
+dev.off()
+}
 }
 \keyword{graphics}
 \keyword{statistics}
