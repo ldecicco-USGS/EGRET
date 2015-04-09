@@ -102,7 +102,7 @@ plotSDLogQ<-function(eList, yearStart=NA,yearEnd=NA,window=15,sdMax=NA,
 
   if(USGSstyle){
 
-    currentPlot <- timePlot(xDates, y, Plot=list(what="line"),
+    currentPlot <- timePlot(as.Date(xDates, origin="1970-01-01"), y, Plot=list(what="line"),
                             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle="Dimensionless",
                             xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
                             ...)

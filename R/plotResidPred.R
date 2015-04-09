@@ -121,9 +121,9 @@ plotResidPred<-function(eList, stdResid = FALSE,
 
     if(legend) addExplanation(currentPlot, where="ll",title="")
     
-    addBars(log(x[Uncen == "Censored"]), yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-            current=currentPlot, 
-            Bars=list(width=0.001,fill="white",border="gray80"))
+#     addBars(log(x[Uncen == "Censored"]), yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
+#             current=currentPlot, 
+#             Bars=list(width=0.001,fill="white",border="gray80"))
     
     xMid <- mean(currentPlot$xax$range)
 

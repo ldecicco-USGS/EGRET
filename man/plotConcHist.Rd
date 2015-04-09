@@ -63,6 +63,7 @@ plotConcHist(eList, yearStart, yearEnd)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotConcHist(eList, yearStart, yearEnd)
+library(smwrGraphs)
 setPDF("test",layout="portrait")
 plotConcHist(eList, yearStart, yearEnd, USGSstyle=TRUE)
 graphics.off()

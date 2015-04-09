@@ -115,8 +115,8 @@ plotResidTime<-function(eList, stdResid = FALSE,
                              ytitle=yLab,
                              ...)
     if(legend) addExplanation(currentPlot, where="ul", title="")
-    currentPlot <- addBars(x[Uncen == "Censored"], yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-                           current=currentPlot, Bars=list(width=0.01,fill="white",border="gray80"))
+#     currentPlot <- addBars(x[Uncen == "Censored"], yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
+#                            current=currentPlot, Bars=list(width=0.01,fill="white",border="gray80"))
     refLine(horizontal=0, current=currentPlot)
     xMid <- mean(currentPlot$xax$range)
 

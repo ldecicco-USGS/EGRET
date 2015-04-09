@@ -45,7 +45,7 @@
 #' library(smwrGraphs)
 #' setPDF(basename = "test")
 #' layoutInfo <- setLayout(width=6, height=4)
-#' layoutStuff <- setGraph(1, layoutResponse)
+#' layoutStuff <- setGraph(1, layoutInfo)
 #' plotFluxHist(eList, yearStart, yearEnd, fluxUnit = 1, USGSstyle=TRUE, margin=layoutStuff)
 #' graphics.off()
 plotFluxHist<-function(eList, yearStart = NA, yearEnd = NA, fluxUnit = 9, 

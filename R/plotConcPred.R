@@ -124,10 +124,10 @@ plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
       x <- x[Uncen == "Censored"]
     }
     
-    addBars(x, 
-            yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-            current=currentPlot, 
-            Bars=list(width=0.01,fill="white",border="gray80"))
+#     addBars(x, 
+#             yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
+#             current=currentPlot, 
+#             Bars=list(width=0.01,fill="white",border="gray80"))
     
     
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 

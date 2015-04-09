@@ -65,10 +65,11 @@ multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
     
     
     graph3 <- setGraph(3, layoutResponse)
-    reportGraph(title )
+    reportGraph(paste("\n",title ))
     graph4 <- setGraph(4, layoutResponse)
     boxConcOut <- boxConcMonth(eList, printTitle = FALSE, tinyPlot = TRUE,
                  logScale=logScaleConc,USGSstyle=USGSstyle, margin=graph4)
+#     addCaption(paste("\n",title))
     graph5 <- setGraph(5, layoutResponse)
     boxOut <- boxQTwice(eList, printTitle = FALSE, qUnit = qUnit, tinyPlot = TRUE,
               logScale=logScaleQ,USGSstyle=USGSstyle, margin=graph5)

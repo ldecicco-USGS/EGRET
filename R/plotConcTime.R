@@ -43,6 +43,7 @@
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotConcTime(eList, qUnit = 1, qLower = 100, qUpper = 10000)
 #' plotConcTime(eList, logScale=TRUE)
+#' library(smwrGraphs)
 #' setPDF(basename = "test")
 #' layoutInfo <- setLayout(width=6, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)

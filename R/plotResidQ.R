@@ -140,10 +140,10 @@ plotResidQ<-function (eList, qUnit = 2,
     
     newX <- transData(data = x[Uncen == "Censored"], TRUE, FALSE)
     
-    addBars(newX, 
-            yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-            current=currentPlot, 
-            Bars=list(width=0.01,fill="white",border="gray80"))
+#     addBars(newX, 
+#             yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
+#             current=currentPlot, 
+#             Bars=list(width=0.01,fill="white",border="gray80"))
     
     
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
