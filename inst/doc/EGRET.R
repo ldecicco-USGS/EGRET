@@ -299,7 +299,7 @@ printFluxUnitCheatSheet()
 #  
 
 ## ----flowHistoryLoad,echo=FALSE,eval=TRUE-----------------
-filePath <- system.file("extdata", package="EGRET")
+filePath <- system.file("extdata", package="usgsEGRET")
 fileName <- "eListColumbia.RData"
 
 load(paste(filePath,fileName,sep="/"))
@@ -325,7 +325,7 @@ plotSDLogQ(eList)
 #  eListMerced <- as.egret(INFO, Daily, NA, NA)
 
 ## ----Merceddata, echo=FALSE,eval=TRUE---------------------
-filePath <- system.file("extdata", package="EGRET")
+filePath <- system.file("extdata", package="usgsEGRET")
 fileName <- "eListMerced.RData"
 
 load(paste(filePath,fileName,sep="/"))
@@ -354,7 +354,7 @@ plotFourStats(eListMerced, qUnit=3)
 #  eListMiss <- as.egret(INFO, Daily, NA, NA)
 
 ## ----MissDataRetrieval, echo=FALSE, eval=TRUE-------------
-filePath <- system.file("extdata", package="EGRET")
+filePath <- system.file("extdata", package="usgsEGRET")
 fileName <- "eListMiss.RData"
 
 load(paste(filePath,fileName,sep="/"))

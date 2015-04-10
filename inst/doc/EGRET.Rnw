@@ -921,7 +921,7 @@ eList <- as.egret(INFO, Daily, NA, NA)
 @
 
 <<flowHistoryLoad,echo=FALSE,eval=TRUE>>=
-filePath <- system.file("extdata", package="EGRET")
+filePath <- system.file("extdata", package="usgsEGRET")
 fileName <- "eListColumbia.RData"
 
 load(paste(filePath,fileName,sep="/"))
@@ -1020,7 +1020,7 @@ eListMerced <- as.egret(INFO, Daily, NA, NA)
 @
 
 <<Merceddata, echo=FALSE,eval=TRUE>>=
-filePath <- system.file("extdata", package="EGRET")
+filePath <- system.file("extdata", package="usgsEGRET")
 fileName <- "eListMerced.RData"
 
 load(paste(filePath,fileName,sep="/"))
@@ -1069,7 +1069,7 @@ eListMiss <- as.egret(INFO, Daily, NA, NA)
 @
 
 <<MissDataRetrieval, echo=FALSE, eval=TRUE>>=
-filePath <- system.file("extdata", package="EGRET")
+filePath <- system.file("extdata", package="usgsEGRET")
 fileName <- "eListMiss.RData"
 
 load(paste(filePath,fileName,sep="/"))
