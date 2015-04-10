@@ -3,7 +3,7 @@
 %\VignetteDepends{}
 %\VignetteSuggests{xtable,extrafont,knitr}
 %\VignetteImports{methods,survival, fields,dataRetrieval, stats, lubridate}
-%\VignettePackage{EGRET}
+%\VignettePackage{usgsEGRET}
 
 \documentclass[a4paper,11pt]{article}
 
@@ -134,7 +134,7 @@ library(xtable)
 options(continue=" ")
 options(width=60)
 library(knitr)
-library(EGRET)
+library(usgsEGRET)
 @
 
 
@@ -351,7 +351,7 @@ vignette("dataRetrieval")
 EGRET uses entirely SI units to store the data, but for purposes of output, it can report results in a wide variety of units, which will be discussed in (\ref{sec:units}). To start our exploration, you must install the packages (check Section \ref{sec:appendix1} for detailed instructions), and then open EGRET with the following command:
 
 <<openlibraries, echo=TRUE,eval=TRUE>>=
-library(EGRET)
+library(usgsEGRET)
 @
 
 %------------------------------------------------------------ 

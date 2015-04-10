@@ -3,7 +3,7 @@ library(xtable)
 options(continue=" ")
 options(width=60)
 library(knitr)
-library(EGRET)
+library(usgsEGRET)
 
 ## ----include=TRUE ,echo=FALSE,eval=TRUE-------------------
 opts_chunk$set(highlight=TRUE, tidy=TRUE, keep.space=TRUE, keep.blank.space=FALSE, keep.comment=TRUE, concordance=TRUE,tidy=FALSE,comment="")
@@ -153,7 +153,7 @@ addSpace <- function(x) ifelse(x != "1", "[5pt]","")
 #  vignette("dataRetrieval")
 
 ## ----openlibraries, echo=TRUE,eval=TRUE-------------------
-library(EGRET)
+library(usgsEGRET)
 
 ## ----firstExample, echo=TRUE, eval=FALSE------------------
 #  siteNumber <- "01491000"
