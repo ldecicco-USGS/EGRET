@@ -67,12 +67,14 @@ plotFluxHist(eList, yearStart, yearEnd, fluxUnit = 'kgDay')
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotFluxHist(eList)
+\dontrun{
 library(smwrGraphs)
 setPDF(basename = "test")
 layoutInfo <- setLayout(width=6, height=4)
 layoutStuff <- setGraph(1, layoutInfo)
 plotFluxHist(eList, yearStart, yearEnd, fluxUnit = 1, USGSstyle=TRUE, margin=layoutStuff)
 graphics.off()
+}
 }
 \seealso{
 \code{\link{setupYears}}

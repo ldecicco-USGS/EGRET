@@ -34,12 +34,14 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' boxResidMonth(eList)
+#' \dontrun{
 #' library(smwrGraphs)
 #' setPDF(basename = "test")
 #' layoutInfo <- setLayout(width=6, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
 #' boxResidMonth(eList,USGSstyle=TRUE, margin=layoutStuff)
 #' graphics.off()
+#' }
 boxResidMonth<-function(eList, stdResid = FALSE, las=1,
                         printTitle = TRUE, cex=0.8, cex.axis=1.1, cex.main=1.1,
                         font.main=2, tinyPlot=FALSE, customPar=FALSE,

@@ -35,12 +35,14 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotFluxPred(eList)
+#' \dontrun{
 #' library(smwrGraphs)
 #' setPDF(basename = "test")
 #' layoutInfo <- setLayout(width=6, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
 #' plotFluxPred(eList, USGSstyle=TRUE, margin=layoutStuff)
 #' graphics.off()
+#' }
 plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA, 
                        printTitle = TRUE, oneToOneLine=TRUE, customPar=FALSE,col="black", lwd=1,
                        cex=0.8, cex.axis=1.1,cex.main=1.1,tinyPlot=FALSE,logScale=FALSE,

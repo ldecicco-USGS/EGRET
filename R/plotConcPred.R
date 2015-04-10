@@ -32,12 +32,14 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotConcPred(eList)
+#' \dontrun{
 #' library(smwrGraphs)
 #' setPDF(basename = "test")
 #' layoutInfo <- setLayout(width=6, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
 #' plotConcPred(eList, USGSstyle=TRUE, margin=layoutStuff)
 #' graphics.off()
+#' }
 plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
                        printTitle = TRUE,tinyPlot=FALSE,cex=0.8, cex.axis=1.1,
                        cex.main=1.1, customPar=FALSE,col="black",lwd=1,

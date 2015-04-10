@@ -26,10 +26,12 @@
 #' multiPlotDataOverview(eList, qUnit=1) 
 #' 
 #' eList <- setPA(eList, paStart=10,paLong=12)
+#' \dontrun{
 #' library(smwrGraphs)
 #' setPDF(basename="multiPlotDataOverview",layout="landscape")
 #' multiPlotDataOverview(eList, qUnit=2,USGSstyle=TRUE) 
 #' graphics.off()
+#' }
 multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
                                  logScaleConc=TRUE, logScaleQ=TRUE,
                                  USGSstyle=FALSE){

@@ -37,10 +37,12 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' boxQTwice(eList)
+#' \dontrun{
 #' library(smwrGraphs)
 #' setPDF(basename="test")
 #' boxQTwice(eList,USGSstyle=TRUE)
 #' graphics.off()
+#' }
 boxQTwice<-function(eList, 
                     printTitle = TRUE, qUnit = 2, cex=0.8,cex.main=1.1,logScale=TRUE, 
                     cex.axis=1.1, tcl=0.5, las=1, tinyPlot = FALSE, 

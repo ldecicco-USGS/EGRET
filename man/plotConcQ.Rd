@@ -64,12 +64,14 @@ plotConcQ(eList, logScale=TRUE)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotConcQ(eList)
+\dontrun{
 library(smwrGraphs)
 setPDF(basename = "test")
 layoutInfo <- setLayout(width=6, height=4)
 layoutStuff <- setGraph(1, layoutInfo)
 plotConcQ(eList, logScale=TRUE, USGSstyle=TRUE, margin=layoutStuff)
 graphics.off()
+}
 }
 \seealso{
 \code{\link{selectDays}}, \code{\link{genericEGRETDotPlot}}

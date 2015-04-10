@@ -30,12 +30,14 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' boxConcThree(eList)
+#' \dontrun{
 #' library(smwrGraphs)
 #' setPDF(basename = "test")
 #' layoutInfo <- setLayout(width=6, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
 #' boxConcThree(eList,USGSstyle=TRUE, margin=layoutStuff)
 #' graphics.off()
+#' }
 boxConcThree<-function (eList, tinyPlot=FALSE,
                         printTitle = TRUE, moreTitle = "WRTDS",customPar=FALSE,
                         font.main=2,cex=0.8,cex.main = 1.1, cex.axis = 1.1,

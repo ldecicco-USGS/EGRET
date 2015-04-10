@@ -63,11 +63,12 @@ plotConcHist(eList, yearStart, yearEnd)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotConcHist(eList, yearStart, yearEnd)
+\dontrun{
 library(smwrGraphs)
 setPDF("test",layout="portrait")
 plotConcHist(eList, yearStart, yearEnd, USGSstyle=TRUE)
 graphics.off()
-library(smwrGraphs)
+
 setPDF(basename = "plotConcFluxHist")
 layoutResponse <- setLayout(num.rows=2)
 AA.gr <- setGraph(1, layoutResponse)
@@ -75,6 +76,7 @@ plotFluxHist(eList,customPar=TRUE, printTitle=TRUE, USGSstyle=TRUE, margin=AA.gr
 AA.gr <- setGraph(2, layoutResponse)
 plotConcHist(eList,customPar=TRUE, printTitle=TRUE, USGSstyle=TRUE, margin=AA.gr)
 graphics.off()
+}
 }
 \seealso{
 \code{\link{setupYears}}, \code{\link{genericEGRETDotPlot}}

@@ -39,12 +39,14 @@
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotQTimeDaily(eList)
 #' eList <- setPA(eList, paStart=10,paLong=10)
+#' \dontrun{
 #' library(smwrGraphs)
 #' setPDF(basename="plotQTimeDaily")
 #' layoutInfo <- setLayout(width=4, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
 #' plotQTimeDaily(eList,USGSstyle=TRUE,margin=layoutStuff, qLower=1500)
 #' graphics.off()
+#' }
 plotQTimeDaily<-function (eList, startYear=NA, endYear=NA, qLower = NA, qUnit = 1, logScale=FALSE,
                           tinyPlot = FALSE, printTitle = TRUE, lwd = 3, col="red", 
                           cex.main = 1.2, cex.lab = 1.2, 

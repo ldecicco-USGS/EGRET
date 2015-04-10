@@ -58,9 +58,11 @@
 #' plotDiffContours(eList, year0,year1,qBottom,qTop,maxDiff,
 #'        lwd=2,color.palette=colors2,flowDuration=FALSE)
 #' plotDiffContours(eList, year0,year1,qBottom,qTop,maxDiff,cex.lab=2,flowDuration=FALSE)
+#' \dontrun{
 #' par(mar=c(5,8,5,8))
 #' plotDiffContours(eList, year0,year1,qBottom,qTop,maxDiff,
 #'        customPar=TRUE,flowDuration=FALSE)
+#'        }
 plotDiffContours<-function (eList, year0, year1, 
                             qBottom, qTop, maxDiff, 
                             whatSurface = 3, tcl=0.1,

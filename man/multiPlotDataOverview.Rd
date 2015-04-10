@@ -37,10 +37,12 @@ eList <- setPA(eList, paStart=6,paLong=3)
 multiPlotDataOverview(eList, qUnit=1)
 
 eList <- setPA(eList, paStart=10,paLong=12)
+\dontrun{
 library(smwrGraphs)
 setPDF(basename="multiPlotDataOverview",layout="landscape")
 multiPlotDataOverview(eList, qUnit=2,USGSstyle=TRUE)
 graphics.off()
+}
 }
 \seealso{
 \code{\link{plotConcQ}}, \code{\link{boxConcMonth}}, \code{\link{plotConcTime}}, \code{\link{boxQTwice}}

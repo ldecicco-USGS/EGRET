@@ -56,10 +56,12 @@ boxQTwice(eList, qUnit='cfs')
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 boxQTwice(eList)
+\dontrun{
 library(smwrGraphs)
 setPDF(basename="test")
 boxQTwice(eList,USGSstyle=TRUE)
 graphics.off()
+}
 }
 \seealso{
 \code{\link[graphics]{boxplot}}

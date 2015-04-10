@@ -38,12 +38,14 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotConcQ(eList)
+#' \dontrun{
 #' library(smwrGraphs)
 #' setPDF(basename = "test")
 #' layoutInfo <- setLayout(width=6, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
 #' plotConcQ(eList, logScale=TRUE, USGSstyle=TRUE, margin=layoutStuff)
 #' graphics.off()
+#' }
 plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
                     concMax = NA, concMin =NA, printTitle = TRUE, cex=0.8, cex.axis=1.1,cex.main=1.1,
                     rmSciX=FALSE,rmSciY=FALSE, customPar=FALSE,col="black",

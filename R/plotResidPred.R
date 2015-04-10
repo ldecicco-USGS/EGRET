@@ -35,12 +35,14 @@
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotResidPred(eList)
+#' \dontrun{
 #' library(smwrGraphs)
 #' setPDF(basename = "plotResidPred")
 #' layoutInfo <- setLayout(width=6, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
 #' plotResidPred(eList, USGSstyle=TRUE, margin=layoutStuff)
 #' graphics.off()
+#' }
 plotResidPred<-function(eList, stdResid = FALSE, 
                         tinyPlot = FALSE, printTitle = TRUE, col="black",lwd=1,
                         cex=0.8, cex.axis=1.1,cex.main=1.1, customPar=FALSE,

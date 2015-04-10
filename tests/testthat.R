@@ -1,3 +1,3 @@
 library(testthat)
-library(EGRET)
-test_check("EGRET")
+library(usgsEGRET)
+test_check("usgsEGRET")
