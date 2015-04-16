@@ -50,6 +50,10 @@ multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
   title<-paste(localINFO$shortName,"\n",localINFO$paramShortName)
   
   if(USGSstyle){
+    names(localINFO) <- gsub("\\.","_",names(localINFO))
+    names(localINFO) <- tolower(names(localINFO))
+    
+    title<-paste0(localINFO$shortname," (",localINFO$site_no,")","\n",localINFO$paramshortname)
     layoutResponse <- setLayout(num.rows=2,num.cols = 3, 
                                 num.graphs = 5, explanation = list(grid=c(6)))
     graph1 <- setGraph(1, layoutResponse)

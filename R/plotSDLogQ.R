@@ -87,10 +87,10 @@ plotSDLogQ<-function(eList, yearStart=NA,yearEnd=NA,window=15,sdMax=NA,
   xMax<-if(is.na(yearEnd)) endDec else yearEnd
 
   line1<-if(printStaName) localINFO$shortName else ""
-  line2<-if(printPA) paste("\n",setSeasonLabelByUser(paStartInput = localINFO$paStart, paLongInput = localINFO$paLong)) else ""
+  line2<- paste(setSeasonLabelByUser(paStartInput = localINFO$paStart, paLongInput = localINFO$paLong))
   line3<-"\nDischarge variability: Standard Deviation of Log(Q)" 
-  title<-if(printTitle) paste(line1,line2,line3) else ""
-  
+  title<-if(printTitle) paste(line1,if(printPA) paste0("\n",line2) else "",line3) else ""
+    
   if(tinyPlot){
     title<-if(printTitle) "standard deviation of log(Q)"
   }
@@ -101,7 +101,11 @@ plotSDLogQ<-function(eList, yearStart=NA,yearEnd=NA,window=15,sdMax=NA,
   yInfo <- generalAxis(x=y, minVal=0, maxVal=sdMax, tinyPlot=tinyPlot,padPercent=5)
 
   if(USGSstyle){
-
+    names(localINFO) <- gsub("\\.","_",names(localINFO))
+    names(localINFO) <- tolower(names(localINFO))
+    
+    titleUSGS <- paste0(line1,"(",localINFO$site_no,")",if(printPA)paste(" : ",line2),line3)
+    
     currentPlot <- timePlot(as.Date(xDates, origin="1970-01-01"), y, Plot=list(what="line"),
                             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle="Dimensionless",
                             xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
@@ -110,9 +114,8 @@ plotSDLogQ<-function(eList, yearStart=NA,yearEnd=NA,window=15,sdMax=NA,
     xMid <- mean(currentPlot$xax$range)    
     yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
     
-    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
-                                 annotation=line2, current=currentPlot,size=10)
-    invisible(title)
+    if (!tinyPlot) addCaption(titleUSGS)
+    invisible(titleUSGS)
   } else {
     genericEGRETDotPlot(x=xmid,#localDaily$DecYear,
                         y=y,

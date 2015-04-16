@@ -74,12 +74,16 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
   fluxBias <- fluxBiasStat(localSample)
   fB <- as.numeric(fluxBias[3])
   fB <- format(fB, digits = 3)
-  title <- paste(localINFO$shortName, ", ", localINFO$paramShortName, 
-                 "\nModel is ",moreTitle, " Flux Bias Statistic", fB, sep="")
+  title <- paste0(localINFO$shortName, ", ", localINFO$paramShortName, 
+                 "\nModel is ",moreTitle, " Flux Bias Statistic ", fB)
   
   title2<-if(paLong==12) "" else setSeasonLabelByUser(paStartInput=paStart,paLongInput=paLong)
   
   if(USGSstyle){
+    names(localINFO) <- gsub("\\.","_",names(localINFO))
+    names(localINFO) <- tolower(names(localINFO))
+    
+    title <- paste0("Model is ",moreTitle, " Flux Bias Statistic ", fB)
     
     if("" != title2){
       title <- paste(title, title2, sep="\n")   
@@ -108,15 +112,16 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
 
     graph5 <- setGraph(5, layoutResponse)
     plotConcPred(eList, printTitle=FALSE, 
-                 tinyPlot=TRUE,
+                 tinyPlot=TRUE,logScale=TRUE,
                  USGSstyle=USGSstyle,margin=graph5,...)
     graph6 <- setGraph(6, layoutResponse)
-    plotFluxPred(eList, 
+    plotFluxPred(eList, logScale=TRUE,
                  fluxUnit, tinyPlot = TRUE, printTitle = FALSE,
                  USGSstyle=USGSstyle,margin=graph6,...)
     graph7 <- setGraph(7, layoutResponse)
     boxQTwice(eList, printTitle = FALSE, qUnit = qUnit,tinyPlot=TRUE,
               USGSstyle=USGSstyle,margin=graph7,...)
+    addCaption(paste0(localINFO$shortname," (", localINFO$site_no,") : ", localINFO$paramshortname))
     
     graph8 <- setGraph(8, layoutResponse)
     boxOut <- boxConcThree(eList, 

@@ -7,7 +7,8 @@
 plotConcHist(eList, yearStart = NA, yearEnd = NA, concMax = NA,
   printTitle = TRUE, tinyPlot = FALSE, plotFlowNorm = TRUE, cex = 0.8,
   cex.axis = 1.1, cex.main = 1.1, lwd = 2, col = "black",
-  col.pred = "green", customPar = FALSE, USGSstyle = FALSE, ...)
+  col.pred = "green", customPar = FALSE, USGSstyle = FALSE, cap = TRUE,
+  ...)
 }
 \arguments{
 \item{eList}{named list with at least the Daily and INFO dataframes}
@@ -41,6 +42,8 @@ plotConcHist(eList, yearStart = NA, yearEnd = NA, concMax = NA,
 
 \item{USGSstyle}{logical use USGSwsGraph package for USGS style}
 
+\item{cap}{logical add caption}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -72,9 +75,11 @@ graphics.off()
 setPDF(basename = "plotConcFluxHist")
 layoutResponse <- setLayout(num.rows=2)
 AA.gr <- setGraph(1, layoutResponse)
-plotFluxHist(eList,customPar=TRUE, printTitle=TRUE, USGSstyle=TRUE, margin=AA.gr)
+plotFluxHist(eList,customPar=TRUE, printTitle=TRUE,
+     USGSstyle=TRUE, margin=AA.gr,cap=FALSE)
 AA.gr <- setGraph(2, layoutResponse)
-plotConcHist(eList,customPar=TRUE, printTitle=TRUE, USGSstyle=TRUE, margin=AA.gr)
+plotConcHist(eList,customPar=TRUE, printTitle=TRUE,
+     USGSstyle=TRUE, margin=AA.gr,cap=TRUE)
 graphics.off()
 }
 }

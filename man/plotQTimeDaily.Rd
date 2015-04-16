@@ -64,10 +64,8 @@ plotQTimeDaily(eList)
 eList <- setPA(eList, paStart=10,paLong=10)
 \dontrun{
 library(smwrGraphs)
-setPDF(basename="plotQTimeDaily")
-layoutInfo <- setLayout(width=4, height=4)
-layoutStuff <- setGraph(1, layoutInfo)
-plotQTimeDaily(eList,USGSstyle=TRUE,margin=layoutStuff, qLower=1500)
+setPDF(basename="plotQTimeDaily",layout = "landscape")
+plotQTimeDaily(eList,USGSstyle=TRUE,qLower=1500)
 graphics.off()
 }
 }

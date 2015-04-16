@@ -27,6 +27,7 @@
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
 #' @param col.pred color of flow normalized line on plot, see ?par 'Color Specification'
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param cap logical add caption
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
@@ -54,7 +55,7 @@ plotFluxHist<-function(eList, yearStart = NA, yearEnd = NA, fluxUnit = 9,
     fluxMax = NA, printTitle = TRUE, plotFlowNorm = TRUE,
     tinyPlot=FALSE,col="black",col.pred="green",
     cex=0.8, cex.axis=1.1,cex.main=1.1, lwd=2, customPar=FALSE,
-    USGSstyle=FALSE,...){
+    USGSstyle=FALSE,cap=TRUE,...){
 
   localINFO <- getInfo(eList)
   localDaily <- getDaily(eList)
@@ -118,6 +119,8 @@ plotFluxHist<-function(eList, yearStart = NA, yearEnd = NA, fluxUnit = 9,
   
   ###############################################
   if(USGSstyle){
+    title3<-if(plotFlowNorm) "Flux Estimates (dots) & Flow Normalized Flux (line)" else "\nAnnual Flux Estimates"
+    
     subAnnualResults$Date <- as.Date(paste0(as.character(as.integer(subAnnualResults$DecYear)),"-04-01"))
     col <- list(points=col)
     
@@ -131,18 +134,18 @@ plotFluxHist<-function(eList, yearStart = NA, yearEnd = NA, fluxUnit = 9,
     
     xMid <- mean(currentPlot$xax$range)
     yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
-    
-    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
-                                 annotation=periodName, current=currentPlot,size=10)
-    
+        
     if(plotFlowNorm) {
       addXY(subAnnualResults$Date, fnFlux, Plot=list(color="green"))
     }
     
-    title<-if(printTitle) paste(localINFO$shortName," ",localINFO$paramShortName,title3) else ""
+    names(localINFO) <- gsub("\\.","_",names(localINFO))
+    names(localINFO) <- tolower(names(localINFO))
+    
+    title<-if(printTitle) title3 else ""
     
     addTitle(title, Justification = "center")
-    
+    if(cap) addCaption(paste(localINFO$shortname," (", localINFO$site_no ,") ",localINFO$paramshortname, ", ",periodName))
 
     
     invisible(currentPlot)

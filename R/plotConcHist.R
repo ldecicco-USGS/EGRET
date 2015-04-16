@@ -27,6 +27,7 @@
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param col.pred color of flow normalized line on plot, see ?par 'Color Specification'
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param cap logical add caption
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
@@ -50,9 +51,11 @@
 #' setPDF(basename = "plotConcFluxHist")
 #' layoutResponse <- setLayout(num.rows=2)
 #' AA.gr <- setGraph(1, layoutResponse)
-#' plotFluxHist(eList,customPar=TRUE, printTitle=TRUE, USGSstyle=TRUE, margin=AA.gr)
+#' plotFluxHist(eList,customPar=TRUE, printTitle=TRUE, 
+#'      USGSstyle=TRUE, margin=AA.gr,cap=FALSE)
 #' AA.gr <- setGraph(2, layoutResponse)
-#' plotConcHist(eList,customPar=TRUE, printTitle=TRUE, USGSstyle=TRUE, margin=AA.gr)
+#' plotConcHist(eList,customPar=TRUE, printTitle=TRUE, 
+#'      USGSstyle=TRUE, margin=AA.gr,cap=TRUE)
 #' graphics.off()
 #' }
 plotConcHist<-function(eList, yearStart = NA, yearEnd = NA, 
@@ -60,7 +63,7 @@ plotConcHist<-function(eList, yearStart = NA, yearEnd = NA,
                        tinyPlot = FALSE,plotFlowNorm = TRUE,
                         cex=0.8, cex.axis=1.1,cex.main=1.1, 
                        lwd=2, col="black", col.pred="green", customPar=FALSE,
-                       USGSstyle=FALSE,...){
+                       USGSstyle=FALSE,cap=TRUE,...){
 
   localDaily <- getDaily(eList)
   localINFO <- getInfo(eList)
@@ -89,6 +92,9 @@ plotConcHist<-function(eList, yearStart = NA, yearEnd = NA,
                        tinyPlot=tinyPlot,units=localINFO$param.units)
   
   if(USGSstyle){
+    title3<-if(plotFlowNorm) "Mean Concentration (dots) & Flow Normalized Concentration (line)" else "\nAnnual Mean Concentration"
+    
+    
     localAnnualResults$Date <- as.Date(paste0(as.character(as.integer(localAnnualResults$DecYear)),"-04-01"))
     col <- list(points=col)
     
@@ -101,16 +107,18 @@ plotConcHist<-function(eList, yearStart = NA, yearEnd = NA,
     xMid <- mean(currentPlot$xax$range)
     yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
     
-    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
-                                 annotation=periodName, current=currentPlot,size=10)
-    
     if(plotFlowNorm) {
       addXY(localAnnualResults$Date, localAnnualResults$FNConc, Plot=list(color="green"))
     }
     
-    title<-if(printTitle) paste(localINFO$shortName," ",localINFO$paramShortName,title3) else ""
+    names(localINFO) <- gsub("\\.","_",names(localINFO))
+    names(localINFO) <- tolower(names(localINFO))
+    
+    title<-if(printTitle) title3 else ""
     
     addTitle(title, Justification = "center")
+    if(cap) addCaption(paste(localINFO$shortname," (", localINFO$site_no ,") ",localINFO$paramshortname, ", ",periodName))
+    
     
     
     invisible(currentPlot)

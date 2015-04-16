@@ -41,10 +41,8 @@
 #' eList <- setPA(eList, paStart=10,paLong=10)
 #' \dontrun{
 #' library(smwrGraphs)
-#' setPDF(basename="plotQTimeDaily")
-#' layoutInfo <- setLayout(width=4, height=4)
-#' layoutStuff <- setGraph(1, layoutInfo)
-#' plotQTimeDaily(eList,USGSstyle=TRUE,margin=layoutStuff, qLower=1500)
+#' setPDF(basename="plotQTimeDaily",layout = "landscape")
+#' plotQTimeDaily(eList,USGSstyle=TRUE,qLower=1500)
 #' graphics.off()
 #' }
 plotQTimeDaily<-function (eList, startYear=NA, endYear=NA, qLower = NA, qUnit = 1, logScale=FALSE,
@@ -122,6 +120,9 @@ plotQTimeDaily<-function (eList, startYear=NA, endYear=NA, qLower = NA, qUnit = 
   yInfo$ticks[1] <- yInfo$bottom
 
   if(USGSstyle){
+    names(localINFO) <- gsub("\\.","_",names(localINFO))
+    names(localINFO) <- tolower(names(localINFO))
+    
     x <- as.Date(subDaily$Date)
     currentPlot <- timePlot(x, yDaily, Plot=list(what="line",color=col),
                             yaxis.range=c(yInfo$bottom,yInfo$top), ytitle=yLab,
@@ -129,16 +130,17 @@ plotQTimeDaily<-function (eList, startYear=NA, endYear=NA, qLower = NA, qUnit = 
                             yaxis.log=logScale,
                             ...)
 
-    xMid <-mean(currentPlot$xax$range)
-    
-    yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
-    if(logScale) {
-      yTop <- 10^yTop
-    }
+#     xMid <-mean(currentPlot$xax$range)
+#     
+#     yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
+#     if(logScale) {
+#       yTop <- 10^yTop
+#     }
+    line2 <- if(is.na(qLower)) "Daily discharge" else paste0("Daily discharge above a threshold of",qLower," ",tolower(qUnit@qUnitName))
 
-    if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
-                                 annotation=title2, current=currentPlot,size=10)
+    if (!tinyPlot) addCaption(paste0(line1,"(",localINFO$site_no,")", "\n", line2))
     invisible(plotTitle)
+    
   } else {
     genericEGRETDotPlot(x=xDaily, y=yDaily, 
                         xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
