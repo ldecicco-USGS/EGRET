@@ -174,13 +174,48 @@ qConst <- list(cfs = new("qUnit",
               qUnitTiny = expression(paste("Discharge ", "(", mm^3/day, ")")),
               shortCode = 5
   )
-#                 ,mmYear = new("qUnit",
-#                           qUnitName = "Cubic Millimeters per Year",
-#                           qUnitFactor = ,
-#                           qUnitExpress = expression(paste("Discharge in ",mm^3/year)),
-#                           qUnitTiny = expression(paste("Discharge ", "(", mm^3/year, ")")),
-#                           shortCode = 6
-#                           )
+)
+
+qConst <- list(cfs = new("qUnit",
+                          qShortName = "   cfs  ",
+                          qUnitFactor = 35.314667,
+                          qUnitName = "Cubic Feet per Second",
+                          qUnitExpress = expression(paste("Discharge in ",ft^3/s)),
+                          qUnitTiny = expression(paste("Discharge ", "(", ft^3/s, ")")),
+                          shortCode = 1
+                          ),
+                cms = new("qUnit",
+                          qShortName = "   cms  ",
+                          qUnitFactor = 1,
+                          qUnitName = "Cubic Meters per Second",
+                          qUnitExpress = expression(paste("Discharge in ",m^3/s)),
+                          qUnitTiny = expression(paste("Discharge ", "(", m^3/s, ")")),
+                          shortCode = 2
+                          ),
+                thousandCfs = new("qUnit",
+                          qShortName = "10^3 cfs",
+                          qUnitFactor = 0.035314667,
+                          qUnitName = "Thousand Cubic Feet per Second",
+                          qUnitExpress = expression(paste("Discharge in ",10^3*ft^3/s)),
+                          qUnitTiny = expression(paste("Discharge ", "(", 10^3*ft^3/s, ")")),
+                          shortCode = 3
+                          ),
+                thousandCms = new("qUnit",
+                          qShortName = "10^3 cms",
+                          qUnitFactor = 0.001,
+                          qUnitName = "Thousand Cubic Meters per Second",
+                          qUnitExpress = expression(paste("Discharge in ",10^3*m^3/s)),
+                          qUnitTiny = expression(paste("Discharge ", "(", 10^3*m^3/s, ")")),
+                          shortCode = 4
+                          ),
+                mmDay = new("qUnit",
+                            qShortName = "mm/day",
+                            qUnitFactor = 86400000,
+                            qUnitName = "Cubic Millimeters per Day",
+                            qUnitExpress = expression(paste("Discharge in ",mm^3/day)),
+                            qUnitTiny = expression(paste("Discharge ", "(", mm^3/day, ")")),
+                            shortCode = 5
+                          )
 )
 
 monthInfo = c(new("monthLabel",
