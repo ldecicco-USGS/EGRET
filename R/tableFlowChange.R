@@ -11,6 +11,7 @@
 #' @param qUnit object of qUnit class \code{\link{printqUnitCheatSheet}}, or numeric represented the short code, or character representing the descriptive name.
 #' @param runoff logical variable, if TRUE the streamflow data are converted to runoff values in mm/day
 #' @param yearPoints A vector of numeric values, specifying the years at which change metrics are to be calculated, default is NA (which allows the function to set these automatically), yearPoints must be in ascending order
+#' @param verbose logical, if TRUE, prints output to console
 #' @keywords streamflow statistics
 #' @export
 #' @examples
@@ -18,7 +19,7 @@
 #' tableFlowChange(eList, istat=5,yearPoints=c(2001,2005,2009))
 #' df <- tableFlowChange(eList, istat=5,yearPoints=c(2001,2005,2009))
 tableFlowChange<-function(eList, istat, qUnit = 1, runoff = FALSE, 
-                          yearPoints = NA) {
+                          yearPoints = NA, verbose=TRUE) {
   
   localAnnualSeries <- makeAnnualSeries(eList)
   localINFO <- getInfo(eList)
@@ -50,24 +51,27 @@ tableFlowChange<-function(eList, istat, qUnit = 1, runoff = FALSE,
   qName<-qUnit@qShortName
   qSmooth<-localAnnualSeries[3,istat,]
   qSmooth<-if(runoff) qSmooth*86.4/localINFO$drainSqKm else qSmooth*qFactor
-  cat("\n  ",localINFO$shortName)
   periodName<-setSeasonLabelByUser(paStartInput = localINFO$paStart, paLongInput = localINFO$paLong)
-  cat("\n  ",periodName)
   nameIstat<-c("minimum day","7-day minimum","30-day minimum","median daily","mean daily","30-day maximum","7-day maximum",'maximum day')
-  cat("\n   ",nameIstat[istat],"\n")
   header2<-"\n             Streamflow Trends\n   time span          change        slope       change        slope"
   blankHolder<-"      ---"
   results<-rep(NA,4)
   indexPoints<-yearPoints-firstYear+1
   numPointsMinusOne<-numPoints-1
-  write(header2,file="")
+  
   unitsText<-if(runoff) "mm/day" else qUnit@qShortName
   
-  if(runoff){
-    cat("                      ",unitsText,"      ",unitsText,"/yr       %           %/yr",sep="")
-  } else {
-    formatSpacing <- if (3 == nchar(gsub(" ", "",unitsText))) "       " else "   "
-    cat("                     ",unitsText,formatSpacing,gsub(" ", "",unitsText),"/yr        %            %/yr",sep="")
+  if(verbose){
+    cat("\n  ",localINFO$shortName)
+    cat("\n  ",periodName)
+    cat("\n   ",nameIstat[istat],"\n")  
+    write(header2,file="")
+    if(runoff){
+      cat("                      ",unitsText,"      ",unitsText,"/yr       %           %/yr",sep="")
+    } else {
+      formatSpacing <- if (3 == nchar(gsub(" ", "",unitsText))) "       " else "   "
+      cat("                     ",unitsText,formatSpacing,gsub(" ", "",unitsText),"/yr        %            %/yr",sep="")
+    }
   }
   header<-c("year1","year2",paste("change[",gsub(" ", "",unitsText),"]",sep=""),paste("slope[",gsub(" ", "",unitsText),"/yr]",sep=""),"change[%]","slope[%/yr]")
   resultDF <- as.data.frame(sapply(1:6, function(x) data.frame(x)))
@@ -85,11 +89,13 @@ tableFlowChange<-function(eList, istat, qUnit = 1, runoff = FALSE,
       results[2]<-if(is.na(yDif)) blankHolder else format(yDif/xDif,digits=2,width=12)
       results[3]<-if(is.na(yDif)) blankHolder else format(100*yDif/yFirst,digits=2,width=12)
       results[4]<-if(is.na(yDif)) blankHolder else format(100*yDif/yFirst/xDif,digits=2,width=12)
-      cat("\n",yearPoints[iFirst]," to ",yearPoints[iLast],results)
+      if(verbose){
+        cat("\n",yearPoints[iFirst]," to ",yearPoints[iLast],results)
+      }
       resultDF <- rbind(resultDF, c(yearPoints[iFirst], yearPoints[iLast],results))
     }
   }
-  cat("\n")
+  if(verbose) cat("\n")
   resultDF <- resultDF[-1,]
   row.names(resultDF) <- NULL
   resultDF <- as.data.frame(lapply(resultDF,as.numeric))

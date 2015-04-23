@@ -9,6 +9,7 @@
 #' @param fluxUnit object of fluxUnit class. \code{\link{printFluxUnitCheatSheet}}, or numeric represented the short code, or character representing the descriptive name.
 #' @param yearPoints numeric vector listing the years for which the change or slope computations are made, they need to be in chronological order.  For example yearPoints=c(1975,1985,1995,2005), default is NA (which allows the program to set yearPoints automatically)
 #' @param flux logical if TRUE results are returned in flux, if FALSE concentration. Default is set to FALSE.
+#' @param verbose logical, if TRUE prints output to console
 #' @return resultsDF dataframe describing trends in flow-normalized concentration or flux if returnDataFrame is TRUE
 #' @keywords water-quality statistics
 #' @export
@@ -23,7 +24,8 @@
 #' # Winter:
 #' eList <- setPA(eList, paStart=12,paLong=3)
 #' tableChangeSingle(eList, fluxUnit=6,yearPoints=c(2001,2005,2008,2009), flux=FALSE)
-tableChangeSingle<-function(eList, fluxUnit = 9, yearPoints = NA, flux = FALSE) {
+tableChangeSingle<-function(eList, fluxUnit = 9, yearPoints = NA, 
+                            flux = FALSE, verbose = TRUE) {
   
   localINFO <- getInfo(eList)
   localDaily <- getDaily(eList)
@@ -76,33 +78,31 @@ tableChangeSingle<-function(eList, fluxUnit = 9, yearPoints = NA, flux = FALSE) 
   numPoints<-length(yearPoints)
   fluxFactor<-fluxUnit@unitFactor
   fName<-fluxUnit@shortName
-  
-  
-  cat("\n  ",localINFO$shortName,"\n  ",localINFO$paramShortName)
   periodName<-setSeasonLabel(localAnnualResults = localAnnualResults)
-  cat("\n  ",periodName,"\n")
-  
   header1<-"\n           Concentration trends\n   time span       change     slope    change     slope\n                     mg/L   mg/L/yr        %       %/yr"
   header2<-"\n\n\n                 Flux Trends\n   time span          change        slope       change        slope"
-  
   fNameNoSpace <- gsub(" ","", fName)
+  if (flux) header1 <- paste0(header2, "\n              ",fName,fName,"/yr      %         %/yr")
   
-  if (flux) header1 <- paste(header2, "\n              ",fName,fName,"/yr      %         %/yr", sep="")
-  
-  blankHolder<-"      ---"
+  blankHolder <- "      ---"
   results<-rep(NA,4)
-  indexPoints<-yearPoints-firstYear+1
-  numPointsMinusOne<-numPoints-1
-  write(header1,file="")
+  indexPoints <- yearPoints-firstYear+1
+  numPointsMinusOne <- numPoints-1
   
   if (flux){
     header <- c("Year1", "Year2", paste("change [", fNameNoSpace, "]", sep=""), paste("slope [", fNameNoSpace, "/yr]", sep=""),"change[percent]", "slope [percent/yr]" )
   } else {
     header <- c("Year1", "Year2", "change[mg/L]","slope[mg/L/yr]","change[%]", "slope [%/yr]")    
-  }
+  }  
   
   resultDF <- as.data.frame(sapply(1:6, function(x) data.frame(x)))
-  colnames(resultDF) <- header  
+  colnames(resultDF) <- header 
+  
+  if(verbose){
+    cat("\n  ",localINFO$shortName,"\n  ",localINFO$paramShortName)
+    cat("\n  ",periodName,"\n")
+    write(header1,file="")
+  }
   
   for(iFirst in 1:numPointsMinusOne) {
     xFirst<-indexPoints[iFirst]
@@ -128,11 +128,11 @@ tableChangeSingle<-function(eList, fluxUnit = 9, yearPoints = NA, flux = FALSE) 
       results[2]<-if(is.na(yDif)) blankHolder else format(yDif/xDif,digits=2,width=widthLength)
       results[3]<-if(is.na(yDif)) blankHolder else format(100*yDif/yFirst,digits=2,width=widthLength)
       results[4]<-if(is.na(yDif)) blankHolder else format(100*yDif/yFirst/xDif,digits=2,width=widthLength)
-      cat("\n",yearPoints[iFirst]," to ",yearPoints[iLast],results)
+      if(verbose) cat("\n",yearPoints[iFirst]," to ",yearPoints[iLast],results)
       resultDF <- rbind(resultDF, c(yearPoints[iFirst], yearPoints[iLast],results))
     }
   }
-  cat("\n")
+  if(verbose) cat("\n")
   resultDF <- resultDF[-1,]
   row.names(resultDF) <- NULL
   resultDF <- as.data.frame(lapply(resultDF,as.numeric))

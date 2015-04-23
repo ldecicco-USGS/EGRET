@@ -9,6 +9,7 @@
 #' @param istat A numeric value for the flow statistic to be graphed (possible values are 1 through 8)
 #' @param qUnit object of qUnit class \code{\link{printqUnitCheatSheet}}, or numeric represented the short code, or character representing the descriptive name.
 #' @param runoff logical variable, if TRUE the streamflow data are converted to runoff values in mm/day
+#' @param verbose logical, if TRUE, prints output to console
 #' @keywords streamflow statistics
 #' @return data frame with:
 #' \tabular{lll}{
@@ -20,7 +21,8 @@
 #' @examples
 #' eList <- Choptank_eList
 #' printReturn <- printSeries(eList, 5)
-printSeries<-function(eList, istat, qUnit = 1, runoff = FALSE) {
+#' printSeries(eList, 5, verbose=FALSE)
+printSeries<-function(eList, istat, qUnit = 1, runoff = FALSE, verbose=TRUE) {
   
   localINFO <- getInfo(eList)
   localAnnualSeries <- makeAnnualSeries(eList)
@@ -33,14 +35,17 @@ printSeries<-function(eList, istat, qUnit = 1, runoff = FALSE) {
     qUnit <- qConst[qUnit][[1]]
   }
   ###############################################################################
-  cat("\n",localINFO$shortName)
+  
   seasonText<-setSeasonLabelByUser(paStartInput=localINFO$paStart,paLongInput=localINFO$paLong)
-  cat("\n",seasonText)
   nameIstat<-c("minimum day","7-day minimum","30-day minimum","median daily","mean daily","30-day maximum","7-day maximum",'maximum day')
-  cat("\n   ",nameIstat[istat])
   unitsText<-if(runoff) "runoff in mm/day" else qUnit@qUnitName
-  cat("\n   ",unitsText)
-  cat("\n   year   annual   smoothed\n           value    value\n\n")
+  if(verbose){
+    cat("\n",localINFO$shortName)
+    cat("\n",seasonText)
+    cat("\n   ",nameIstat[istat])
+    cat("\n   ",unitsText)
+    cat("\n   year   annual   smoothed\n           value    value\n\n")
+  }
   qActual<-localAnnualSeries[2,istat,]
   qSmooth<-localAnnualSeries[3,istat,]
   years<-localAnnualSeries[1,istat,]
@@ -52,7 +57,9 @@ printSeries<-function(eList, istat, qUnit = 1, runoff = FALSE) {
   toPrint$years<-format(toPrint$years,digits=4,width=7)
   toPrint$qActual<-format(toPrint$qActual,digits=3,width=8)
   toPrint$qSmooth<-format(toPrint$qSmooth,digits=3,width=8)
-  write.table(toPrint,file="",col.names=FALSE,row.names=FALSE,quote=FALSE)
+  if(verbose){
+    write.table(toPrint,file="",col.names=FALSE,row.names=FALSE,quote=FALSE)
+  }
   toPrint$years <- as.integer(toPrint$years)
   toPrint$qActual <- as.numeric(toPrint$qActual)
   toPrint$qSmooth <- as.numeric(toPrint$qSmooth)
