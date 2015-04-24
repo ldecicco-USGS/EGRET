@@ -13,6 +13,7 @@
 #' @param minNumUncen numeric specifying the minimum number of uncensored observations to run the weighted regression, default is 50
 #' @param edgeAdjust logical specifying whether to use the modified method for calculating the windows at the edge of the record.  
 #' The modified method tends to reduce curvature near the start and end of record.  Default is TRUE.
+#' @param verbose logical, if TRUE prints out information to the console
 #' @keywords water-quality statistics
 #' @export
 #' @return eList named list with Daily, Sample, and INFO dataframes, along with the surfaces matrix.
@@ -27,12 +28,12 @@
 #' surfaces <- EGRETreturn$surfaces
 #'  
 #' #Run an estimation adjusting windowQ from default:
-#' eList <- modelEstimation(eList, windowQ=5)
+#' eList <- modelEstimation(eList, windowQ=5, verbose=FALSE)
 #' }
 modelEstimation<-function(eList, 
                           windowY=7, windowQ=2, windowS=0.5,
                           minNumObs=100,minNumUncen=50, 
-                          edgeAdjust=TRUE){
+                          edgeAdjust=TRUE, verbose=TRUE){
   # this code is a wrapper for several different functions that test the model, fit a surface,
   #  estimate daily values and flow normalized daily values
   #  and organize these into monthly results
@@ -52,10 +53,10 @@ modelEstimation<-function(eList,
   DecLow <- localDaily$DecYear[1]
   DecHigh <- localDaily$DecYear[numDays]
   
-  cat("\n first step running estCrossVal may take about 1 minute")
+  if(verbose) cat("\n first step running estCrossVal may take about 1 minute")
   Sample1<-estCrossVal(numDays,DecLow,DecHigh, localSample, 
                        windowY, windowQ, windowS, minNumObs, minNumUncen,
-                       edgeAdjust)
+                       edgeAdjust, verbose)
 
   surfaceIndexParameters<-surfaceIndex(localDaily)
   localINFO$bottomLogQ<-surfaceIndexParameters[1]
@@ -74,9 +75,10 @@ modelEstimation<-function(eList,
   localINFO$DecHigh <- DecHigh
   localINFO$edgeAdjust <- edgeAdjust
   
-  cat("\nNext step running  estSurfaces with survival regression:\n")
+  if(verbose) cat("\nNext step running  estSurfaces with survival regression:\n")
   surfaces1<-estSurfaces(eList, 
-                         windowY, windowQ, windowS, minNumObs, minNumUncen, edgeAdjust)
+                         windowY, windowQ, windowS, minNumObs, 
+                         minNumUncen, edgeAdjust, verbose=verbose)
 
   eList <- as.egret(Daily=localDaily, 
                     Sample=Sample1,
