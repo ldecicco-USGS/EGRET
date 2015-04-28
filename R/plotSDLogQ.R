@@ -107,8 +107,8 @@ plotSDLogQ<-function(eList, yearStart=NA,yearEnd=NA,window=15,sdMax=NA,
     titleUSGS <- paste0(line1,"(",localINFO$site_no,")",if(printPA)paste(" : ",line2),line3)
     
     currentPlot <- timePlot(as.Date(xDates, origin="1970-01-01"), y, Plot=list(what="line"),
-                            yaxis.range=c(yInfo$bottom,yInfo$top), ytitle="Dimensionless",
-                            xaxis.range=c(as.Date(paste0(xInfo$bottom,"-01-01")),as.Date(paste0(xInfo$top,"-01-01"))),
+                            yaxis.range=c(yInfo$bottom,yInfo$top), ytitle="Dimensionless",xtitle="",
+                            xaxis.range=c(as.Date(paste0(floor(xInfo$bottom),"-01-01")),as.Date(paste0(floor(xInfo$top),"-12-31"))),
                             ...)
     
     xMid <- mean(currentPlot$xax$range)    
