@@ -151,8 +151,8 @@ plotConcTime<-function(eList, qUnit = 2,
                           yaxis.log=logScale,
                           ...)
     if(legend) addExplanation(currentPlot, where="ul", title="")
-    currentPlot <- addBars(x[Uncen == "Censored"], yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-                           current=currentPlot, Bars=list(width=0.01,fill="white",border="gray80"))
+#     currentPlot <- addBars(x[Uncen == "Censored"], yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
+#                            current=currentPlot, Bars=list(width=0.01,fill="white",border="gray80"))
     #     addTitle(plotTitle, Justification = "center")
     xMid <- mean(currentPlot$xax$range)
     
