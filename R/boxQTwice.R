@@ -111,7 +111,7 @@ boxQTwice<-function(eList,
     groupNames<-c("Sampled days","All days")
     yLab <- paste("Discharge in",tolower(qUnit@qUnitName))
     currentPlot <- boxPlot(bigQ, group=charIndex, 
-                           Box=list(type="simple"),
+                           Box=list(type="tukey"),
                            ytitle=yLab,
 #                            yaxis.range=c(yInfo$bottom,yInfo$top),
                            yaxis.log=logScale, ...)
