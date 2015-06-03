@@ -99,7 +99,7 @@ boxConcThree<-function (eList, tinyPlot=FALSE,
                    rep("All-day\nestimates",nrow(localDaily)))
     
     currentPlot <- boxPlot(as.numeric(concV), group=charIndex, 
-                           Box=list(type="simple"),
+                           Box=list(type="tukey"),
                            ytitle = yLab,
                            xtitle = "", ...)
     
