@@ -104,15 +104,15 @@ boxConcMonth<-function(eList, printTitle = TRUE,
   if(USGSstyle){
     
     currentPlot <- boxPlot(tempDF$conc, group=tempDF$month, 
-                           Box=list(type="simple"),
+                           Box=list(type="tukey"),
                            ytitle=if(showYLabels) yInfo$label else "",
                            xtitle=if(showXLabels) "Month" else "",
-                           ylabels = yInfo$ticks,
+                           ylabels = yInfo$ticks,yaxis.range = c(0, 5*max(tempDF$conc)),
                            yaxis.log=logScale, ...)
     
     xMid <- 6
  
-    yTop <- 0.9*max(currentPlot$yax$range)
+    yTop <- 0.95*max(currentPlot$yax$range)
 
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)

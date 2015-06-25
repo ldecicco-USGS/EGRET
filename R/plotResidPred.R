@@ -108,7 +108,7 @@ plotResidPred<-function(eList, stdResid = FALSE,
 
     yLab <- if(stdResid) "Standardized residuals in natural log units" else "Residuals in natural log units"
 
-    xLab <- paste("Estimated concentration in", localINFO$param.units)
+    xLab <- "Estimated concentration in natural log units" 
 
     currentPlot <- colorPlot(log(x), yHigh, color= Uncen, 
                              Plot=list(what="points",

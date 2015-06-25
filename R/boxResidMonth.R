@@ -87,8 +87,8 @@ boxResidMonth<-function(eList, stdResid = FALSE, las=1,
   if(USGSstyle){
     yLab <- if(stdResid) "Standardized residuals in natural log units" else "Residuals in natural log units"
     currentPlot <- boxPlot(tempDF$resid, group=tempDF$month, 
-                           Box=list(type="simple"),
-                           ytitle=yLab,
+                           Box=list(type="tukey"),
+                           ytitle=yLab,yaxis.range=c(NA,max(tempDF$resid)+1),
                            xtitle="Month",...)
     
     xMid <- 6
