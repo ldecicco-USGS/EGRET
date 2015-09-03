@@ -21,7 +21,7 @@
 #' @param cex.axis magnification to be used for axis annotation relative to the current setting of cex
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param lwd number line width
-#' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param USGSstyle logical use smwrGraph package for USGS style
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
