@@ -22,6 +22,7 @@
 #' @param lwd number line width
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param legend logical add USGS style legend
+#' @param rResid logical option to plot randomized residuals.
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
@@ -32,6 +33,7 @@
 #' plotFluxPred(eList)
 #' plotFluxPred(eList, fluxUnit = 'poundsDay')
 #' plotFluxPred(eList, logScale=TRUE)
+#' plotFluxPred(eList, logScale=TRUE, rResid=TRUE)
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotFluxPred(eList)
@@ -46,7 +48,8 @@
 plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA, 
                        printTitle = TRUE, oneToOneLine=TRUE, customPar=FALSE,col="black", lwd=1,
                        cex=0.8, cex.axis=1.1,cex.main=1.1,tinyPlot=FALSE,logScale=FALSE,
-                       USGSstyle=FALSE,legend=FALSE,...){
+                       USGSstyle=FALSE,legend=FALSE,rResid=FALSE,...){
+
   # this function shows observed versus estimated flux
   # estimated flux on the x-axis (these include the bias correction), 
   # observed flux on y-axis 
@@ -90,18 +93,15 @@ plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA,
 
   fluxFactor <- fluxUnit@unitFactor*86.40
   x<-localSample$ConcHat*localSample$Q*fluxFactor
-  yLow<-localSample$ConcLow*localSample$Q*fluxFactor
-  yHigh<-localSample$ConcHigh*localSample$Q*fluxFactor
+
   Uncen<-localSample$Uncen
 
   if (tinyPlot & !USGSstyle) {
     xLab <- fluxUnit@unitEstimateTiny
-#     yLab <- paste("Obs.", fluxUnit@unitExpressTiny)
     yLab <- substitute(a ~ b, list(a="Obs.",b= fluxUnit@unitExpressTiny[[1]]))
   } else {
     xLab <- fluxUnit@unitEstimate
     yLab <- substitute(a ~ b, list(a="Observed",b= fluxUnit@unitExpress[[1]]))
-#     yLab <- paste("Observed", fluxUnit@unitExpress)
   }
   
   if(logScale){
@@ -115,13 +115,9 @@ plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA,
   }
   
   plotTitle<-if(printTitle) paste(localINFO$shortName,"\n",localINFO$paramShortName,"\n","Observed vs Estimated Flux") else ""
-  
-  ###############################
 
-  
   xInfo <- generalAxis(x=x, minVal=minX, maxVal=NA, logScale=logScale, tinyPlot=tinyPlot,padPercent=5)  
-  yInfo <- generalAxis(x=yHigh, minVal=minY, maxVal=fluxMax, logScale=logScale, tinyPlot=tinyPlot,padPercent=5)
-  
+
   if(USGSstyle){
     xLab <- paste("Estimated flux in", fluxUnit@unitUSGS)
     yLab <- paste("Observed flux in", fluxUnit@unitUSGS)
@@ -133,6 +129,9 @@ plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA,
     if(tinyPlot){
       dotSize <- 0.03
     }
+    
+    yHigh<-localSample$ConcHigh*localSample$Q*fluxFactor
+    yInfo <- generalAxis(x=yHigh, minVal=minY, maxVal=fluxMax, logScale=logScale, tinyPlot=tinyPlot,padPercent=5)
     
     Uncen <- localSample$Uncen
     Uncen <- ifelse(Uncen==1, "Uncensored", "Censored")
@@ -166,15 +165,44 @@ plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA,
                                  annotation=title2, current=currentPlot,size=10)
     invisible(currentPlot)
   } else {
-    genericEGRETDotPlot(x=x, y=yHigh,
-                        xTicks=xInfo$ticks, yTicks=yInfo$ticks,
-                        xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
-                        xlab=xLab, ylab=yLab,log=logText, customPar=customPar,
-                        plotTitle=plotTitle,oneToOneLine=oneToOneLine, cex=cex,col=col,
-                        tinyPlot=tinyPlot,cex.axis=cex.axis,cex.main=cex.main,...
-    )
-    
-    censoredSegments(yBottom=yInfo$bottom, yLow=yLow, yHigh=yHigh, x=x, Uncen=Uncen,col=col,lwd=lwd)
-    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+
+  
+    if(!rResid){
+      yLow<-localSample$ConcLow*localSample$Q*fluxFactor
+      yHigh<-localSample$ConcHigh*localSample$Q*fluxFactor
+      
+      yInfo <- generalAxis(x=yHigh, minVal=minY, maxVal=fluxMax, logScale=logScale, tinyPlot=tinyPlot,padPercent=5)
+
+      genericEGRETDotPlot(x=x, y=yHigh,
+                          xTicks=xInfo$ticks, yTicks=yInfo$ticks,
+                          xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
+                          xlab=xLab, ylab=yLab,log=logText, customPar=customPar,
+                          plotTitle=plotTitle,oneToOneLine=oneToOneLine, cex=cex,col=col,
+                          tinyPlot=tinyPlot,cex.axis=cex.axis,cex.main=cex.main,...
+      )
+      
+      censoredSegments(yBottom=yInfo$bottom, yLow=yLow, yHigh=yHigh, x=x, Uncen=Uncen,col=col,lwd=lwd)
+  
+    } else {
+      if(!("rObserved" %in% names(localSample))){
+        eList <- makeAugmentedSample(eList)
+        localSample <- eList$Sample
+      }
+      yHigh <- localSample$rObserved*localSample$Q*fluxFactor
+      yInfo <- generalAxis(x=yHigh, minVal=minY, maxVal=fluxMax, logScale=logScale, tinyPlot=tinyPlot,padPercent=5)
+      
+      genericEGRETDotPlot(x=x[Uncen == 1], y=yHigh[Uncen == 1],
+                          xTicks=xInfo$ticks, yTicks=yInfo$ticks,
+                          xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
+                          xlab=xLab, ylab=yLab,log=logText, customPar=customPar,
+                          plotTitle=plotTitle,oneToOneLine=oneToOneLine, cex=cex,col=col,
+                          tinyPlot=tinyPlot,cex.axis=cex.axis,cex.main=cex.main,...
+      )
+      points(x=x[Uncen == 0], y=yHigh[Uncen == 0], pch=1,cex=cex,col=col)
+    }
   }
+  
+  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  invisible(eList)
+  
 }

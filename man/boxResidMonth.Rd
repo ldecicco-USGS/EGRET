@@ -6,7 +6,8 @@
 \usage{
 boxResidMonth(eList, stdResid = FALSE, las = 1, printTitle = TRUE,
   cex = 0.8, cex.axis = 1.1, cex.main = 1.1, font.main = 2,
-  tinyPlot = FALSE, customPar = FALSE, USGSstyle = FALSE, ...)
+  tinyPlot = FALSE, customPar = FALSE, USGSstyle = FALSE,
+  rResid = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Sample and INFO dataframes}
@@ -30,6 +31,8 @@ boxResidMonth(eList, stdResid = FALSE, las = 1, printTitle = TRUE,
 \item{customPar}{logical defaults to FALSE. If TRUE, par() should be set by user before calling this function}
 
 \item{USGSstyle}{logical use USGSwsGraph package for USGS style}
+
+\item{rResid}{logical option to plot randomized residuals.}
 
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }

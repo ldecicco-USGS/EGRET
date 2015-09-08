@@ -20,6 +20,7 @@
 #' @param lwd number line width
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param legend logical add legend
+#' @param rResid logical option to plot randomized residuals.
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @seealso \code{\link{selectDays}}, \code{\link{genericEGRETDotPlot}}
@@ -29,6 +30,7 @@
 #' # Water year:
 #' plotConcPred(eList)
 #' plotConcPred(eList, logScale=TRUE)
+#' plotConcPred(eList, logScale=TRUE, rResid=TRUE)
 #' # Graphs consisting of Jun-Aug
 #' eList <- setPA(eList, paStart=6,paLong=3)
 #' plotConcPred(eList)
@@ -43,11 +45,7 @@
 plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
                        printTitle = TRUE,tinyPlot=FALSE,cex=0.8, cex.axis=1.1,
                        cex.main=1.1, customPar=FALSE,col="black",lwd=1,
-                       USGSstyle=FALSE,legend=FALSE,...){
-  # this function shows observed versus predicted concentration
-  # predicted concentration on the x-axis (these include the bias correction), 
-  # observed concentration on y-axis 
-  # these predictions are from a "leave-one-out" cross validation application of WRTDS 
+                       USGSstyle=FALSE,legend=FALSE,rResid=FALSE,...){
 
   localINFO <- getInfo(eList)
   localSample <- getSample(eList) 
@@ -65,8 +63,7 @@ plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
   title2<-if(paLong==12) "" else setSeasonLabelByUser(paStartInput=paStart,paLongInput=paLong)
   
   x<-localSample$ConcHat
-  yLow<-localSample$ConcLow
-  yHigh<-localSample$ConcHigh
+
   Uncen<-localSample$Uncen
 
   if(tinyPlot & !USGSstyle){
@@ -90,12 +87,15 @@ plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
   plotTitle<-if(printTitle) paste(localINFO$shortName,"\n",localINFO$paramShortName,"\n","Observed versus Estimated Concentration") else ""
 
   xInfo <- generalAxis(x=x, minVal=minXLow, maxVal=concMax, tinyPlot=tinyPlot,logScale=logScale)  
-  yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, tinyPlot=tinyPlot,logScale=logScale)
   
-  ############################
   if(USGSstyle){
     xLab<-paste("Estimated concentration in",localINFO$param.units)
     yLab<-paste("Observed concentration in",localINFO$param.units)
+    
+    yLow<-localSample$ConcLow
+    yHigh<-localSample$ConcHigh
+    
+    yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, tinyPlot=tinyPlot,logScale=logScale)
     
     if(col == "black"){
       col <- list("Uncensored"="black","Censored"="gray80")
@@ -136,16 +136,44 @@ plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
                                  annotation=title2, current=currentPlot,size=10)
     invisible(currentPlot)
   } else {
-    genericEGRETDotPlot(x=x, y=yHigh,
-                  xTicks=xInfo$ticks, yTicks=yInfo$ticks,
-                  xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
-                  xlab=xLab, ylab=yLab,log=logVariable,
-                  plotTitle=plotTitle, oneToOneLine=TRUE,
-                  cex.axis=cex.axis,cex.main=cex.main,cex=cex,
-                  tinyPlot=tinyPlot,customPar=customPar,col=col,lwd=lwd,...
-      )
+
+    if(!rResid){
+      yLow<-localSample$ConcLow
+      yHigh<-localSample$ConcHigh
+      
+      yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, tinyPlot=tinyPlot,logScale=logScale)
   
-    censoredSegments(yBottom=yInfo$bottom, yLow=yLow, yHigh=yHigh, x=x, Uncen=Uncen,col=col,lwd=lwd)
-    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+      genericEGRETDotPlot(x=x, y=yHigh,
+                          xTicks=xInfo$ticks, yTicks=yInfo$ticks,
+                          xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
+                          xlab=xLab, ylab=yLab,log=logVariable,
+                          plotTitle=plotTitle, oneToOneLine=TRUE,
+                          cex.axis=cex.axis,cex.main=cex.main,cex=cex,
+                          tinyPlot=tinyPlot,customPar=customPar,col=col,lwd=lwd,...
+        )
+    
+      censoredSegments(yBottom=yInfo$bottom, yLow=yLow, yHigh=yHigh, x=x, Uncen=Uncen,col=col,lwd=lwd)
+    } else {
+      if(!("rObserved" %in% names(localSample))){
+        eList <- makeAugmentedSample(eList)
+        localSample <- eList$Sample
+      }
+      yHigh <- localSample$rObserved
+      
+      yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, tinyPlot=tinyPlot,logScale=logScale)
+      
+      genericEGRETDotPlot(x=x[Uncen == 1], y=yHigh[Uncen == 1],
+                          xTicks=xInfo$ticks, yTicks=yInfo$ticks,
+                          xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
+                          xlab=xLab, ylab=yLab,log=logVariable,
+                          plotTitle=plotTitle, oneToOneLine=TRUE,
+                          cex.axis=cex.axis,cex.main=cex.main,cex=cex,
+                          tinyPlot=tinyPlot,customPar=customPar,col=col,lwd=lwd,...
+      )
+      points(x=x[Uncen == 0], y=yHigh[Uncen == 0], pch=1,cex=cex,col=col)
+    }
   }
+  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  invisible(eList)
+
 }

@@ -23,6 +23,7 @@
 #' @param customPar logical defaults to FALSE. If TRUE, par() should be set by user before calling this function 
 #' @param las numeric in {0,1,2,3}; the style of axis labels
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
+#' @param rResid logical option to plot randomized residuals.
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @seealso \code{\link[graphics]{boxplot}}
@@ -45,8 +46,8 @@
 boxResidMonth<-function(eList, stdResid = FALSE, las=1,
                         printTitle = TRUE, cex=0.8, cex.axis=1.1, cex.main=1.1,
                         font.main=2, tinyPlot=FALSE, customPar=FALSE,
-                        USGSstyle=FALSE,...) {
-  
+                        USGSstyle=FALSE,rResid=FALSE,...) {
+
   localINFO <- getInfo(eList)
   localSample <- getSample(eList)
   
@@ -73,22 +74,32 @@ boxResidMonth<-function(eList, stdResid = FALSE, las=1,
   }
   
   plotTitle<-if(printTitle) paste(localINFO$shortName,"\n",localINFO$paramShortName,"\nBoxplots of residuals by month") else ""
-  resid<-log(localSample$ConcAve) - localSample$yHat
-  resid<-if(stdResid) resid/localSample$SE else resid
+  
+  if(!rResid){
+    resid<-log(localSample$ConcAve) - localSample$yHat
+  } else {
+    if(!("rResid" %in% names(localSample))){
+      eList <- makeAugmentedSample(eList)
+      localSample <- eList$Sample
+    }
+    resid <- localSample$rResid
+  }
+  
+  if(stdResid) {
+    resid<- resid/localSample$SE
+  }
   
   singleMonthList <- sapply(c(1:12),function(x){monthInfo[[x]]@monthAbbrev})
   
   namesListFactor <- factor(singleMonthList, levels=singleMonthList)
   monthList <- as.character(apply(localSample, 1, function(x)  monthInfo[[as.numeric(x[["Month"]])]]@monthAbbrev))
   monthList <- factor(monthList, namesListFactor)
-  
-  tempDF <- data.frame(month=monthList, resid=resid)  
-  
+
   if(USGSstyle){
     yLab <- if(stdResid) "Standardized residuals in natural log units" else "Residuals in natural log units"
-    currentPlot <- boxPlot(tempDF$resid, group=tempDF$month, 
+    currentPlot <- boxPlot(resid, group=monthList, 
                            Box=list(type="tukey"),
-                           ytitle=yLab,yaxis.range=c(NA,max(tempDF$resid)+1),
+                           ytitle=yLab,yaxis.range=c(NA,max(resid)+1),
                            xtitle="Month",...)
     
     xMid <- 6
@@ -100,7 +111,8 @@ boxResidMonth<-function(eList, stdResid = FALSE, las=1,
     invisible(currentPlot)
     
   } else {
-    boxplot(tempDF$resid ~ tempDF$month,
+
+    boxplot(resid ~ monthList,
             varwidth=TRUE,
             xlab="Month",ylab=yLab,
             main=plotTitle,
@@ -111,6 +123,8 @@ boxResidMonth<-function(eList, stdResid = FALSE, las=1,
             las=las,
             ...)
     abline(h=0)  
-    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
   }
+  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+  invisible(eList)
+
 }

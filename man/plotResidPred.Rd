@@ -7,7 +7,7 @@
 plotResidPred(eList, stdResid = FALSE, tinyPlot = FALSE,
   printTitle = TRUE, col = "black", lwd = 1, cex = 0.8,
   cex.axis = 1.1, cex.main = 1.1, customPar = FALSE, USGSstyle = FALSE,
-  legend = FALSE, ...)
+  legend = FALSE, rResid = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Sample and INFO dataframes}
@@ -35,6 +35,8 @@ plotResidPred(eList, stdResid = FALSE, tinyPlot = FALSE,
 
 \item{legend}{logical add USGS style legend}
 
+\item{rResid}{logical option to plot censored residuals as segments, or randomized points.}
+
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -52,6 +54,7 @@ and an INFO dataframe with metadata.
 eList <- Choptank_eList
 # Water year:
 plotResidPred(eList)
+plotResidPred(eList, rResid=TRUE)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotResidPred(eList)

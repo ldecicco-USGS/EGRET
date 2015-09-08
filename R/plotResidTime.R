@@ -24,6 +24,7 @@
 #' @param lwd number line width
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param legend logical add legend
+#' @param rResid logical option to plot censored residuals as segments, or randomized points.
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
@@ -46,15 +47,16 @@
 plotResidTime<-function(eList, stdResid = FALSE, 
                         printTitle = TRUE, hLine=TRUE, tinyPlot=FALSE,col="black",lwd=1,
                         cex=0.8, cex.axis=1.1,cex.main=1.1, customPar=FALSE,
-                        USGSstyle=FALSE,legend=FALSE,...){
+                        USGSstyle=FALSE,legend=FALSE,rResid=FALSE,...){
   # this function shows residual versus Time
   # Time on the x-axis , 
   # residual on y-axis 
   # these residuals are from a "leave-one-out" cross validation application of WRTDS
   # if stdResid=FALSE it just works with the regular residuals
   # if stdResid=TRUE it computes the standardized residual which is the residual/Sample$SE  
-  
+
   localINFO <- getInfo(eList)
+
   localSample <- getSample(eList)
   
   if(sum(c("paStart","paLong") %in% names(localINFO)) == 2){
@@ -70,10 +72,7 @@ plotResidTime<-function(eList, stdResid = FALSE,
   title2<-if(paLong==12) "" else setSeasonLabelByUser(paStartInput=paStart,paLongInput=paLong)
   
   x<-localSample$DecYear
-  yLow<-log(localSample$ConcLow)-localSample$yHat
-  yHigh<-log(localSample$ConcHigh)-localSample$yHat
-  yLow<-if(stdResid) yLow/localSample$SE else yLow
-  yHigh<-if(stdResid) yHigh/localSample$SE else yHigh
+
   Uncen<-localSample$Uncen
   xMin<-min(x) - 0.2
   xMax<-max(x) + 0.2
@@ -86,6 +85,7 @@ plotResidTime<-function(eList, stdResid = FALSE,
   }
   plotTitle<-if(printTitle) paste(localINFO$shortName,"\n",localINFO$paramShortName,"\n","Residual versus Time") else ""
   
+
   dotSize <- 0.09  
   if(tinyPlot) {
     dotSize <- 0.03
@@ -93,18 +93,14 @@ plotResidTime<-function(eList, stdResid = FALSE,
   if(USGSstyle){
     tinyPlot <- FALSE
   }
-  yInfo <- generalAxis(x=yHigh, maxVal=NA, minVal=NA,padPercent=5, tinyPlot=tinyPlot)
-#   yInfo <- generalAxis(x=yHigh, maxVal=max(yHigh) + 0.1, minVal=min(yLow,na.rm=TRUE) - 0.5,padPercent=0, tinyPlot=tinyPlot)
-  xInfo <- generalAxis(x=x, maxVal=xMax, minVal=xMin,padPercent=0, tinyPlot=tinyPlot)
-  
-  ##########################
+
   if(USGSstyle){
     x <- as.Date(localSample$Date)
     
     if(col == "black"){
       col <- list("Uncensored"="black","Censored"="gray80")
     }
-    Uncen <- localSample$Uncen
+
     Uncen <- ifelse(Uncen==1, "Uncensored", "Censored")
     col <- col[unique(Uncen)]
     
@@ -117,8 +113,7 @@ plotResidTime<-function(eList, stdResid = FALSE,
                              ytitle=yLab,
                              ...)
     if(legend) addExplanation(currentPlot, where="ul", title="")
-#     currentPlot <- addBars(x[Uncen == "Censored"], yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-#                            current=currentPlot, Bars=list(width=0.01,fill="white",border="gray80"))
+
     refLine(horizontal=0, current=currentPlot)
     xMid <- mean(currentPlot$xax$range)
 
@@ -130,14 +125,55 @@ plotResidTime<-function(eList, stdResid = FALSE,
     
   } else {
     
-    genericEGRETDotPlot(x=x, y=yHigh,
-                      xTicks=xInfo$ticks, yTicks=yInfo$ticks,col=col,
-                      xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom, yInfo$top),
-                      xlab=xLab, ylab=yLab, plotTitle=plotTitle, customPar=customPar, cex=cex,
-                      cex.axis=cex.axis,cex.main=cex.main, hLine=hLine, tinyPlot=tinyPlot,...
-  
-    )
-    censoredSegments(yInfo$bottom, yLow, yHigh, x, Uncen,col=col,lwd=lwd)
+    xInfo <- generalAxis(x=x, maxVal=xMax, minVal=xMin,padPercent=0, tinyPlot=tinyPlot)
+    
+    if(!rResid){
+      
+      yLow<-log(localSample$ConcLow)-localSample$yHat
+      yHigh<-log(localSample$ConcHigh)-localSample$yHat
+      
+      if(stdResid){
+        yLow <- yLow/localSample$SE 
+        yHigh <- yHigh/localSample$SE
+      }
+      
+      yInfo <- generalAxis(x=yHigh, maxVal=NA, minVal=NA,padPercent=5, tinyPlot=tinyPlot)
+      
+      genericEGRETDotPlot(x=x, y=yHigh,
+                          xTicks=xInfo$ticks, yTicks=yInfo$ticks,col=col,
+                          xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom, yInfo$top),
+                          xlab=xLab, ylab=yLab, plotTitle=plotTitle, customPar=customPar, cex=cex,
+                          cex.axis=cex.axis,cex.main=cex.main, hLine=hLine, tinyPlot=tinyPlot,...
+      )
+      censoredSegments(yInfo$bottom, yLow, yHigh, x, Uncen,col=col,lwd=lwd)
+      
+    } else {
+      if(!("rResid" %in% names(localSample))){
+        eList <- makeAugmentedSample(eList)
+        localSample <- eList$Sample
+      }
+      yHigh <- localSample$rResid
+      
+      if(stdResid){
+        yHigh <- yHigh/localSample$SE
+      }
+      
+      yInfo <- generalAxis(x=yHigh, maxVal=NA, minVal=NA,padPercent=5, tinyPlot=tinyPlot)
+      
+      genericEGRETDotPlot(x=x[Uncen == 1], y=yHigh[Uncen == 1],
+                          xTicks=xInfo$ticks, yTicks=yInfo$ticks,col=col,
+                          xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom, yInfo$top),
+                          xlab=xLab, ylab=yLab, plotTitle=plotTitle, customPar=customPar, cex=cex,
+                          cex.axis=cex.axis,cex.main=cex.main, hLine=hLine, tinyPlot=tinyPlot,...
+      )
+      points(x=x[Uncen == 0], y=yHigh[Uncen == 0],cex=cex,col=col)
+      
+    }
     if (!tinyPlot) mtext(title2,side=3,line=-1.5)
   }
+
+  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+
+  invisible(eList)
+
 }

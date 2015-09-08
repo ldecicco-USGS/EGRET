@@ -22,12 +22,14 @@
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param lwd number line width
 #' @param USGSstyle logical use smwrGraph package for USGS style
+#' @param rResid logical option to plot censored residuals as segments, or randomized points.
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @export
 #' @examples
 #' eList <- Choptank_eList
 #' fluxBiasMulti(eList)
+#' fluxBiasMulti(eList, rResid=TRUE)
 #' # Water year:
 #' \dontrun{
 #' pdf("fluxBiasMulti.pdf", height=9, width=8)
@@ -46,8 +48,8 @@
 #' }
 fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS", 
                          cex = 0.7, cex.axis = 1.1,cex.main=1.1,
-                         col="black", lwd=1,USGSstyle=FALSE,...){
-  
+                         col="black", lwd=1,USGSstyle=FALSE,rResid=FALSE,...){
+
   localINFO <- getInfo(eList)
   localSample <- getSample(eList)
   localDaily <- getDaily(eList)
@@ -71,6 +73,9 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
     warning("Expected concentration units are mg/l, \nThe INFO dataframe indicates:",localINFO$param.units,
             "\nFlux calculations will be wrong if units are not consistent")
   }
+
+  title2<-if(paLong==12) "" else setSeasonLabelByUser(paStartInput=paStart,paLongInput=paLong)
+  
   fluxBias <- fluxBiasStat(localSample)
   fB <- as.numeric(fluxBias[3])
   fB <- format(fB, digits = 3)
@@ -134,27 +139,27 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
     par(oma = c(0, 10, 4, 10),mfrow=c(4,2))
     plotResidPred(eList, 
                   stdResid = FALSE, tinyPlot=TRUE, printTitle = FALSE,cex=cex, 
-                  cex.axis = cex.axis, col=col,lwd=lwd,...)
+                  cex.axis = cex.axis, col=col,rResid=rResid,lwd=lwd,...)
     plotResidQ(eList, 
                qUnit, tinyPlot = TRUE, printTitle = FALSE,cex=cex, 
-               cex.axis = cex.axis, col=col,lwd=lwd,...)
+               cex.axis = cex.axis, col=col,lwd=lwd,rResid=rResid,...)
     plotResidTime(eList, 
                   printTitle = FALSE, tinyPlot=TRUE,cex=cex, 
-                  cex.axis = cex.axis, col=col,lwd=lwd,...)
+                  cex.axis = cex.axis, col=col,lwd=lwd,rResid=rResid,...)
     boxResidMonth(eList, 
                   printTitle = FALSE, tinyPlot=TRUE,cex=cex, 
-                  cex.axis = cex.axis,lwd=lwd,...)
+                  cex.axis = cex.axis,lwd=lwd,rResid=rResid,...)
     boxConcThree(eList, 
                  localINFO = localINFO, printTitle=FALSE, tinyPlot=TRUE,cex=cex, 
-                 cex.axis = cex.axis, lwd=lwd,...)
+                 cex.axis = cex.axis, lwd=lwd,rResid=rResid,...)
     plotConcPred(eList, printTitle=FALSE, 
-                 tinyPlot=TRUE,cex=cex, 
+                 tinyPlot=TRUE,cex=cex,rResid=rResid, 
                  cex.axis = cex.axis, col=col,lwd=lwd,...)
     boxQTwice(eList, printTitle = FALSE, qUnit = qUnit,tinyPlot=TRUE,cex=cex, 
               cex.axis = cex.axis, lwd=lwd,...)
     plotFluxPred(eList, 
                  fluxUnit, tinyPlot = TRUE, printTitle = FALSE,cex=cex, 
-                 cex.axis = cex.axis, col=col,lwd=lwd,...)
+                 cex.axis = cex.axis, col=col,lwd=lwd,rResid=rResid,...)
 
     if("" == title2){
       mtext(title, cex = cex.main, outer = TRUE, font = 1.8)
@@ -165,5 +170,7 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
     
     par(mfcol = c(1, 1), oma = c(0, 0, 0, 0))
   }
-  
+
+  invisible(eList)
+
 }
