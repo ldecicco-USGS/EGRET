@@ -29,6 +29,7 @@
 #' (for example, adjusting margins with par(mar=c(5,5,5,5))). If customPar FALSE, EGRET chooses the best margins depending on tinyPlot.
 #' @param col color of points on plot, see ?par 'Color Specification'
 #' @param lwd number line width.
+#' @param rResid logical option to plot randomized residuals.
 #' @param \dots arbitrary functions sent to the generic plotting function.  See ?par for details on possible parameters.
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
 #' @param legend logical add USGS style legend
@@ -52,7 +53,7 @@
 #' graphics.off()
 #' }
 plotConcTime<-function(eList, qUnit = 2, 
-                       qLower = NA, qUpper = NA, 
+                       qLower = NA, qUpper = NA, rResid=FALSE,
                        tinyPlot = FALSE, concMax = NA, concMin = NA, printTitle = TRUE,logScale=FALSE, 
                        cex=0.8, cex.axis=1.1,cex.main=1.1, customPar=FALSE,
                        col="black",lwd=1,USGSstyle=FALSE,legend=FALSE,...){
@@ -106,8 +107,7 @@ plotConcTime<-function(eList, qUnit = 2,
   
   # the next section of code sets up the seasonal part of the plot title
   title2<-if(paLong==12) "" else setSeasonLabelByUser(paStartInput=paStart,paLongInput=paLong)
-  yLow<-subSample$ConcLow
-  yHigh<-subSample$ConcHigh
+
   Uncen<-subSample$Uncen
   x<-subSample$DecYear
   
@@ -133,10 +133,13 @@ plotConcTime<-function(eList, qUnit = 2,
   }
   
   xInfo <- generalAxis(x=x, minVal=min(x), maxVal=max(x), tinyPlot=tinyPlot)  
-  yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, logScale=logScale, 
-                       tinyPlot=tinyPlot,units=attr(eList, "param.units"))
   
   if(USGSstyle){
+    yLow<-subSample$ConcLow
+    yHigh<-subSample$ConcHigh
+    yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, logScale=logScale, 
+                         tinyPlot=tinyPlot,units=attr(eList, "param.units"))
+    
     x <- as.Date(subSample$Date)
     
     if(col == "black"){
@@ -166,14 +169,46 @@ plotConcTime<-function(eList, qUnit = 2,
                                  annotation=title2, current=currentPlot,size=10)
     invisible(currentPlot)
   } else {
-    genericEGRETDotPlot(x=x, y=yHigh, 
-                        xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
-                        xlab="", ylab=yInfo$label,
-                        xTicks=xInfo$ticks, yTicks=yInfo$ticks,cex=cex,
-                        plotTitle=plotTitle, log=logVariable,
-                        cex.axis=cex.axis,cex.main=cex.main,tinyPlot=tinyPlot,col=col,customPar=customPar, ...
-    )
-    censoredSegments(yBottom=yInfo$ticks[1],yLow=yLow,yHigh=yHigh,x=x,Uncen=Uncen,col=col,lwd=lwd)
-    if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+
+    if(!rResid){
+      yLow<-subSample$ConcLow
+      yHigh<-subSample$ConcHigh
+      
+      yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, logScale=logScale, 
+                           tinyPlot=tinyPlot,units=attr(eList, "param.units"))
+      
+      genericEGRETDotPlot(x=x, y=yHigh, 
+                          xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
+                          xlab="", ylab=yInfo$label,
+                          xTicks=xInfo$ticks, yTicks=yInfo$ticks,cex=cex,
+                          plotTitle=plotTitle, log=logVariable,
+                          cex.axis=cex.axis,cex.main=cex.main,tinyPlot=tinyPlot,col=col,customPar=customPar, ...
+      )
+      censoredSegments(yBottom=yInfo$ticks[1],yLow=yLow,yHigh=yHigh,x=x,Uncen=Uncen,col=col,lwd=lwd)
+  
+    } else {
+      if(!("rObserved" %in% names(localSample))){
+        eList <- makeAugmentedSample(eList)
+        localSample <- eList$Sample
+      }
+      yHigh <- localSample$rObserved
+      
+      yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, logScale=logScale, 
+                           tinyPlot=tinyPlot,units=attr(eList, "param.units"))
+      
+      genericEGRETDotPlot(x=x[Uncen == 1], y=yHigh[Uncen == 1], 
+                          xlim=c(xInfo$bottom,xInfo$top), ylim=c(yInfo$bottom,yInfo$top),
+                          xlab="", ylab=yInfo$label,
+                          xTicks=xInfo$ticks, yTicks=yInfo$ticks,cex=cex,
+                          plotTitle=plotTitle, log=logVariable,
+                          cex.axis=cex.axis,cex.main=cex.main,tinyPlot=tinyPlot,col=col,customPar=customPar, ...
+      )
+      
+      points(x=x[Uncen == 0], y=yHigh[Uncen == 0], pch=1,cex=cex,col=col)
+      
+    }
   }
+    
+  if (!tinyPlot) mtext(title2,side=3,line=-1.5)
+
 }
