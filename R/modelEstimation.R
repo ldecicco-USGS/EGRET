@@ -83,7 +83,7 @@ setUpEstimation<-function(eList,
                           windowY=7, windowQ=2, windowS=0.5,
                           minNumObs=100,minNumUncen=50, 
                           edgeAdjust=TRUE, interactive=TRUE){
-
+  
   localINFO <- getInfo(eList)
   localSample <- getSample(eList)
   localDaily <- getDaily(eList)
@@ -99,13 +99,7 @@ setUpEstimation<-function(eList,
   numDays <- length(localDaily$DecYear)
   DecLow <- localDaily$DecYear[1]
   DecHigh <- localDaily$DecYear[numDays]
-
   
-  if(verbose) cat("\n first step running estCrossVal may take about 1 minute")
-  Sample1<-estCrossVal(numDays,DecLow,DecHigh, localSample, 
-                       windowY, windowQ, windowS, minNumObs, minNumUncen,
-                       edgeAdjust, verbose)
-
   surfaceIndexParameters<-surfaceIndex(localDaily)
   localINFO$bottomLogQ<-surfaceIndexParameters[1]
   localINFO$stepLogQ<-surfaceIndexParameters[2]
@@ -123,26 +117,8 @@ setUpEstimation<-function(eList,
   localINFO$DecHigh <- DecHigh
   localINFO$edgeAdjust <- edgeAdjust
   
-
-  if(verbose) cat("\nNext step running  estSurfaces with survival regression:\n")
-  surfaces1<-estSurfaces(eList, 
-                         windowY, windowQ, windowS, minNumObs, 
-                         minNumUncen, edgeAdjust, verbose=verbose)
-
-  eList <- as.egret(Daily=localDaily, 
-                    Sample=Sample1,
-                    INFO=localINFO,
-                    surfaces=surfaces1)
-  
-  Daily1<-estDailyFromSurfaces(eList)
-  
-  eList <- as.egret(Daily=Daily1, 
-               Sample=Sample1,
-               INFO=localINFO,
-               surfaces=surfaces1)
-  
   eList$INFO <- localINFO
-
+  
   return(eList)
   
 }
