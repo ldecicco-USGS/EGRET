@@ -59,15 +59,12 @@ multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
     layoutResponse <- setLayout(num.rows=2,num.cols = 3, 
                                 num.graphs = 5, explanation = list(grid=c(6)))
     graph1 <- setGraph(1, layoutResponse)
-    plotConcQ(eList, qUnit = qUnit, printTitle = FALSE,rmSciX=TRUE,tinyPlot = TRUE,
+    eList <- plotConcQ(eList, qUnit = qUnit, printTitle = FALSE,rmSciX=TRUE,tinyPlot = TRUE,
               logScale=logScaleConc,USGSstyle=USGSstyle,legend=FALSE, 
               margin=graph1)
-#     if("" != title2){
-#       title <- paste(title, title2, sep="\n")   
-#     }
-#     addTitle(Main = title)
+
     graph2 <- setGraph(2, layoutResponse)
-    concTimeOut <- plotConcTime(eList, printTitle = FALSE, tinyPlot = TRUE,
+    plotConcTime(eList, printTitle = FALSE, tinyPlot = TRUE,
                  logScale=logScaleConc,USGSstyle=USGSstyle,legend=TRUE, 
                  margin=graph2)
     
@@ -75,9 +72,9 @@ multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
     graph3 <- setGraph(3, layoutResponse)
     reportGraph(paste("\n",title ))
     graph4 <- setGraph(4, layoutResponse)
-    boxConcOut <- boxConcMonth(eList, printTitle = FALSE, tinyPlot = TRUE,
+    boxConcMonth(eList, printTitle = FALSE, tinyPlot = TRUE,
                  logScale=logScaleConc,USGSstyle=USGSstyle, margin=graph4)
-#     addCaption(paste("\n",title))
+
     graph5 <- setGraph(5, layoutResponse)
     boxOut <- boxQTwice(eList, printTitle = FALSE, qUnit = qUnit, tinyPlot = TRUE,
               logScale=logScaleQ,USGSstyle=USGSstyle, margin=graph5)

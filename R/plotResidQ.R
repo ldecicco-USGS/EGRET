@@ -100,10 +100,20 @@ plotResidQ<-function (eList, qUnit = 2,
   
     
   if(USGSstyle){
-    yLow <- log(localSample$ConcLow) - localSample$yHat
-    yHigh <- log(localSample$ConcHigh) - localSample$yHat
-    yInfo <- generalAxis(x=yHigh, minVal=NA, maxVal=NA, tinyPlot=tinyPlot,padPercent=5)
- 
+#     yLow <- log(localSample$ConcLow) - localSample$yHat
+#     yHigh <- log(localSample$ConcHigh) - localSample$yHat
+#     yInfo <- generalAxis(x=yHigh, minVal=NA, maxVal=NA, tinyPlot=tinyPlot,padPercent=5)
+
+    if(!("rResid" %in% names(localSample))){
+      eList <- makeAugmentedSample(eList)
+      localSample <- eList$Sample
+    }
+    yHigh <- localSample$rResid
+    
+    if(stdResid){
+      yHigh <- yHigh/localSample$SE
+    }
+   
     if(col == "black"){
       col <- list("Uncensored"="black","Censored"="gray80")
     }
@@ -131,16 +141,10 @@ plotResidQ<-function (eList, qUnit = 2,
     if(legend) addExplanation(currentPlot, where="ul",title="")
     
     newX <- transData(data = x[Uncen == "Censored"], TRUE, FALSE)
-    
-#     addBars(newX, 
-#             yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-#             current=currentPlot, 
-#             Bars=list(width=0.01,fill="white",border="gray80"))
-    
-    
+
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    invisible(currentPlot)
+    # invisible(currentPlot)
     
   } else {
 

@@ -98,10 +98,22 @@ plotResidPred<-function(eList, stdResid = FALSE,
   xInfo <- generalAxis(x=log(x), minVal=NA, maxVal=NA, tinyPlot=tinyPlot)
   
   if(USGSstyle){
-    yLow<-log(localSample$ConcLow)-localSample$yHat
-    yHigh<-log(localSample$ConcHigh)-localSample$yHat
-    yLow<-if(stdResid) yLow/localSample$SE else yLow
-    yHigh<-if(stdResid) yHigh/localSample$SE else yHigh
+#     yLow<-log(localSample$ConcLow)-localSample$yHat
+#     yHigh<-log(localSample$ConcHigh)-localSample$yHat
+#     yLow<-if(stdResid) yLow/localSample$SE else yLow
+#     yHigh<-if(stdResid) yHigh/localSample$SE else yHigh
+#     yInfo <- generalAxis(x=yHigh, minVal=NA, maxVal=NA, tinyPlot=tinyPlot)
+    if(!("rResid" %in% names(localSample))){
+      eList <- makeAugmentedSample(eList)
+      localSample <- eList$Sample
+    }
+    
+    yHigh <- localSample$rResid
+    
+    if(stdResid){
+      yHigh <- yHigh/localSample$SE
+    }
+    
     yInfo <- generalAxis(x=yHigh, minVal=NA, maxVal=NA, tinyPlot=tinyPlot)
     
     if(col == "black"){
@@ -127,16 +139,12 @@ plotResidPred<-function(eList, stdResid = FALSE,
     yTop <- 0.9*diff(currentPlot$yax$range)+min(currentPlot$yax$range)
 
     if(legend) addExplanation(currentPlot, where="ll",title="")
-    
-#     addBars(log(x[Uncen == "Censored"]), yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-#             current=currentPlot, 
-#             Bars=list(width=0.001,fill="white",border="gray80"))
-    
+
     xMid <- mean(currentPlot$xax$range)
 
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    invisible(currentPlot)
+    # invisible(currentPlot)
   } else {
     
     if(!rResid){

@@ -146,6 +146,10 @@ boxConcThree<-function (eList, tinyPlot=FALSE,
   }
   
   if (!tinyPlot) mtext(title2,side=3,line=-1.5)
-  invisible(eList)
+  if (USGSstyle){
+    invisible(currentPlot)
+  } else {
+    invisible(eList)
+  }
 
 }

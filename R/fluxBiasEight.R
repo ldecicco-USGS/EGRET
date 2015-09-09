@@ -97,7 +97,7 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
     layoutResponse <- setLayout(num.rows=3,num.cols = 3, 
               num.graphs = 8, explanation = list(grid=c(9)))
     graph1 <- setGraph(1, layoutResponse)
-    plotResidPred(eList, 
+    eList <- plotResidPred(eList, 
                   stdResid = FALSE, tinyPlot=TRUE, printTitle = FALSE,
                   USGSstyle=USGSstyle,margin=graph1,legend=TRUE,...)
     
@@ -137,7 +137,7 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
     
   } else {
     par(oma = c(0, 10, 4, 10),mfrow=c(4,2))
-    plotResidPred(eList, 
+    eList <- plotResidPred(eList, 
                   stdResid = FALSE, tinyPlot=TRUE, printTitle = FALSE,cex=cex, 
                   cex.axis = cex.axis, col=col,rResid=rResid,lwd=lwd,...)
     plotResidQ(eList, 

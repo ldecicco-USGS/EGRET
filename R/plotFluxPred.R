@@ -130,7 +130,11 @@ plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA,
       dotSize <- 0.03
     }
     
-    yHigh<-localSample$ConcHigh*localSample$Q*fluxFactor
+    if(!("rObserved" %in% names(localSample))){
+      eList <- makeAugmentedSample(eList)
+      localSample <- eList$Sample
+    }
+    yHigh <- localSample$rObserved*localSample$Q*fluxFactor
     yInfo <- generalAxis(x=yHigh, minVal=minY, maxVal=fluxMax, logScale=logScale, tinyPlot=tinyPlot,padPercent=5)
     
     Uncen <- localSample$Uncen
@@ -154,16 +158,10 @@ plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA,
       xMid <- mean(currentPlot$xax$range)
       x <- x[Uncen == "Censored"]
     }
-    
-#     addBars(x, 
-#             yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-#             current=currentPlot, 
-#             Bars=list(width=0.01,fill="white",border="gray80"))
-    
-    
+
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    invisible(currentPlot)
+    # invisible(currentPlot)
   } else {
 
   

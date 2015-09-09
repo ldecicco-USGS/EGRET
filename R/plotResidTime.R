@@ -106,6 +106,16 @@ plotResidTime<-function(eList, stdResid = FALSE,
     
     yLab <- if(stdResid) "Standardized residuals in natural log units" else "Residuals in natural log units"
     
+    if(!("rResid" %in% names(localSample))){
+      eList <- makeAugmentedSample(eList)
+      localSample <- eList$Sample
+    }
+    yHigh <- localSample$rResid
+    
+    if(stdResid){
+      yHigh <- yHigh/localSample$SE
+    }
+    
     currentPlot <- colorPlot(x, yHigh, Uncen, 
                              Plot=list(what="points",
                                         color=col,
@@ -121,7 +131,7 @@ plotResidTime<-function(eList, stdResid = FALSE,
     
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    invisible(currentPlot)
+    # invisible(currentPlot)
     
   } else {
     

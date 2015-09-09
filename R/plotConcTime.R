@@ -135,8 +135,12 @@ plotConcTime<-function(eList, qUnit = 2,
   xInfo <- generalAxis(x=x, minVal=min(x), maxVal=max(x), tinyPlot=tinyPlot)  
   
   if(USGSstyle){
-    yLow<-subSample$ConcLow
-    yHigh<-subSample$ConcHigh
+    if(!("rObserved" %in% names(localSample))){
+      eList <- makeAugmentedSample(eList)
+      localSample <- eList$Sample
+    }
+    yHigh <- localSample$rObserved
+    
     yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, logScale=logScale, 
                          tinyPlot=tinyPlot,units=attr(eList, "param.units"))
     
@@ -154,9 +158,7 @@ plotConcTime<-function(eList, qUnit = 2,
                           yaxis.log=logScale,
                           ...)
     if(legend) addExplanation(currentPlot, where="ul", title="")
-#     currentPlot <- addBars(x[Uncen == "Censored"], yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-#                            current=currentPlot, Bars=list(width=0.01,fill="white",border="gray80"))
-    #     addTitle(plotTitle, Justification = "center")
+
     xMid <- mean(currentPlot$xax$range)
     
     if(logScale){
@@ -211,4 +213,5 @@ plotConcTime<-function(eList, qUnit = 2,
     
   if (!tinyPlot) mtext(title2,side=3,line=-1.5)
 
+  invisible(eList)
 }

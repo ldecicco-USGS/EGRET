@@ -110,8 +110,11 @@ plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
   
   if(USGSstyle){
     
-    yLow<-localSample$ConcLow
-    yHigh<-localSample$ConcHigh
+    if(!("rObserved" %in% names(localSample))){
+      eList <- makeAugmentedSample(eList)
+      localSample <- eList$Sample
+    }
+    yHigh <- localSample$rObserved
     
     yInfo <- generalAxis(x=yHigh, maxVal=concMax, minVal=yMin, tinyPlot=tinyPlot,logScale=logScale,units=localINFO$param.units)
     
@@ -142,14 +145,9 @@ plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
 
     newX <- transData(data = x[Uncen == "Censored"], TRUE, FALSE)
 
-#     addBars(newX, yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-#                            current=currentPlot, 
-#                            Bars=list(width=0.01,fill="white",border="gray80"))
-
-
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    invisible(currentPlot)
+    # invisible(currentPlot)
   } else {
 
     xInfo <- generalAxis(x=x, maxVal=NA, minVal=NA, logScale=TRUE, tinyPlot=tinyPlot)
@@ -194,4 +192,5 @@ plotConcQ<-function(eList, qUnit = 2, tinyPlot = FALSE, logScale=FALSE,
   }
   if (!tinyPlot) mtext(title2,side=3,line=-1.5)
 
+  invisible(eList)
 }

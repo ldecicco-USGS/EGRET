@@ -75,7 +75,7 @@ boxResidMonth<-function(eList, stdResid = FALSE, las=1,
   
   plotTitle<-if(printTitle) paste(localINFO$shortName,"\n",localINFO$paramShortName,"\nBoxplots of residuals by month") else ""
   
-  if(!rResid){
+  if(!rResid & !USGSstyle){
     resid<-log(localSample$ConcAve) - localSample$yHat
   } else {
     if(!("rResid" %in% names(localSample))){
@@ -108,7 +108,7 @@ boxResidMonth<-function(eList, stdResid = FALSE, las=1,
     
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    invisible(currentPlot)
+    # invisible(currentPlot)
     
   } else {
 

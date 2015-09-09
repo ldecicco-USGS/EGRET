@@ -92,9 +92,11 @@ plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
     xLab<-paste("Estimated concentration in",localINFO$param.units)
     yLab<-paste("Observed concentration in",localINFO$param.units)
     
-    yLow<-localSample$ConcLow
-    yHigh<-localSample$ConcHigh
-    
+    if(!("rObserved" %in% names(localSample))){
+      eList <- makeAugmentedSample(eList)
+      localSample <- eList$Sample
+    }
+    yHigh <- localSample$rObserved
     yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, tinyPlot=tinyPlot,logScale=logScale)
     
     if(col == "black"){
@@ -125,16 +127,10 @@ plotConcPred<-function(eList, concMax = NA, logScale=FALSE,
       xMid <- mean(currentPlot$xax$range)
       x <- x[Uncen == "Censored"]
     }
-    
-#     addBars(x, 
-#             yHigh[Uncen == "Censored"], base=min(currentPlot$yax$range), 
-#             current=currentPlot, 
-#             Bars=list(width=0.01,fill="white",border="gray80"))
-    
-    
+
     if (!tinyPlot) addAnnotation(x=xMid, y=yTop,justification="center", 
                                  annotation=title2, current=currentPlot,size=10)
-    invisible(currentPlot)
+    # invisible(currentPlot)
   } else {
 
     if(!rResid){
