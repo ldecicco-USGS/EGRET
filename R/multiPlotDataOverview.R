@@ -14,7 +14,6 @@
 #' @param logScaleConc logical if TRUE y in concentration graphs plotted in log axis. Default is TRUE.
 #' @param logScaleQ logical if TRUE y in streamflow graphs plotted in log axis. Default is TRUE.
 #' @param USGSstyle logical use USGSwsGraph package for USGS style
-#' @param rResid logical option to plot randomized residuals.
 #' @keywords graphics water-quality statistics
 #' @seealso \code{\link{plotConcQ}}, \code{\link{boxConcMonth}}, \code{\link{plotConcTime}}, \code{\link{boxQTwice}}
 #' @export
@@ -35,8 +34,7 @@
 #' }
 multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
                                  logScaleConc=TRUE, logScaleQ=TRUE,
-                                 USGSstyle=FALSE,rResid=FALSE){
- 
+                                 USGSstyle=FALSE){
   localINFO <- getInfo(eList)
   
   if(sum(c("paStart","paLong") %in% names(localINFO)) == 2){
@@ -84,11 +82,11 @@ multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
   } else {
     par(mfcol=c(2,2),oma=c(0,2.4,4.5,2.4),tcl=0.5)
     plotConcQ(eList, qUnit = qUnit, tinyPlot = TRUE, printTitle = FALSE,rmSciX=TRUE,
-              logScale=logScaleConc,USGSstyle=USGSstyle,rResid=rResid)
+              logScale=logScaleConc,USGSstyle=USGSstyle)
     boxConcMonth(eList, printTitle = FALSE, tinyPlot=TRUE,
-                 logScale=logScaleConc,USGSstyle=USGSstyle,rResid=rResid)
+                 logScale=logScaleConc,USGSstyle=USGSstyle)
     plotConcTime(eList, printTitle = FALSE, tinyPlot = TRUE,
-                 logScale=logScaleConc,USGSstyle=USGSstyle,rResid=rResid)
+                 logScale=logScaleConc,USGSstyle=USGSstyle)
     boxQTwice(eList, printTitle = FALSE, qUnit = qUnit, tinyPlot=TRUE,
               logScale=logScaleQ,USGSstyle=USGSstyle)
    

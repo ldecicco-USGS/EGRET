@@ -5,8 +5,7 @@
 \title{Produces a 4 panel plot that gives an overview of the data set prior to any processing}
 \usage{
 multiPlotDataOverview(eList, qUnit = 2, cex.main = 1.2,
-  logScaleConc = TRUE, logScaleQ = TRUE, USGSstyle = FALSE,
-  rResid = FALSE)
+  logScaleConc = TRUE, logScaleQ = TRUE, USGSstyle = FALSE)
 }
 \arguments{
 \item{eList}{named list with at least Daily, Sample, and INFO dataframes}
@@ -20,8 +19,6 @@ multiPlotDataOverview(eList, qUnit = 2, cex.main = 1.2,
 \item{logScaleQ}{logical if TRUE y in streamflow graphs plotted in log axis. Default is TRUE.}
 
 \item{USGSstyle}{logical use USGSwsGraph package for USGS style}
-
-\item{rResid}{logical option to plot randomized residuals.}
 }
 \description{
 The four plots produced are 1) log concentration versus log discharge, 2) log concentration versus time

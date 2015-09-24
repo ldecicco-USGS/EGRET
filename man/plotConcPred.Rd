@@ -7,7 +7,7 @@
 plotConcPred(eList, concMax = NA, logScale = FALSE, printTitle = TRUE,
   tinyPlot = FALSE, cex = 0.8, cex.axis = 1.1, cex.main = 1.1,
   customPar = FALSE, col = "black", lwd = 1, USGSstyle = FALSE,
-  legend = FALSE, rResid = FALSE, ...)
+  legend = FALSE, ...)
 }
 \arguments{
 \item{eList}{named list with at least the Sample and INFO dataframes}
@@ -37,8 +37,6 @@ plotConcPred(eList, concMax = NA, logScale = FALSE, printTitle = TRUE,
 
 \item{legend}{logical add legend}
 
-\item{rResid}{logical option to plot randomized residuals.}
-
 \item{\dots}{arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)}
 }
 \description{
@@ -52,7 +50,6 @@ eList <- Choptank_eList
 # Water year:
 plotConcPred(eList)
 plotConcPred(eList, logScale=TRUE)
-plotConcPred(eList, logScale=TRUE, rResid=TRUE)
 # Graphs consisting of Jun-Aug
 eList <- setPA(eList, paStart=6,paLong=3)
 plotConcPred(eList)
