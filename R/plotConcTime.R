@@ -145,7 +145,7 @@ plotConcTime<-function(eList, qUnit = 2,
     if(col == "black"){
       col <- list("Uncensored"="black","Censored"="gray80")
     }
-    
+
     Uncen <- ifelse(Uncen==1, "Uncensored", "Censored")
     col <- col[unique(Uncen)]
     
@@ -169,8 +169,14 @@ plotConcTime<-function(eList, qUnit = 2,
   } else {
 
     yLow<-subSample$ConcLow
-    yHigh<-subSample$ConcHigh
+    # yHigh<-subSample$ConcHigh
+
     
+    subSample<-localSample[localSample$Q>qLowerBound & localSample$Q<qUpperBound,]
+    
+    subSample <- if(paLong == 12) subSample else selectDays(subSample, paLong,paStart)
+    yHigh <- subSample$rObserved
+    Uncen <- subSample$Uncen
     yInfo <- generalAxis(x=yHigh, minVal=minYLow, maxVal=concMax, logScale=logScale, 
                          tinyPlot=tinyPlot,units=attr(eList, "param.units"))
     

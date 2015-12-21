@@ -58,6 +58,10 @@ plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA,
   localINFO <- getInfo(eList)
   localSample <- getSample(eList)
   
+  if(!all((c("SE","yHat") %in% names(eList$Sample)))){
+    stop("This function requires running modelEstimation on eList")
+  }
+  
   if(sum(c("paStart","paLong") %in% names(localINFO)) == 2){
     paLong <- localINFO$paLong
     paStart <- localINFO$paStart  
@@ -134,6 +138,7 @@ plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA,
       eList <- makeAugmentedSample(eList)
       localSample <- eList$Sample
     }
+    Uncen<-localSample$Uncen
     yHigh <- localSample$rObserved*localSample$Q*fluxFactor
     yInfo <- generalAxis(x=yHigh, minVal=minY, maxVal=fluxMax, logScale=logScale, tinyPlot=tinyPlot,padPercent=5)
     
