@@ -62,7 +62,7 @@ dev.off()
 
 library(smwrGraphs)
 setPDF(basename="fluxBiasMulti",layout="landscape")
-fluxBiasMulti(eList,USGSstyle=TRUE) 
+fluxBiasMulti(eList,USGSstyle=TRUE, rResid=TRUE) 
 graphics.off()
 }
 }

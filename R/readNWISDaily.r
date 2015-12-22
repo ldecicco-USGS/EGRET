@@ -13,8 +13,6 @@
 #' which is appropriate for using NWIS data in the EGRET package.  Set this to FALSE to not include the conversion. If the parameter code is not 00060 (NWIS discharge),
 #' there is no conversion applied.
 #' @keywords data import USGS WRTDS
-#' @export
-#' @import dataRetrieval
 #' @return A data frame 'Daily' with the following columns:
 #' \tabular{lll}{
 #' Name \tab Type \tab Description \cr
@@ -38,27 +36,27 @@
 #' Daily <- readNWISDaily('01594440','00060', '1985-01-01', '1985-03-31')
 #' DailySuspSediment <- readNWISDaily('01594440','80154', '1985-01-01', '1985-03-31',convert=FALSE)
 #' }
-readNWISDaily <- function (siteNumber,parameterCd="00060",
-                           startDate="",endDate="",interactive=TRUE,convert=TRUE){
-
-#   data <- readNWISdv(siteNumber,parameterCd,startDate,endDate)
-#   #  need to setup conversion factor because the NWIS data are in cfs but we store in cms
-#   names(data) <- c('agency', 'site', 'dateTime', 'tz_cd','code', 'value')  # do a merge instead?
+# readNWISDaily <- function (siteNumber,parameterCd="00060",
+#                            startDate="",endDate="",interactive=TRUE,convert=TRUE){
+# 
+# #   data <- readNWISdv(siteNumber,parameterCd,startDate,endDate)
+# #   #  need to setup conversion factor because the NWIS data are in cfs but we store in cms
+# #   names(data) <- c('agency', 'site', 'dateTime', 'tz_cd','code', 'value')  # do a merge instead?
+# #   
+# #   data$dateTime <- as.Date(data$dateTime) 
+#   ##################################
+#   url <- dataRetrieval::constructNWISURL(siteNumber,parameterCd,startDate,endDate,"dv",statCd="00003", format = "tsv")
 #   
-#   data$dateTime <- as.Date(data$dateTime) 
-  ##################################
-  url <- dataRetrieval::constructNWISURL(siteNumber,parameterCd,startDate,endDate,"dv",statCd="00003", format = "tsv")
-  
-  data <- dataRetrieval::importRDB1(url, asDateTime=FALSE)
-  if(nrow(data)>0){
-    names(data) <- c('agency', 'site', 'dateTime', 'value', 'code')
-    data$dateTime <- as.Date(data$dateTime)
-  }
-
-  #####################################
-  qConvert <- ifelse("00060" == parameterCd, 35.314667, 1)
-  qConvert<- ifelse(convert,qConvert,1)
-  
-  localDaily <- populateDaily(data,qConvert,interactive=interactive)
-  return (localDaily)
-}
+#   data <- dataRetrieval::importRDB1(url, asDateTime=FALSE)
+#   if(nrow(data)>0){
+#     names(data) <- c('agency', 'site', 'dateTime', 'value', 'code')
+#     data$dateTime <- as.Date(data$dateTime)
+#   }
+# 
+#   #####################################
+#   qConvert <- ifelse("00060" == parameterCd, 35.314667, 1)
+#   qConvert<- ifelse(convert,qConvert,1)
+#   
+#   localDaily <- populateDaily(data,qConvert,interactive=interactive)
+#   return (localDaily)
+# }

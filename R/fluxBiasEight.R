@@ -43,7 +43,7 @@
 #' 
 #' library(smwrGraphs)
 #' setPDF(basename="fluxBiasMulti",layout="landscape")
-#' fluxBiasMulti(eList,USGSstyle=TRUE) 
+#' fluxBiasMulti(eList,USGSstyle=TRUE, rResid=TRUE) 
 #' graphics.off()
 #' }
 fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS", 
@@ -99,30 +99,30 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
     graph1 <- setGraph(1, layoutResponse)
     eList <- plotResidPred(eList, 
                   stdResid = FALSE, tinyPlot=TRUE, printTitle = FALSE,
-                  USGSstyle=USGSstyle,margin=graph1,legend=TRUE,...)
+                  USGSstyle=USGSstyle,margin=graph1,legend=TRUE,rResid=rResid,...)
     
     graph2 <- setGraph(2, layoutResponse)
     plotResidQ(eList, 
                qUnit, tinyPlot = TRUE, printTitle = FALSE,
-               USGSstyle=USGSstyle,margin=graph2,...)
+               USGSstyle=USGSstyle,margin=graph2,rResid=rResid,...)
     addTitle(Main = title, Justification = "center")
     graph3 <- setGraph(3, layoutResponse)
     plotResidTime(eList, 
                   printTitle = FALSE, tinyPlot=TRUE,
-                  USGSstyle=USGSstyle,margin=graph3,...)
+                  USGSstyle=USGSstyle,margin=graph3,rResid=rResid,...)
     graph4 <- setGraph(4, layoutResponse)
     boxResidMonth(eList, 
                   printTitle = FALSE, tinyPlot=TRUE,cex=cex,
-                  USGSstyle=USGSstyle,margin=graph4,...)
+                  USGSstyle=USGSstyle,margin=graph4,rResid=rResid,...)
 
     graph5 <- setGraph(5, layoutResponse)
     plotConcPred(eList, printTitle=FALSE, 
                  tinyPlot=TRUE,logScale=TRUE,
-                 USGSstyle=USGSstyle,margin=graph5,...)
+                 USGSstyle=USGSstyle,margin=graph5,rResid=FALSE,...)
     graph6 <- setGraph(6, layoutResponse)
     plotFluxPred(eList, logScale=TRUE,
                  fluxUnit, tinyPlot = TRUE, printTitle = FALSE,
-                 USGSstyle=USGSstyle,margin=graph6,...)
+                 USGSstyle=USGSstyle,margin=graph6,rResid=FALSE,...)
     graph7 <- setGraph(7, layoutResponse)
     boxQTwice(eList, printTitle = FALSE, qUnit = qUnit,tinyPlot=TRUE,
               USGSstyle=USGSstyle,margin=graph7,...)
@@ -131,7 +131,7 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
     graph8 <- setGraph(8, layoutResponse)
     boxOut <- boxConcThree(eList, 
                  printTitle=FALSE, tinyPlot=TRUE,
-                 USGSstyle=USGSstyle,margin=graph8,...)
+                 USGSstyle=USGSstyle,margin=graph8,rResid=rResid,...)
     graphExplain <- setGraph("explanation", layoutResponse)
     addExplanation(boxOut)
     

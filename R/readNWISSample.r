@@ -11,8 +11,6 @@
 #' @param endDate character ending date for data retrieval in the form YYYY-MM-DD.
 #' @param interactive logical Option for interactive mode.  If true, there is user interaction for error handling and data checks.
 #' @keywords data import USGS WRTDS
-#' @import dataRetrieval
-#' @export
 #' @return A data frame 'Sample' with the following columns:
 #' \tabular{lll}{
 #' Name \tab Type \tab Description \cr
@@ -39,16 +37,16 @@
 #' Sample_All2 <- readNWISSample('05114000',c('00915','00931'), '1985-01-01', '1985-03-31')
 #' Sample_Select <- readNWISSample('05114000',c('00915','00931'), '', '')
 #' }
-readNWISSample <- function(siteNumber,parameterCd,startDate="",endDate="",interactive=TRUE){
-  
-  rawSample <- dataRetrieval::readNWISqw(siteNumber,parameterCd,startDate,endDate, expanded=FALSE)
-  dataColumns <- grep("p\\d{5}",names(rawSample))
-  remarkColumns <- grep("r\\d{5}",names(rawSample))
-  totalColumns <-c(grep("sample_dt",names(rawSample)), dataColumns, remarkColumns)
-  totalColumns <- totalColumns[order(totalColumns)]
-  compressedData <- compressData(rawSample[,totalColumns], interactive=interactive)
-  Sample <- populateSampleColumns(compressedData)
-  return(Sample)
-}
+# readNWISSample <- function(siteNumber,parameterCd,startDate="",endDate="",interactive=TRUE){
+#   
+#   rawSample <- dataRetrieval::readNWISqw(siteNumber,parameterCd,startDate,endDate, expanded=FALSE)
+#   dataColumns <- grep("p\\d{5}",names(rawSample))
+#   remarkColumns <- grep("r\\d{5}",names(rawSample))
+#   totalColumns <-c(grep("sample_dt",names(rawSample)), dataColumns, remarkColumns)
+#   totalColumns <- totalColumns[order(totalColumns)]
+#   compressedData <- compressData(rawSample[,totalColumns], interactive=interactive)
+#   Sample <- populateSampleColumns(compressedData)
+#   return(Sample)
+# }
 
 

@@ -42,7 +42,7 @@
 #' setPDF(basename = "test")
 #' layoutInfo <- setLayout(width=6, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
-#' plotResidQ(eList, USGSstyle=TRUE, margin=layoutStuff)
+#' plotResidQ(eList, USGSstyle=TRUE, margin=layoutStuff, rResid=TRUE)
 #' graphics.off()
 #' }
 plotResidQ<-function (eList, qUnit = 2, 

@@ -134,14 +134,18 @@ plotFluxPred<-function(eList, fluxUnit = 3, fluxMax = NA,
       dotSize <- 0.03
     }
     
-    if(!("rObserved" %in% names(localSample))){
-      eList <- makeAugmentedSample(eList)
-      localSample <- eList$Sample
+    if(rResid){
+      if(!("rObserved" %in% names(localSample))){
+        eList <- makeAugmentedSample(eList)
+        localSample <- eList$Sample
+      }
+
+      yHigh <- localSample$rObserved*localSample$Q*fluxFactor
+      
+    } else {
+      yHigh<-localSample$ConcHigh*localSample$Q*fluxFactor
     }
-    Uncen<-localSample$Uncen
-    yHigh <- localSample$rObserved*localSample$Q*fluxFactor
     yInfo <- generalAxis(x=yHigh, minVal=minY, maxVal=fluxMax, logScale=logScale, tinyPlot=tinyPlot,padPercent=5)
-    
     Uncen <- localSample$Uncen
     Uncen <- ifelse(Uncen==1, "Uncensored", "Censored")
     col <- col[unique(Uncen)]

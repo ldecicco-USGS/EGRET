@@ -10,8 +10,6 @@
 #' @param endDate character ending date for data retrieval in the form YYYY-MM-DD.
 #' @param interactive logical Option for interactive mode.  If true, there is user interaction for error handling and data checks.
 #' @keywords data import USGS WRTDS
-#' @export
-#' @import dataRetrieval
 #' @return A data frame 'Sample' with the following columns:
 #' \tabular{lll}{
 #' Name \tab Type \tab Description \cr
@@ -36,25 +34,25 @@
 #' Sample_01075 <- readWQPSample('USGS-01594440','Chloride', '', '')
 #' Sample_All <- readWQPSample('WIDNR_WQX-10032762','Specific conductance', '', '')
 #' }
-readWQPSample <- function(siteNumber,characteristicName,startDate,endDate,interactive=TRUE){
-  
-  url <- constructWQPURL(siteNumber,characteristicName,startDate,endDate)
-  retval <- importWQP(url)
-  
-  #Check for pcode:
-  if(all(nchar(characteristicName) == 5)){
-    suppressWarnings(pCodeLogic <- all(!is.na(as.numeric(characteristicName))))
-  } else {
-    pCodeLogic <- FALSE
-  }
-  
-  if(nrow(retval) > 0){
-    data <- processQWData(retval,pCodeLogic)
-  } else {
-    data <- NULL
-  }
-  
-  compressedData <- compressData(data, interactive=interactive)
-  Sample <- populateSampleColumns(compressedData)
-  return(Sample)
-}
+# readWQPSample <- function(siteNumber,characteristicName,startDate,endDate,interactive=TRUE){
+#   
+#   url <- constructWQPURL(siteNumber,characteristicName,startDate,endDate)
+#   retval <- importWQP(url)
+#   
+#   #Check for pcode:
+#   if(all(nchar(characteristicName) == 5)){
+#     suppressWarnings(pCodeLogic <- all(!is.na(as.numeric(characteristicName))))
+#   } else {
+#     pCodeLogic <- FALSE
+#   }
+#   
+#   if(nrow(retval) > 0){
+#     data <- processQWData(retval,pCodeLogic)
+#   } else {
+#     data <- NULL
+#   }
+#   
+#   compressedData <- compressData(data, interactive=interactive)
+#   Sample <- populateSampleColumns(compressedData)
+#   return(Sample)
+# }

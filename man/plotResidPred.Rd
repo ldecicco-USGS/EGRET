@@ -63,7 +63,7 @@ library(smwrGraphs)
 setPDF(basename = "plotResidPred")
 layoutInfo <- setLayout(width=6, height=4)
 layoutStuff <- setGraph(1, layoutInfo)
-plotResidPred(eList, USGSstyle=TRUE, margin=layoutStuff)
+plotResidPred(eList, USGSstyle=TRUE, margin=layoutStuff, rResid=TRUE)
 graphics.off()
 }
 }
