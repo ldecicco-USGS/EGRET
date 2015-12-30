@@ -43,7 +43,7 @@
 #' 
 #' library(smwrGraphs)
 #' setPDF(basename="fluxBiasMulti",layout="landscape")
-#' fluxBiasMulti(eList,USGSstyle=TRUE, rResid=TRUE) 
+#' output <- fluxBiasMulti(eList,USGSstyle=TRUE, rResid=TRUE) 
 #' graphics.off()
 #' }
 fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS", 
@@ -124,17 +124,17 @@ fluxBiasMulti<-function (eList, qUnit = 2, fluxUnit = 3, moreTitle = "WRTDS",
                  fluxUnit, tinyPlot = TRUE, printTitle = FALSE,
                  USGSstyle=USGSstyle,margin=graph6,rResid=FALSE,...)
     graph7 <- setGraph(7, layoutResponse)
-    boxQTwice(eList, printTitle = FALSE, qUnit = qUnit,tinyPlot=TRUE,
+    boxOut <- boxQTwice(eList, printTitle = FALSE, qUnit = qUnit,tinyPlot=TRUE,
               USGSstyle=USGSstyle,margin=graph7,...)
     addCaption(paste0(localINFO$shortname," (", localINFO$site_no,") : ", localINFO$paramshortname))
     
     graph8 <- setGraph(8, layoutResponse)
-    boxOut <- boxConcThree(eList, 
+    boxConcThree(eList, 
                  printTitle=FALSE, tinyPlot=TRUE,
                  USGSstyle=USGSstyle,margin=graph8,rResid=rResid,...)
     graphExplain <- setGraph("explanation", layoutResponse)
     addExplanation(boxOut)
-    
+
   } else {
     par(oma = c(0, 10, 4, 10),mfrow=c(4,2))
     eList <- plotResidPred(eList, 

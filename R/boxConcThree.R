@@ -23,6 +23,7 @@
 #' @param \dots arbitrary graphical parameters that will be passed to genericEGRETDotPlot function (see ?par for options)
 #' @keywords graphics water-quality statistics
 #' @seealso \code{\link[graphics]{boxplot}}
+#' @importFrom smwrQW as.lcens
 #' @export
 #' @examples
 #' eList <- Choptank_eList
@@ -116,8 +117,21 @@ boxConcThree<-function (eList, tinyPlot=FALSE,
                    rep("Sampled-day\nestimates", length=nrow(localSample)),
                    rep("All-day\nestimates",nrow(localDaily)))
     
-    currentPlot <- boxPlot(as.numeric(concV), group=charIndex, 
-                           Box=list(type="tukey"),
+    lcensConc <- rowMeans(localSample[c("ConcLow","ConcHigh")],na.rm = TRUE)
+    lcensConc <- as.character(lcensConc)
+    lcensConc[is.na(localSample$ConcLow)] <- paste0("<",localSample$ConcHigh[is.na(localSample$ConcLow)])
+    lcensConc <- c(lcensConc, rep("", (nrow(localDaily)-nrow(localSample))))
+    
+    
+    concV_1 <- as.lcens(lcensConc)
+    concV_2 <- c(localSample$ConcHat, rep(NA, (nrow(localDaily)-nrow(localSample))))
+    concV_3 <- localDaily$ConcDay
+   
+    df <- data.frame(concV_1,concV_2,concV_3)
+    names(df) <- c("Sampled-day\nvalues","Sampled-day\nestimates","All-day\nestimates")
+    
+    currentPlot <- boxPlot(df, 
+                           Box=list(type="tukey",censorstyle="estimated"),
                            ytitle = yLab,
                            xtitle = "", ...)
     

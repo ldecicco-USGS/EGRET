@@ -29,7 +29,10 @@
 #' \dontrun{
 #' library(smwrGraphs)
 #' setPDF(basename="multiPlotDataOverview",layout="landscape")
-#' multiPlotDataOverview(eList, qUnit=2,USGSstyle=TRUE) 
+#' output <- multiPlotDataOverview(eList, qUnit=2,USGSstyle=TRUE) 
+#' graphics.off()
+#' setPDF("explanation",layout="portrait")
+#' addExplanation(output)
 #' graphics.off()
 #' }
 multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
@@ -70,14 +73,15 @@ multiPlotDataOverview<-function (eList, qUnit = 2,cex.main=1.2,
     graph3 <- setGraph(3, layoutResponse)
     reportGraph(paste("\n",title ))
     graph4 <- setGraph(4, layoutResponse)
-    boxConcMonth(eList, printTitle = FALSE, tinyPlot = TRUE,
+    boxOut <- boxConcMonth(eList, printTitle = FALSE, tinyPlot = TRUE,
                  logScale=logScaleConc,USGSstyle=USGSstyle, margin=graph4)
 
     graph5 <- setGraph(5, layoutResponse)
-    boxOut <- boxQTwice(eList, printTitle = FALSE, qUnit = qUnit, tinyPlot = TRUE,
+    boxQTwice(eList, printTitle = FALSE, qUnit = qUnit, tinyPlot = TRUE,
               logScale=logScaleQ,USGSstyle=USGSstyle, margin=graph5)
     graphExplain <- setGraph("explanation", layoutResponse)
     addExplanation(boxOut)
+    invisible(boxOut)
 
   } else {
     par(mfcol=c(2,2),oma=c(0,2.4,4.5,2.4),tcl=0.5)

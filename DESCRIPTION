@@ -19,6 +19,7 @@ Imports:
     lubridate,
     methods,
     smwrGraphs,
+    smwrQW,
     utils,
     graphics,
     stats,

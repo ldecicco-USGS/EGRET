@@ -63,6 +63,12 @@ layoutInfo <- setLayout(width=6, height=4)
 layoutStuff <- setGraph(1, layoutInfo)
 boxConcMonth(eList,USGSstyle=TRUE, margin=layoutStuff)
 graphics.off()
+
+setPDF(basename = "test_log")
+layoutInfo <- setLayout(width=6, height=4)
+layoutStuff <- setGraph(1, layoutInfo)
+boxConcMonth(eList,USGSstyle=TRUE, margin=layoutStuff, logScale=TRUE)
+graphics.off()
 }
 }
 \seealso{

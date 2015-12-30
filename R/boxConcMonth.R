@@ -26,6 +26,7 @@
 #' @seealso \code{\link[graphics]{boxplot}}
 #' @export
 #' @import methods
+#' @importFrom smwrQW as.lcens
 #' @examples
 #' eList <- Choptank_eList
 #' # Water year:
@@ -39,6 +40,12 @@
 #' layoutInfo <- setLayout(width=6, height=4)
 #' layoutStuff <- setGraph(1, layoutInfo)
 #' boxConcMonth(eList,USGSstyle=TRUE, margin=layoutStuff)
+#' graphics.off()
+#' 
+#' setPDF(basename = "test_log")
+#' layoutInfo <- setLayout(width=6, height=4)
+#' layoutStuff <- setGraph(1, layoutInfo)
+#' boxConcMonth(eList,USGSstyle=TRUE, margin=layoutStuff, logScale=TRUE)
 #' graphics.off()
 #' }
 boxConcMonth<-function(eList, printTitle = TRUE,
@@ -103,11 +110,32 @@ boxConcMonth<-function(eList, printTitle = TRUE,
   
   if(USGSstyle){
     
-    currentPlot <- boxPlot(tempDF$conc, group=tempDF$month, 
-                           Box=list(type="tukey"),
+    tempDF <- data.frame(month=monthList, ConcLow=localSample$ConcLow, ConcHigh=localSample$ConcHigh)
+    lcensConc <- rowMeans(tempDF[c("ConcLow","ConcHigh")],na.rm = TRUE)
+    lcensConc <- as.character(lcensConc)
+    lcensConc[is.na(localSample$ConcLow)] <- paste0("<",localSample$ConcHigh[is.na(localSample$ConcLow)])
+    tempDF$conc <- as.lcens(lcensConc)
+
+    maxSamples <- max(aggregate(tempDF$conc, by=list(tempDF$month), FUN=length)$x)
+    newDF <- data.frame(matrix(NA, nrow = maxSamples, ncol = length(levels(monthList))))
+    names(newDF) <- levels(monthList)
+    
+    for(i in levels(monthList)){
+      monthData <- tempDF$conc[as.character(tempDF$month) == i]
+      if(all(!attr(monthData, "censor.code"))){ #no censoring
+        newDF[1:length(monthData),i] <- as.numeric(monthData)[1:length(monthData)]
+      } else {
+        newDF[,i] <- as.lcens(rep("", maxSamples))
+        newDF[1:length(monthData),i] <- monthData
+      }
+    }
+    
+    currentPlot <- boxPlot(newDF, 
+                           Box=list(type="tukey",censorstyle="estimated"),
                            ytitle=if(showYLabels) yInfo$label else "",
                            xtitle=if(showXLabels) "Month" else "",
-                           ylabels = yInfo$ticks,yaxis.range = c(0, 5*max(tempDF$conc)),
+                           ylabels = yInfo$ticks,
+                           yaxis.range = c(yInfo$bottom,yInfo$top),
                            yaxis.log=logScale, ...)
     
     xMid <- 6
