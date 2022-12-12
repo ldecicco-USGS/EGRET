@@ -1,5 +1,5 @@
-pandoc: 2.11.4
-pkgdown: 1.6.1
+pandoc: 2.19.2
+pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   AlternativeQMethod: AlternativeQMethod.html
@@ -7,12 +7,13 @@ articles:
   EGRET: EGRET.html
   Enhancements: Enhancements.html
   Overview: Overview.html
-  parallel: parallel.html
   References_WRTDS: References_WRTDS.html
-  rResid: rResid.html
   SeasonalFraction: SeasonalFraction.html
-  streamflow_trend: streamflow_trend.html
   TrendsByMonth: TrendsByMonth.html
   WRTDSK: WRTDSK.html
-last_built: 2021-05-20T18:26Z
+  parallel: parallel.html
+  rResid: rResid.html
+  streamflow_trend: streamflow_trend.html
+  units: units.html
+last_built: 2022-12-12T18:52Z
 
