@@ -110,7 +110,7 @@
 </div>
 <p><a href="https://cran.r-project.org/package=EGRET" class="external-link"><img src="http://www.r-pkg.org/badges/version/EGRET" alt="CRAN version"></a> <a href="https://cran.r-project.org/package=EGRET" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/EGRET"></a> <a href="https://cran.r-project.org/package=EGRET" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/EGRET"></a></p>
 <p>Exploration and Graphics for RivEr Trends (<code>EGRET</code>): An R-package for the analysis of long-term changes in water quality and streamflow, including the water-quality method Weighted Regressions on Time, Discharge, and Season (WRTDS).</p>
-<p>Look for new and improved documentation her: <a href="https://rconnect.usgs.gov/EGRET/" class="external-link uri">https://rconnect.usgs.gov/EGRET/</a></p>
+<p>Look for new and improved documentation here: <a href="https://rconnect.usgs.gov/EGRET/" class="external-link uri">https://rconnect.usgs.gov/EGRET/</a></p>
 <p>The link for the official USGS publication user guide is here:</p>
 <p><a href="https://pubs.usgs.gov/tm/04/a10/" class="external-link uri">https://pubs.usgs.gov/tm/04/a10/</a></p>
 <p>A companion package <a href="https://rconnect.usgs.gov/EGRETci/" class="external-link"><code>EGRETci</code></a> implements a set of approaches to the analysis of uncertainty associated with WRTDS trend analysis.</p>
@@ -218,10 +218,14 @@
 <span><span class="co">#&gt; Survival regression: Done</span></span>
 <span></span>
 <span><span class="co">#eList:</span></span>
-<span><span class="fu"><a href="reference/plotConcTimeDaily.html">plotConcTimeDaily</a></span><span class="op">(</span><span class="va">eList</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/plotConcTimeDaily.html">plotConcTimeDaily</a></span><span class="op">(</span><span class="va">eList</span><span class="op">)</span></span>
+<span><span class="co">#&gt; plotGenConc = TRUE requires running WRTDSKalman</span></span>
+<span><span class="co">#&gt;               on eList. Switching to WRTDS concentration.</span></span></code></pre></div>
 <p><img src="reference/figures/README-runModel-1.png"></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/plotFluxTimeDaily.html">plotFluxTimeDaily</a></span><span class="op">(</span><span class="va">eList</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/plotFluxTimeDaily.html">plotFluxTimeDaily</a></span><span class="op">(</span><span class="va">eList</span><span class="op">)</span></span>
+<span><span class="co">#&gt; plotGenConc = TRUE requires running WRTDSKalman</span></span>
+<span><span class="co">#&gt;               on eList. Switching to WRTDS concentration.</span></span></code></pre></div>
 <p><img src="reference/figures/README-runModel-2.png"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/plotConcPred.html">plotConcPred</a></span><span class="op">(</span><span class="va">eList</span><span class="op">)</span></span></code></pre></div>
@@ -302,7 +306,7 @@
 <span><span class="va">startDate</span> <span class="op">&lt;-</span> <span class="st">""</span> <span class="co"># Get earliest date</span></span>
 <span><span class="va">endDate</span> <span class="op">&lt;-</span> <span class="st">""</span> <span class="co"># Get latest date</span></span>
 <span><span class="va">Daily</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/readNWISDaily.html">readNWISDaily</a></span><span class="op">(</span><span class="va">siteID</span>, <span class="st">"00060"</span>, <span class="va">startDate</span>, <span class="va">endDate</span><span class="op">)</span></span>
-<span><span class="co">#&gt; There are 27396 data points, and 27396 days.</span></span>
+<span><span class="co">#&gt; There are 27427 data points, and 27427 days.</span></span>
 <span><span class="co"># Gather site and parameter information:</span></span>
 <span><span class="co"># Here user must input some values for</span></span>
 <span><span class="co"># the default (interactive=TRUE)</span></span>
@@ -375,7 +379,7 @@
 <span><span class="co">#&gt;  collate  English_United States.utf8</span></span>
 <span><span class="co">#&gt;  ctype    English_United States.utf8</span></span>
 <span><span class="co">#&gt;  tz       America/Chicago</span></span>
-<span><span class="co">#&gt;  date     2023-01-03</span></span>
+<span><span class="co">#&gt;  date     2023-02-03</span></span>
 <span><span class="co">#&gt;  pandoc   2.19.2 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ─ Packages ───────────────────────────────────────────────────────────────────</span></span>
@@ -385,20 +389,20 @@
 <span><span class="co">#&gt;  bit64           4.0.5   2020-08-30 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  class           7.3-20  2022-01-16 [2] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  classInt        0.4-8   2022-09-29 [1] CRAN (R 4.2.1)</span></span>
-<span><span class="co">#&gt;  cli             3.5.0   2022-12-20 [1] CRAN (R 4.2.2)</span></span>
-<span><span class="co">#&gt;  colorspace      2.0-3   2022-02-21 [1] CRAN (R 4.2.1)</span></span>
+<span><span class="co">#&gt;  cli             3.6.0   2023-01-09 [1] CRAN (R 4.2.2)</span></span>
+<span><span class="co">#&gt;  colorspace      2.1-0   2023-01-23 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  crayon          1.5.2   2022-09-29 [1] CRAN (R 4.2.1)</span></span>
-<span><span class="co">#&gt;  curl            4.3.3   2022-10-06 [1] CRAN (R 4.2.1)</span></span>
-<span><span class="co">#&gt;  dataRetrieval   2.7.12  2022-12-30 [1] local</span></span>
+<span><span class="co">#&gt;  curl            5.0.0   2023-01-12 [1] CRAN (R 4.2.2)</span></span>
+<span><span class="co">#&gt;  dataRetrieval   2.7.12  2023-02-01 [1] local</span></span>
 <span><span class="co">#&gt;  DBI             1.1.3   2022-06-18 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  digest          0.6.31  2022-12-11 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  dotCall64       1.0-2   2022-10-03 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  dplyr           1.0.10  2022-09-01 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  e1071           1.7-12  2022-10-24 [1] CRAN (R 4.2.2)</span></span>
-<span><span class="co">#&gt;  EGRET         * 3.0.7.3 2022-12-12 [1] local</span></span>
+<span><span class="co">#&gt;  EGRET         * 3.0.8   2023-01-24 [1] local</span></span>
 <span><span class="co">#&gt;  ellipsis        0.3.2   2021-04-29 [1] CRAN (R 4.2.1)</span></span>
-<span><span class="co">#&gt;  evaluate        0.19    2022-12-13 [1] CRAN (R 4.2.2)</span></span>
-<span><span class="co">#&gt;  fansi           1.0.3   2022-03-24 [1] CRAN (R 4.2.1)</span></span>
+<span><span class="co">#&gt;  evaluate        0.20    2023-01-17 [1] CRAN (R 4.2.2)</span></span>
+<span><span class="co">#&gt;  fansi           1.0.4   2023-01-22 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  fastmap         1.1.0   2021-01-25 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  fields          14.1    2022-08-12 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  generics        0.1.3   2022-07-05 [1] CRAN (R 4.2.1)</span></span>
@@ -411,7 +415,7 @@
 <span><span class="co">#&gt;  htmltools       0.5.4   2022-12-07 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  httr            1.4.4   2022-08-17 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  KernSmooth      2.23-20 2021-05-03 [2] CRAN (R 4.2.2)</span></span>
-<span><span class="co">#&gt;  knitr           1.41    2022-11-18 [1] CRAN (R 4.2.2)</span></span>
+<span><span class="co">#&gt;  knitr           1.42    2023-01-25 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  lattice         0.20-45 2021-09-22 [2] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  lifecycle       1.0.3   2022-10-07 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  magrittr        2.0.3   2022-03-30 [1] CRAN (R 4.1.3)</span></span>
@@ -422,29 +426,27 @@
 <span><span class="co">#&gt;  pkgconfig       2.0.3   2019-09-22 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  proxy           0.4-27  2022-06-09 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  R6              2.5.1   2021-08-19 [1] CRAN (R 4.2.1)</span></span>
-<span><span class="co">#&gt;  Rcpp            1.0.9   2022-07-08 [1] CRAN (R 4.2.1)</span></span>
+<span><span class="co">#&gt;  Rcpp            1.0.10  2023-01-22 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  readr           2.1.3   2022-10-01 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  rlang           1.0.6   2022-09-24 [1] CRAN (R 4.2.1)</span></span>
-<span><span class="co">#&gt;  rmarkdown       2.19    2022-12-15 [1] CRAN (R 4.2.2)</span></span>
+<span><span class="co">#&gt;  rmarkdown       2.20    2023-01-19 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  rstudioapi      0.14    2022-08-22 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  scales          1.2.1   2022-08-20 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  sessioninfo     1.2.2   2021-12-06 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  sf              1.0-9   2022-11-08 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  spam            2.9-1   2022-08-07 [1] CRAN (R 4.2.1)</span></span>
-<span><span class="co">#&gt;  stringi         1.7.8   2022-07-11 [1] CRAN (R 4.2.1)</span></span>
-<span><span class="co">#&gt;  stringr         1.5.0   2022-12-02 [1] CRAN (R 4.2.2)</span></span>
-<span><span class="co">#&gt;  survival        3.4-0   2022-08-09 [1] CRAN (R 4.2.1)</span></span>
+<span><span class="co">#&gt;  survival        3.5-0   2023-01-09 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  tibble          3.1.8   2022-07-22 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  tidyselect      1.2.0   2022-10-10 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  tzdb            0.3.0   2022-03-28 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  units           0.8-1   2022-12-10 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  utf8            1.2.2   2021-07-24 [1] CRAN (R 4.2.1)</span></span>
-<span><span class="co">#&gt;  vctrs           0.5.1   2022-11-16 [1] CRAN (R 4.2.2)</span></span>
+<span><span class="co">#&gt;  vctrs           0.5.2   2023-01-23 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  viridis         0.6.2   2021-10-13 [1] CRAN (R 4.2.1)</span></span>
 <span><span class="co">#&gt;  viridisLite     0.4.1   2022-08-22 [1] CRAN (R 4.2.1)</span></span>
-<span><span class="co">#&gt;  vroom           1.6.0   2022-09-30 [1] CRAN (R 4.2.1)</span></span>
+<span><span class="co">#&gt;  vroom           1.6.1   2023-01-22 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt;  xfun            0.36    2022-12-21 [1] CRAN (R 4.2.2)</span></span>
-<span><span class="co">#&gt;  yaml            2.3.6   2022-10-18 [1] CRAN (R 4.2.1)</span></span>
+<span><span class="co">#&gt;  yaml            2.3.7   2023-01-23 [1] CRAN (R 4.2.2)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  [1] C:/Users/ldecicco/Documents/R/win-library/4.2</span></span>
 <span><span class="co">#&gt;  [2] C:/Program Files/R/R-4.2.2/library</span></span>
@@ -547,6 +549,7 @@
 <ul class="list-unstyled">
 <li>Robert Hirsch <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-4534-075X" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Laura DeCicco <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3915-9487" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Jennifer Murphy <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-0881-0919" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
