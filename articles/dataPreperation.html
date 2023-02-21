@@ -151,7 +151,7 @@ CharacteristicName.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://code.usgs.gov/water/dataRetrieval" class="external-link">dataRetrieval</a></span><span class="op">)</span></span>
 <span><span class="va">nitrogen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/dataRetrieval/man/readWQPdata.html" class="external-link">readWQPdata</a></span><span class="op">(</span>siteNumbers <span class="op">=</span> <span class="st">"USGS-01491000"</span>, </span>
 <span>                        CharacteristicName <span class="op">=</span> <span class="st">"Inorganic nitrogen (nitrate and nitrite)"</span><span class="op">)</span></span></code></pre></div>
-<p>This returns a data frame with 1395 rows. There are a few columns I
+<p>This returns a data frame with 1396 rows. There are a few columns I
 recommend checking:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">nitrogen</span><span class="op">$</span><span class="va">ResultSampleFractionText</span><span class="op">)</span></span></code></pre></div>

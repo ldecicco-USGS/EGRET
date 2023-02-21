@@ -93,7 +93,9 @@ Uncen    = 1 if uncensored, 0 if censored</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>data</dt>
-<dd><p>dataframe contains at least dateTime, value, code columns</p></dd>
+<dd><p>dataframe contains at least dateTime, code, value, columns in that order. 
+If there are more than the initial date, code, value...it combines the
+data is combined as using interval censored concepts.</p></dd>
 
 
 <dt>verbose</dt>
