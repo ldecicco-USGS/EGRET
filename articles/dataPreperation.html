@@ -151,11 +151,11 @@ CharacteristicName.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://code.usgs.gov/water/dataRetrieval" class="external-link">dataRetrieval</a></span><span class="op">)</span></span>
 <span><span class="va">nitrogen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/dataRetrieval/man/readWQPdata.html" class="external-link">readWQPdata</a></span><span class="op">(</span>siteNumbers <span class="op">=</span> <span class="st">"USGS-01491000"</span>, </span>
 <span>                        CharacteristicName <span class="op">=</span> <span class="st">"Inorganic nitrogen (nitrate and nitrite)"</span><span class="op">)</span></span></code></pre></div>
-<p>This returns a data frame with 1397 rows. There are a few columns I
+<p>This returns a data frame with 1400 rows. There are a few columns I
 recommend checking:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">nitrogen</span><span class="op">$</span><span class="va">ResultSampleFractionText</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "Total"     "Dissolved"</span></span></code></pre>
+<pre><code><span><span class="co">## [1] "Dissolved" "Total"</span></span></code></pre>
 <p>We’ll need to decide if it’s appropriate to use both Total and
 Dissolved in a single analysis. Usually it is not. There may be other
 sample fraction values depending on the parameters.</p>
@@ -205,8 +205,8 @@ columns:</p>
 <span><span class="co">## [7] "Dambreak"</span></span></code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">total_nitrogen_water</span><span class="op">$</span><span class="va">HydrologicCondition</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## [1] "Falling stage"        "Rising stage"         "Peak stage"          </span></span>
-<span><span class="co">## [4] "Stable, normal stage" "Not determined"       "Stable, high stage"  </span></span>
+<pre><code><span><span class="co">## [1] "Falling stage"        "Stable, normal stage" "Rising stage"        </span></span>
+<span><span class="co">## [4] "Peak stage"           "Not determined"       "Stable, high stage"  </span></span>
 <span><span class="co">## [7] "Stable, low stage"</span></span></code></pre>
 <p>In this example, we have 1 reported measurement unit and no detection
 condition text. I would guess for most <code>EGRET</code> type analysis,
