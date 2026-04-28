@@ -1,3 +1,7 @@
+EGRET 3.0.12
+===========
+* Changed readNWISDaily to use new USGS Water Data API service.
+
 EGRET 3.0.11
 ===========
 * Changed readNWISSample to use new USGS samples-data service.

@@ -46,23 +46,16 @@ readNWISSample <- function(
   endDate = "",
   verbose = TRUE
 ) {
-  siteNumber <- paste0("USGS-", siteNumber)
-
-  if (utils::packageVersion("dataRetrieval") >= "2.7.19") {
-    data <- suppressMessages(dataRetrieval::read_waterdata_samples(
-      monitoringLocationIdentifier = siteNumber,
-      usgsPCode = parameterCd,
-      activityStartDateLower = startDate,
-      activityStartDateUpper = endDate
-    ))
-  } else {
-    data <- suppressMessages(dataRetrieval::read_waterdata_samples(
-      monitoringLocationIdentifier = siteNumber,
-      usgsPCode = parameterCd,
-      activityStartDateLower = startDate,
-      activityStartDateUpper = endDate
-    ))
+  if (!grepl("USGS-", siteNumber)) {
+    siteNumber <- paste0("USGS-", siteNumber)
   }
+
+  data <- suppressMessages(dataRetrieval::read_waterdata_samples(
+    monitoringLocationIdentifier = siteNumber,
+    usgsPCode = parameterCd,
+    activityStartDateLower = startDate,
+    activityStartDateUpper = endDate
+  ))
 
   extra_cols <- c(
     "ActivityStartDateTime",
