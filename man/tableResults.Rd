@@ -19,13 +19,13 @@ tableResults(eList, qUnit = 2, fluxUnit = 9, localDaily = NA)
 results dataframe, if returnDataFrame=TRUE
 
 dataframe with year, discharge, concentration,
-flow-normalized concentration, flux, and flow-normalized concentration columns. 
+flow-normalized concentration, flux, and flow-normalized concentration columns.
 If the eList was run through WRTDSKalman, an additional column generalized flux
 is included.
 }
 \description{
-Produce an ASCII table showing: year, mean discharge, mean concentration, flow-normalized concentration, 
-mean flux, and flow-normalized flux. Note that the flux and flow-normalized flux are rates and not a mass.  As such a value for some period shorter than a full year 
+Produce an ASCII table showing: year, mean discharge, mean concentration, flow-normalized concentration,
+mean flux, and flow-normalized flux. Note that the flux and flow-normalized flux are rates and not a mass.  As such a value for some period shorter than a full year
 could be larger than the value for a full year.
 }
 \details{
