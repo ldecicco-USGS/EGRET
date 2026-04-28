@@ -65,3 +65,5 @@ test-out.xml
 review/*
 docs/*
 docker/*
+^\.vscode$
+^[.]?air[.]toml$
