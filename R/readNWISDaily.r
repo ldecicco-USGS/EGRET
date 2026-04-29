@@ -8,8 +8,11 @@
 #' @param endDate character ending date for data retrieval in the form YYYY-MM-DD.
 #' @param verbose logical specifying whether or not to display progress message
 #' @param convert logical Option to include a conversion from cfs to cms (35.314667). The default is TRUE,
-#' which is appropriate for using NWIS data in the EGRET package.  Set this to FALSE to not include the conversion. If the parameter code is not 00060 (NWIS discharge),
+#' which is appropriate for using NWIS data in the EGRET package.
+#' Set this to FALSE to not include the conversion. If the parameter code is not 00060 (NWIS discharge),
 #' there is no conversion applied.
+#' @param adjust logical specifying whether or not to adjust the zero and negative flow.
+#' Defaults to TRUE.
 #' @keywords data import USGS WRTDS
 #' @export
 #' @return A data frame 'Daily' with the following columns:
@@ -44,7 +47,8 @@ readNWISDaily <- function(
   startDate = "",
   endDate = "",
   verbose = TRUE,
-  convert = TRUE
+  convert = TRUE,
+  adjust = TRUE
 ) {
   qConvert <- ifelse("00060" == parameterCd, 35.314667, 1)
   qConvert <- ifelse(convert, qConvert, 1)
@@ -75,7 +79,12 @@ readNWISDaily <- function(
       localDaily$agency <- character(0)
     }
 
-    localDaily <- populateDaily(localDaily, qConvert, verbose = verbose)
+    localDaily <- populateDaily(
+      localDaily,
+      qConvert,
+      verbose = verbose,
+      adjust = adjust
+    )
   } else {
     localDaily <- data.frame(
       Date = as.Date(character()),

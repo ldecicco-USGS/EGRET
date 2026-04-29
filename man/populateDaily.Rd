@@ -4,7 +4,7 @@
 \alias{populateDaily}
 \title{Populate Daily data frame}
 \usage{
-populateDaily(rawData, qConvert, verbose = TRUE)
+populateDaily(rawData, qConvert, verbose = TRUE, adjust = TRUE)
 }
 \arguments{
 \item{rawData}{dataframe contains at least dateTime, value, code columns}
@@ -12,6 +12,9 @@ populateDaily(rawData, qConvert, verbose = TRUE)
 \item{qConvert}{character conversion to cubic meters per second}
 
 \item{verbose}{logical specifying whether or not to display progress message}
+
+\item{adjust}{logical specifying whether or not to adjust the zero and negative flow.
+Defaults to TRUE.}
 }
 \value{
 A data frame 'Daily' with the following columns:
@@ -35,11 +38,11 @@ Using raw data that has at least dateTime, value, code, populates the rest of th
 }
 \examples{
 dateTime <- as.character(seq(as.Date("2001/1/1"),
-         as.Date("2001/12/31"), by = "day"))
-value <- 1:365
-code <- rep("",365)
+         as.Date("2002/1/2"), by = "day"))
+value <- -1:365
+code <- rep("",367)
 dataInput <- data.frame(dateTime, value, code, stringsAsFactors=FALSE)
-Daily <- populateDaily(dataInput, 2)
+Daily <- populateDaily(dataInput, 1)
 }
 \seealso{
 \code{\link{readNWISDaily}}, \code{\link{readUserDaily}}

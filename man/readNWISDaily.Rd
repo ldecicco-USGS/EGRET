@@ -5,7 +5,7 @@
 \title{Import NWIS Daily Data for EGRET analysis}
 \usage{
 readNWISDaily(siteNumber, parameterCd = "00060", startDate = "",
-  endDate = "", verbose = TRUE, convert = TRUE)
+  endDate = "", verbose = TRUE, convert = TRUE, adjust = TRUE)
 }
 \arguments{
 \item{siteNumber}{character USGS site number.  This is usually an 8 digit number}
@@ -19,8 +19,12 @@ readNWISDaily(siteNumber, parameterCd = "00060", startDate = "",
 \item{verbose}{logical specifying whether or not to display progress message}
 
 \item{convert}{logical Option to include a conversion from cfs to cms (35.314667). The default is TRUE,
-which is appropriate for using NWIS data in the EGRET package.  Set this to FALSE to not include the conversion. If the parameter code is not 00060 (NWIS discharge),
+which is appropriate for using NWIS data in the EGRET package.
+Set this to FALSE to not include the conversion. If the parameter code is not 00060 (NWIS discharge),
 there is no conversion applied.}
+
+\item{adjust}{logical specifying whether or not to adjust the zero and negative flow.
+Defaults to TRUE.}
 }
 \value{
 A data frame 'Daily' with the following columns:

@@ -50,12 +50,13 @@ readNWISSample <- function(
     siteNumber <- paste0("USGS-", siteNumber)
   }
 
-  data <- suppressMessages(dataRetrieval::read_waterdata_samples(
+  data <- dataRetrieval::read_waterdata_samples(
     monitoringLocationIdentifier = siteNumber,
     usgsPCode = parameterCd,
     activityStartDateLower = startDate,
-    activityStartDateUpper = endDate
-  ))
+    activityStartDateUpper = endDate,
+    dataProfile = "fullphyschem"
+  )
 
   extra_cols <- c(
     "ActivityStartDateTime",
@@ -100,10 +101,6 @@ readNWISSample <- function(
     )] <- conversion_names$legacy_names[i]
   }
 
-  if (nrow(data) == 0) {
-    warning("No data returned")
-  }
-
   if (nrow(data) > 0) {
     data <- processQWData(data)
     first_three <- c("dateTime", "qualifier", "value")
@@ -136,6 +133,8 @@ readNWISSample <- function(
     )]
     Sample <- Sample[order(Sample$Date), ]
   } else {
+    warning("No data returned")
+
     Sample <- data.frame(
       Date = as.Date(character()),
       ConcLow = numeric(),
