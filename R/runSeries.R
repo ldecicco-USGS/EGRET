@@ -350,6 +350,8 @@ runSeries <- function(
   eListOut$INFO$windowY <- windowY
   eListOut$INFO$windowS <- windowS
 
+  eListOut <- fillUpElists(eListOut)
+
   attr(eListOut, "runSeries") <- TRUE
 
   return(eListOut)

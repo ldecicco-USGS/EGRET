@@ -45,7 +45,7 @@ pCode <- '00631'
 \donttest{
 Daily <- readNWISDaily(siteNumber,'00060', '1984-10-01', '')
 Sample <- readNWISSample(siteNumber,pCode, '1984-10-01', '')
-INFO <- readNWISInfo(siteNumber,pCode,interactive=FALSE)
+INFO <- readNWISInfo(siteNumber,pCode, interactive = FALSE)
 eList <- mergeReport(INFO, Daily, Sample)
 Sample <- eList$Sample
 plot(eList)

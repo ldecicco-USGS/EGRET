@@ -22,8 +22,8 @@ Populates INFO data frame with additional user-supplied information. Also remove
 }
 \examples{
 \donttest{
-library(dataRetrieval)
-INFO <- readNWISsite('01594440')
+
+INFO <- dataRetrieval::read_waterdata_monitoring_location('USGS-01594440')
 siteNumber <- "01594440"
 siteINFO <- populateSiteINFO(INFO, siteNumber, interactive = FALSE)
 }

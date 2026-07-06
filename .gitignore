@@ -7,12 +7,7 @@ Meta/
 Newstuff/
 *.docx
 vignettes/*.html
-vignettes/EGRET.R
-vignettes/Enhancements.R
-vignettes/TrendsByMonth.R
-vignettes/WRTDSK.R
-vignettes/rResid.R
-vignettes/parallel.R
+vignettes/*.R
 vignettes/*_cache
 docs
 /doc/

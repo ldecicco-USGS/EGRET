@@ -6,7 +6,7 @@
 #' This function takes an existing eList
 #' Including the estimated model (the surfaces object in the eList)
 #' And produces the daily WRTDSKalman estimates of concentration and flux
-#' These generated estimates are called genConc and genFlux
+#' These generated estimates are called GenConc and GenFlux
 #'
 #' @rdname wrtdsK
 #' @export
@@ -25,40 +25,40 @@
 #' AnnualResults <- setupYears(eList$Daily)
 #' head(AnnualResults)
 WRTDSKalman <- function(
-  eList,
-  rho = 0.90,
-  niter = 200,
-  seed = NA,
-  verbose = TRUE
+    eList,
+    rho = 0.90,
+    niter = 200,
+    seed = NA,
+    verbose = TRUE
 ) {
   if (!is.egret(eList)) {
     stop("Please check eList argument")
   }
-
+  
   # Need these columns to be integers:
   int_cols <- c("Julian", "Month", "Day", "MonthSeq", "waterYear")
   int_indexs <- which(names(eList$Daily) %in% int_cols)
-
+  
   eList$Daily[, int_indexs] <- sapply(eList$Daily[, int_indexs], as.integer)
-
+  
   if (!"surfaces" %in% names(eList)) {
     eList$surfaces <- estSurfaces(eList)
   }
-
+  
   if (!is.na(seed)) {
     set.seed(seed)
   }
-
+  
   # this part is to set up the array of runs of missing values
   localEList <- cleanUp(eList, seed = seed)
   localDaily <- populateDailySamp(localEList)
-
+  
   if (sum(is.na(localDaily$trueConc)) == 0) {
     stop(
       "There are known concentration values for every day in the Daily data frame."
     )
   }
-
+  
   numDays <- length(localDaily$Date)
   numDaysP <- numDays + 1
   # set up DailyGen which will hold the daily generated flux values for all days and all iterations
@@ -82,17 +82,18 @@ WRTDSKalman <- function(
   doGap <- seq(2, nRunsM, 2)
   # numGap is the number of groups of missing values to be filled in
   numGap <- length(doGap)
+  # compute range where autocorrelation is 0.001
+  range <- round(-3/log10(rho) * 2, 0)
+  halfrange <- floor(range/2)
+  
   # now we are ready to do the iterations to generate the series
   if (verbose) {
     cat("% complete:\n")
   }
-
   printUpdate <- unique(floor(seq(1, niter, niter / 100)))
-
   endOfLine <- seq(10, 100, 10)
-
   seeds <- sample(1:5000, niter)
-
+  
   for (iter in 1:niter) {
     if (iter %in% printUpdate & verbose) {
       cat(floor(iter * 100 / niter), "\t")
@@ -111,32 +112,47 @@ WRTDSKalman <- function(
       iGap <- doGap[i]
       startFill <- zstarts[iGap]
       endFill <- zends[iGap] + 1
-      nFill <- zz$length[iGap] + 2
-      if (i == 1 | i == numGap) {
-        z <- stats::rnorm(nFill - 2)
-        xfill <- c(xxP[startFill], z, xxP[endFill])
-      } else {
-        xfill <- genmissing(xxP[startFill], xxP[endFill], rho, nFill)
+      nFill <- zz$lengths[iGap] + 2
+      
+      # gaps that are equal or less than range
+      # first and last gaps now use genmissing()
+      if (nFill <= range) {
+        xxP[startFill:endFill] <- genmissing(xxP[startFill], xxP[endFill], rho, nFill)
       }
-
-      xxP[startFill:endFill] <- xfill
+      
+      # split long gaps into three parts to speed processing
+      # first part is range/2 days from start
+      # third part is range/2 days from end
+      # second part is all days between first and third parts
+      if (nFill > range + 2) {
+        p1End <- startFill + halfrange
+        p2Start <- startFill + halfrange + 1
+        p2End <- endFill - halfrange - 1
+        p2Length <- p2End - p2Start + 1
+        p3Start <- endFill - halfrange
+        xxP[startFill:p1End] <- genmissing(xxP[startFill], 0, rho, halfrange + 1)
+        xxP[p2Start:p2End] <- stats::rnorm(p2Length)
+        xxP[p3Start:endFill] <- genmissing(0, xxP[endFill], rho, halfrange + 1)
+      }
     }
+    
     # now we need to strip out the padded days
     xResid <- xxP[2:numDaysP]
     xConc <- exp((xResid * localDaily$SE) + localDaily$yHat)
     DailyGen[, iter] <- xConc * localDaily$Q * 86.4
   }
+
   # now we take means over all the iterations
   GenMean <- rep(NA, numDays)
   Daily <- eList$Daily
-
+  
   Daily$GenFlux <- rowMeans(DailyGen, na.rm = TRUE)
   Daily$GenConc <- Daily$GenFlux / (Daily$Q * 86.4)
   attr(Daily, "niter") <- niter
   attr(Daily, "rho") <- rho
-
+  
   eList$Daily <- Daily
-
+  
   return(eList)
 }
 
@@ -195,30 +211,30 @@ randomSubset <- function(df, colName, seed = NA) {
     which(duplicated(df[[colName]], fromLast = FALSE)),
     which(duplicated(df[[colName]], fromLast = TRUE))
   ))
-
+  
   if (length(dupIndex) == 0) {
     return(df)
   }
-
+  
   dupIndex <- dupIndex[order(dupIndex)]
-
+  
   unique_groups <- unique(df[[colName]][dupIndex])
-
+  
   if (!is.na(seed)) {
     set.seed(seed)
   }
-
+  
   sliceIndex <- rep(NA, length(unique_groups))
   for (i in seq_along(unique_groups)) {
     sliceIndex[i] <- sample(which(df[[colName]] == unique_groups[i]), size = 1)
   }
-
+  
   dfDuplicates <- df[sliceIndex, ]
   dfNoDuplicates <- df[-dupIndex, ]
-
+  
   subDF <- rbind(dfNoDuplicates, dfDuplicates)
   subDF <- subDF[order(subDF[[colName]]), ]
-
+  
   return(subDF)
 }
 
@@ -239,15 +255,15 @@ randomSubset <- function(df, colName, seed = NA) {
 populateDailySamp <- function(eList) {
   localSample <- eList$Sample
   localDaily <- eList$Daily
-
+  
   localSample <- localSample[, c("Julian", "ConcAve")]
   names(localSample) <- c("Julian", "trueConc")
-
+  
   retDaily <- merge(localDaily, localSample, by = "Julian", all.x = TRUE)
-
+  
   retDaily$trueFlux <- retDaily$trueConc * retDaily$Q * 86.4
   retDaily$stdResid <- (log(retDaily$trueConc) - retDaily$yHat) / retDaily$SE
-
+  
   return(retDaily)
 }
 
@@ -280,13 +296,13 @@ genmissing <- function(X1, XN, rho, N) {
   C <- t(chol(
     rho^abs(outer(1:N, 1:N, "-"))[c(1, N, 2:(N - 1)), c(1, N, 2:(N - 1))]
   ))
-
+  
   (C %*%
-    c(
-      MASS::ginv(C[1:2, 1:2]) %*%
-        c(X1, XN),
-      stats::rnorm(N - 2)
-    ))[c(1, 3:N, 2)]
+      c(
+        MASS::ginv(C[1:2, 1:2]) %*%
+          c(X1, XN),
+        stats::rnorm(N - 2)
+      ))[c(1, 3:N, 2)]
 }
 
 
@@ -317,15 +333,15 @@ genmissing <- function(X1, XN, rho, N) {
 #' plotWRTDSKalman(eList, sideBySide = TRUE)
 #'
 plotWRTDSKalman <- function(
-  eList,
-  sideBySide = FALSE,
-  fluxUnit = 9,
-  usgsStyle = FALSE
+    eList,
+    sideBySide = FALSE,
+    fluxUnit = 9,
+    usgsStyle = FALSE
 ) {
   if (!all((c("GenFlux", "GenConc") %in% names(eList$Daily)))) {
     stop("This function requires running WRTDSKalman on eList")
   }
-
+  
   if (all(c("paStart", "paLong") %in% names(eList$INFO))) {
     paLong <- eList$INFO$paLong
     paStart <- eList$INFO$paStart
@@ -333,15 +349,15 @@ plotWRTDSKalman <- function(
     paLong <- 12
     paStart <- 10
   }
-
+  
   AnnualResults <- setupYears(eList$Daily)
-
+  
   if (is.numeric(fluxUnit)) {
     fluxUnit <- fluxConst[shortCode = fluxUnit][[1]]
   } else if (is.character(fluxUnit)) {
     fluxUnit <- fluxConst[fluxUnit][[1]]
   }
-
+  
   if (usgsStyle) {
     yLab <- fluxUnit@unitName[[1]]
   } else {
@@ -349,10 +365,10 @@ plotWRTDSKalman <- function(
   }
   yLab <- trimws(yLab, which = "left")
   unitFactorReturn <- fluxUnit@unitFactor
-
+  
   AnnualResults$Flux <- AnnualResults$Flux * unitFactorReturn
   AnnualResults$GenFlux <- AnnualResults$GenFlux * unitFactorReturn
-
+  
   yMax <- 1.1 * max(AnnualResults$Flux, AnnualResults$GenFlux)
   nYears <- length(AnnualResults[, 1])
   # first a plot of just the WRTDS estimate
@@ -389,7 +405,7 @@ plotWRTDSKalman <- function(
     xlab <- paste0("WRTDS estimate of annual flux, in ", yLab)
     ylab <- paste0("WRTDSKalman estimate of annual flux, in ", yLab)
   }
-
+  
   genericEGRETDotPlot(
     AnnualResults$DecYear,
     AnnualResults$Flux,
@@ -411,7 +427,7 @@ plotWRTDSKalman <- function(
     pch = 20,
     cex = 1.4
   )
-
+  
   # scatter plot
   genericEGRETDotPlot(
     AnnualResults$Flux,
@@ -427,7 +443,7 @@ plotWRTDSKalman <- function(
     plotTitle = title2
   )
   graphics::abline(a = 0, b = 1)
-
+  
   if (sideBySide) {
     mtext(mainTitle, line = -1, side = 3, outer = TRUE, cex = 1)
     par(mfrow = c(1, 1), oma = c(0, 0, 0, 0))
@@ -465,44 +481,44 @@ plotWRTDSKalman <- function(
 #' plotTimeSlice(eList, start = NA, end = 1991, conc = FALSE)
 #'
 plotTimeSlice <- function(
-  eList,
-  start = NA,
-  end = NA,
-  conc = TRUE,
-  fluxUnit = 3,
-  usgsStyle = FALSE
+    eList,
+    start = NA,
+    end = NA,
+    conc = TRUE,
+    fluxUnit = 3,
+    usgsStyle = FALSE
 ) {
   if (!all((c("GenFlux", "GenConc") %in% names(eList$Daily)))) {
     stop("This function requires running WRTDSKalman on eList")
   }
-
+  
   eList <- makeAugmentedSample(eList)
-
+  
   Daily <- eList$Daily
   Sample <- eList$Sample
-
+  
   if (!is.na(start)) {
     Daily <- Daily[Daily$DecYear >= start, ]
-
+    
     Sample <- Sample[Sample$DecYear >= start, ]
   } else {
     start <- min(c(Daily$DecYear, Sample$DecYear))
   }
-
+  
   if (!is.na(end)) {
     Daily <- Daily[Daily$DecYear <= end, ]
-
+    
     Sample <- Sample[Sample$DecYear <= end, ]
   } else {
     end <- max(c(Daily$DecYear, Sample$DecYear))
   }
-
+  
   # figure out which data symbol to use, red for uncensored, brown for censored
   Sample$color <- ifelse(Sample$Uncen == 1, "red", "cyan4")
-
+  
   # first concentration, then flux
   name <- paste(eList$INFO$shortName, eList$INFO$paramShortName)
-
+  
   possibleGoodUnits <- c(
     "mg/l",
     "mg/l as N",
@@ -518,10 +534,10 @@ plotTimeSlice <- function(
     "mg/l as S",
     "mg/l NH4"
   )
-
+  
   allCaps <- toupper(possibleGoodUnits)
   localUnits <- toupper(eList$INFO$param.units)
-
+  
   if (!(localUnits %in% allCaps)) {
     warning(
       "Expected concentration units are mg/l, \nThe INFO dataframe indicates:",
@@ -529,15 +545,15 @@ plotTimeSlice <- function(
       "\nFlux calculations will be wrong if units are not consistent"
     )
   }
-
+  
   if (conc) {
     ratio <- mean(Daily$GenConc) / mean(Daily$ConcDay)
     fratio <- format(ratio, digits = 2)
-
+    
     y1 <- Daily$ConcDay
     y2 <- Daily$GenConc
     y3 <- Sample$rObserved
-
+    
     plotTitle <- paste(
       name,
       "\nConcentrations, Black is WRTDS, Green is WRTDSKalman\nData in red, (rl in blue if <), Ratio of means is",
@@ -549,28 +565,28 @@ plotTimeSlice <- function(
     } else if (is.character(fluxUnit)) {
       fluxUnit <- fluxConst[fluxUnit][[1]]
     }
-
+    
     fluxFactor <- fluxUnit@unitFactor
-
+    
     ratio <- mean(Daily$GenFlux) / mean(Daily$FluxDay)
     fratio <- format(ratio, digits = 2)
-
+    
     y1 <- Daily$FluxDay * fluxFactor
     y2 <- Daily$GenFlux * fluxFactor
     y3 <- Sample$rObserved * Sample$Q * fluxFactor * 86.40
-
+    
     yLab <- ifelse(usgsStyle, fluxUnit@unitUSGS, fluxUnit@unitExpress)
-
+    
     plotTitle <- paste(
       name,
       "\nFlux, Black is WRTDS, Green is WRTDSKalman\nData in red, (rl in blue if <), Ratio of means is",
       fratio
     )
   }
-
+  
   high_y <- max(y1, y2, y3, na.rm = TRUE)
   low_y <- min(y1, y2, y3, na.rm = TRUE)
-
+  
   yInfo <- generalAxis(
     x = y1,
     minVal = low_y,
@@ -580,7 +596,7 @@ plotTimeSlice <- function(
     logScale = TRUE,
     concentration = conc
   )
-
+  
   genericEGRETDotPlot(
     Daily$DecYear,
     y1,

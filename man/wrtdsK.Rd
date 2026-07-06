@@ -26,7 +26,7 @@ estimates of concentration and flux
 This function takes an existing eList
 Including the estimated model (the surfaces object in the eList)
 And produces the daily WRTDSKalman estimates of concentration and flux
-These generated estimates are called genConc and genFlux
+These generated estimates are called GenConc and GenFlux
 }
 \examples{
 eList <- Choptank_eList
