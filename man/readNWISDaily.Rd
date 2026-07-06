@@ -6,7 +6,7 @@
 \usage{
 readNWISDaily(siteNumber, parameterCd = "00060", startDate = "",
   endDate = "", verbose = TRUE, convert = TRUE, adjust = TRUE,
-  fill = FALSE)
+  fill = FALSE, maxgap = 21, fill_type = "interpolation")
 }
 \arguments{
 \item{siteNumber}{character USGS site number.  This is usually an 8 digit number.}
@@ -29,6 +29,14 @@ allow log transformation. Defaults to TRUE.}
 
 \item{fill}{logical specifying whether to fill NA values by linear interpolation.
 Defaults to FALSE.}
+
+\item{maxgap}{Maximum number of NA days allowed for interpolating gaps.
+Default is 21. Only used if fill is set to TRUE.}
+
+\item{fill_type}{character to define what process to fill missing data. Options are
+"interpolation" - linear interpolation from the
+`zoo::na.approx`, or "log_interp" - linear interpolation in the log space.
+Only used if fill is set to TRUE.}
 }
 \value{
 A data frame 'Daily' with the following columns:

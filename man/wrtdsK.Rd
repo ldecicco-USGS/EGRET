@@ -4,7 +4,8 @@
 \alias{WRTDSKalman}
 \title{WRTDS-Kalman}
 \usage{
-WRTDSKalman(eList, rho = 0.9, niter = 200, seed = NA, verbose = TRUE)
+WRTDSKalman(eList, rho = 0.9, niter = 200, range = 365, seed = NA,
+  verbose = TRUE)
 }
 \arguments{
 \item{eList}{named list with the INFO, Daily, and Sample dataframes and surfaces matrix}
@@ -12,6 +13,8 @@ WRTDSKalman(eList, rho = 0.9, niter = 200, seed = NA, verbose = TRUE)
 \item{rho}{numeric the lag one autocorrelation. Default is 0.9.}
 
 \item{niter}{number of iterations. Default is 200.}
+
+\item{range}{number of days from the nearest sample where autoregressive model is applied. Used to speed up function on datasets with very long gaps in sampling. Default is 365 days.}
 
 \item{seed}{integer value. Defaults to NA, which will not change the current seed.
 Setting the seed to any given value can be used to create repeatable output.}
