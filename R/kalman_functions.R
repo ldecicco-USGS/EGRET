@@ -6,14 +6,13 @@
 #' This function takes an existing eList
 #' Including the estimated model (the surfaces object in the eList)
 #' And produces the daily WRTDSKalman estimates of concentration and flux
-#' These generated estimates are called genConc and genFlux
+#' These generated estimates are called GenConc and GenFlux
 #'
 #' @rdname wrtdsK
 #' @export
 #' @param eList named list with the INFO, Daily, and Sample dataframes and surfaces matrix
 #' @param rho numeric the lag one autocorrelation. Default is 0.9.
 #' @param niter number of iterations. Default is 200.
-#' @param range number of days from the nearest sample where autoregressive model is applied. Used to speed up function on datasets with very long gaps in sampling. Default is 365 days.
 #' @param verbose logical specifying whether or not to display progress message
 #' @param seed integer value. Defaults to NA, which will not change the current seed.
 #' Setting the seed to any given value can be used to create repeatable output.
@@ -29,7 +28,6 @@ WRTDSKalman <- function(
     eList,
     rho = 0.90,
     niter = 200,
-    range = 365,
     seed = NA,
     verbose = TRUE
 ) {
@@ -84,15 +82,16 @@ WRTDSKalman <- function(
   doGap <- seq(2, nRunsM, 2)
   # numGap is the number of groups of missing values to be filled in
   numGap <- length(doGap)
+  # compute range where autocorrelation is 0.001
+  range <- round(-3/log10(rho) * 2, 0)
+  halfrange <- floor(range/2)
+  
   # now we are ready to do the iterations to generate the series
   if (verbose) {
     cat("% complete:\n")
   }
-  
   printUpdate <- unique(floor(seq(1, niter, niter / 100)))
-  
   endOfLine <- seq(10, 100, 10)
-  
   seeds <- sample(1:5000, niter)
   
   for (iter in 1:niter) {
@@ -126,15 +125,15 @@ WRTDSKalman <- function(
       # third part is range/2 days from end
       # second part is all days between first and third parts
       if (nFill > range + 2) {
-        halfrange <- floor(range/2)
         p1End <- startFill + halfrange
-        p2 <- c(startFill + halfrange + 1, endFill - halfrange - 1)
+        p2Start <- startFill + halfrange + 1
+        p2End <- endFill - halfrange - 1
+        p2Length <- p2End - p2Start + 1
         p3Start <- endFill - halfrange
         xxP[startFill:p1End] <- genmissing(xxP[startFill], 0, rho, halfrange + 1)
+        xxP[p2Start:p2End] <- stats::rnorm(p2Length)
         xxP[p3Start:endFill] <- genmissing(0, xxP[endFill], rho, halfrange + 1)
-        xxP[p2[1]:p2[2]] <- stats::rnorm(nFill - (2 * halfrange + 2))
       }
-      
     }
     
     # now we need to strip out the padded days
@@ -142,6 +141,7 @@ WRTDSKalman <- function(
     xConc <- exp((xResid * localDaily$SE) + localDaily$yHat)
     DailyGen[, iter] <- xConc * localDaily$Q * 86.4
   }
+
   # now we take means over all the iterations
   GenMean <- rep(NA, numDays)
   Daily <- eList$Daily
