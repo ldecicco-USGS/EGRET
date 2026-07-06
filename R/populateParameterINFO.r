@@ -10,14 +10,14 @@
 #' @export
 #' @examples
 #' \donttest{
-#' library(dataRetrieval)
-#' INFO <- readNWISsite('01594440')
+#'
+#' INFO <- dataRetrieval::read_waterdata_monitoring_location('USGS-01594440')
 #' parameterCd <- "01075"
-#' parameterData <- readNWISpCode(parameterCd)
-#' INFO$param.nm <- parameterData$parameter_nm
-#' INFO$param.units <- parameterData$parameter_units
-#' INFO$paramShortName <- parameterData$srsname
-#' INFO$paramNumber <- parameterData$parameter_cd
+#' parameterData <- dataRetrieval::read_waterdata_parameter_codes(parameterCd)
+#' INFO$param.nm <- parameterData$parameter_name
+#' INFO$param.units <- parameterData$unit_of_measure
+#' INFO$paramShortName <- parameterData$parameter_name
+#' INFO$paramNumber <- parameterData$parameter_code
 #'
 #' INFO <- populateParameterINFO(parameterCd, INFO, interactive = FALSE)
 #' }

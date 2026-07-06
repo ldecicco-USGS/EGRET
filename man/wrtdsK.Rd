@@ -4,8 +4,7 @@
 \alias{WRTDSKalman}
 \title{WRTDS-Kalman}
 \usage{
-WRTDSKalman(eList, rho = 0.9, niter = 200, range = 365, seed = NA,
-  verbose = TRUE)
+WRTDSKalman(eList, rho = 0.9, niter = 200, seed = NA, verbose = TRUE)
 }
 \arguments{
 \item{eList}{named list with the INFO, Daily, and Sample dataframes and surfaces matrix}
@@ -13,8 +12,6 @@ WRTDSKalman(eList, rho = 0.9, niter = 200, range = 365, seed = NA,
 \item{rho}{numeric the lag one autocorrelation. Default is 0.9.}
 
 \item{niter}{number of iterations. Default is 200.}
-
-\item{range}{number of days from the nearest sample where autoregressive model is applied. Used to speed up function on datasets with very long gaps in sampling. Default is 365 days.}
 
 \item{seed}{integer value. Defaults to NA, which will not change the current seed.
 Setting the seed to any given value can be used to create repeatable output.}
@@ -29,7 +26,7 @@ estimates of concentration and flux
 This function takes an existing eList
 Including the estimated model (the surfaces object in the eList)
 And produces the daily WRTDSKalman estimates of concentration and flux
-These generated estimates are called genConc and genFlux
+These generated estimates are called GenConc and GenFlux
 }
 \examples{
 eList <- Choptank_eList
