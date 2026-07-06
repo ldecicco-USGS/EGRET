@@ -10,14 +10,14 @@
 #' @export
 #' @examples
 #' \donttest{
-#' library(dataRetrieval)
-#' INFO <- readNWISsite('01594440')
+#'
+#' INFO <- dataRetrieval::read_waterdata_monitoring_location('USGS-01594440')
 #' siteNumber <- "01594440"
 #' siteINFO <- populateSiteINFO(INFO, siteNumber, interactive = FALSE)
 #' }
 populateSiteINFO <- function(INFO, siteNumber, interactive = TRUE) {
   if (nzchar(siteNumber)) {
-    if (!nzchar(INFO$site_no)) {
+    if (!"site_no" %in% names(INFO)) {
       INFO$site_no <- siteNumber
     }
 
@@ -100,15 +100,29 @@ populateSiteINFO <- function(INFO, siteNumber, interactive = TRUE) {
         "square kilometers.\n\n"
       )
     } else {
-      INFO$drain_area_va <- as.numeric(INFO$drain_area_va)
-      INFO$contrib_drain_area_va <- as.numeric(INFO$contrib_drain_area_va)
-      INFO$drainSqKm <- INFO$drain_area_va * 2.5899881
-      INFO$shortName <- INFO$station_nm
+      if (
+        all(
+          c("drain_area_va", "contrib_drain_area_va", "station_nm") %in%
+            names(INFO)
+        )
+      ) {
+        INFO$drain_area_va <- as.numeric(INFO$drain_area_va)
+        INFO$contrib_drain_area_va <- as.numeric(INFO$contrib_drain_area_va)
+        INFO$drainSqKm <- INFO$drain_area_va * 2.5899881
+        INFO$shortName <- INFO$station_nm
+      }
+
+      if (all(c() %in% names(INFO))) {
+        INFO$drain_area_va <- as.numeric(INFO$drainage_area)
+        INFO$contrib_drain_area_va <- as.numeric(
+          INFO$contributing_drainage_area
+        )
+        INFO$drainSqKm <- INFO$drain_area_va * 2.5899881
+        INFO$shortName <- INFO$monitoring_location_name
+      }
     }
   } else {
     if (interactive) {
-      #       cat("The program needs to know a site number or id, please enter that here (don't use quotes) - Enter to leave blank:")
-      #       INFO$site_no <- readline()
       cat(
         "Please enter a site name that will be used to label all graphs and tables(no quotes):\n"
       )
@@ -124,7 +138,12 @@ populateSiteINFO <- function(INFO, siteNumber, interactive = TRUE) {
       cat("4 is hectares.\n")
       cat("Area(no quotes):\n")
       INFO$drain_area_va <- readline()
-      INFO$drain_area_va <- as.numeric(INFO$drain_area_va)
+      if ("drain_area_va" %in% names(INFO)) {
+        INFO$drain_area_va <- as.numeric(INFO$drain_area_va)
+      } else if ("drainage_area" %in% names(INFO)) {
+        INFO$drain_area_va <- as.numeric(INFO$drainage_area)
+      }
+
       cat(
         "Unit Code (1-4, no quotes)\nrepresenting \n1: sq mi \n2: sq km \n3: sq m\n4: sq 100*km):"
       )
@@ -138,10 +157,7 @@ populateSiteINFO <- function(INFO, siteNumber, interactive = TRUE) {
         "square kilometers.\n"
       )
     } else {
-      #       INFO$site_no <- NA
       INFO$shortName <- NA
-      #       INFO$dec_lat_va <- NA
-      #       INFO$dec_long_va <- NA
       INFO$drain_area_va <- NA
       INFO$drainSqKm <- NA
     }
