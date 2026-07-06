@@ -127,12 +127,16 @@ flexFN <- function(
   }
 
   INFO <- eList$INFO
-  INFO$nVectorYear <- attr(eList$surfaces, "surfaceIndex")[["nVectorYear"]]
-  INFO$bottomYear <- attr(eList$surfaces, "surfaceIndex")[["bottomYear"]]
-  INFO$stepYear <- attr(eList$surfaces, "surfaceIndex")[["stepYear"]]
-  INFO$nVectorLogQ <- attr(eList$surfaces, "surfaceIndex")[["nVectorLogQ"]]
-  INFO$bottomLogQ <- attr(eList$surfaces, "surfaceIndex")[["bottomLogQ"]]
-  INFO$stepLogQ <- attr(eList$surfaces, "surfaceIndex")[["stepLogQ"]]
+
+  if ("surfaceIndex" %in% names(attributes(eList$surfaces))) {
+    INFO$nVectorYear <- attr(eList$surfaces, "surfaceIndex")[["nVectorYear"]]
+    INFO$bottomYear <- attr(eList$surfaces, "surfaceIndex")[["bottomYear"]]
+    INFO$stepYear <- attr(eList$surfaces, "surfaceIndex")[["stepYear"]]
+    INFO$nVectorLogQ <- attr(eList$surfaces, "surfaceIndex")[["nVectorLogQ"]]
+    INFO$bottomLogQ <- attr(eList$surfaces, "surfaceIndex")[["bottomLogQ"]]
+    INFO$stepLogQ <- attr(eList$surfaces, "surfaceIndex")[["stepLogQ"]]
+  }
+
   INFO$nSegments <- nrow(dateInfo)
 
   #Rename dateInfo cols so that they are internally consistent now:
