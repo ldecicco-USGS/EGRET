@@ -84,7 +84,7 @@ WRTDSKalman <- function(
   numGap <- length(doGap)
   # compute range where autocorrelation is 0.001
   range <- round(-3/log10(rho) * 2, 0)
-  halfrange <- floor(range/2)
+  halfrange <- floor((range - 2) / 2)
   
   # now we are ready to do the iterations to generate the series
   if (verbose) {
@@ -124,12 +124,12 @@ WRTDSKalman <- function(
       # first part is range/2 days from start
       # third part is range/2 days from end
       # second part is all days between first and third parts
-      if (nFill > range + 2) {
+      if (nFill > range) {
         p1End <- startFill + halfrange
-        p2Start <- startFill + halfrange + 1
-        p2End <- endFill - halfrange - 1
-        p2Length <- p2End - p2Start + 1
         p3Start <- endFill - halfrange
+        p2Start <- p1End + 1
+        p2End <- p3Start - 1
+        p2Length <- p2End - p2Start + 1
         xxP[startFill:p1End] <- genmissing(xxP[startFill], 0, rho, halfrange + 1)
         xxP[p2Start:p2End] <- stats::rnorm(p2Length)
         xxP[p3Start:endFill] <- genmissing(0, xxP[endFill], rho, halfrange + 1)
@@ -143,9 +143,7 @@ WRTDSKalman <- function(
   }
 
   # now we take means over all the iterations
-  GenMean <- rep(NA, numDays)
   Daily <- eList$Daily
-  
   Daily$GenFlux <- rowMeans(DailyGen, na.rm = TRUE)
   Daily$GenConc <- Daily$GenFlux / (Daily$Q * 86.4)
   attr(Daily, "niter") <- niter
