@@ -82,9 +82,8 @@ WRTDSKalman <- function(
   doGap <- seq(2, nRunsM, 2)
   # numGap is the number of groups of missing values to be filled in
   numGap <- length(doGap)
-  # compute range where autocorrelation is 0.001
-  range <- round(-3/log10(rho) * 2, 0)
-  halfrange <- floor((range - 2) / 2)
+  # precompute Cholesky factor shared by every call of genmissing_fast()
+  Lfull <- precompute_L(rho, max(zz$lengths))
   
   # now we are ready to do the iterations to generate the series
   if (verbose) {
@@ -113,27 +112,8 @@ WRTDSKalman <- function(
       startFill <- zstarts[iGap]
       endFill <- zends[iGap] + 1
       nFill <- zz$lengths[iGap] + 2
-      
-      # gaps that are equal or less than range
-      # first and last gaps now use genmissing()
-      if (nFill <= range) {
-        xxP[startFill:endFill] <- genmissing(xxP[startFill], xxP[endFill], rho, nFill)
-      }
-      
-      # split long gaps into three parts to speed processing
-      # first part is range/2 days from start
-      # third part is range/2 days from end
-      # second part is all days between first and third parts
-      if (nFill > range) {
-        p1End <- startFill + halfrange
-        p3Start <- endFill - halfrange
-        p2Start <- p1End + 1
-        p2End <- p3Start - 1
-        p2Length <- p2End - p2Start + 1
-        xxP[startFill:p1End] <- genmissing(xxP[startFill], 0, rho, halfrange + 1)
-        xxP[p2Start:p2End] <- stats::rnorm(p2Length)
-        xxP[p3Start:endFill] <- genmissing(0, xxP[endFill], rho, halfrange + 1)
-      }
+      # genmissing_fast() uses Lfull created above
+      xxP[startFill:endFill] <- genmissing_fast(xxP[startFill], xxP[endFill], rho, nFill, Lfull)
     }
     
     # now we need to strip out the padded days
@@ -303,6 +283,116 @@ genmissing <- function(X1, XN, rho, N) {
       ))[c(1, 3:N, 2)]
 }
 
+
+#' genmissing_fast
+#'
+#' Generates a lag one auto-regressive time series, where the first and last
+#' values are fixed.  Marginal expected value is zero and variance is one.
+#' Generated values have a normal conditional distribution.
+#'
+#' @author Claude.ai
+#'
+#' @param X1 value before the gap
+#' @param XN value after the gap
+#' @param rho the lag one autocorrelation
+#' @param N the length of the sequence including X1 and XN. It
+#' is two more than the gap length
+#' @param Lfull precomputed Cholesky factor created with precompute_L
+#' @export
+#' @return genmissing_fast numeric vector of length N, conditioned on the
+#' first value (X1) and last value (XN) with the specified lag one autocorrelation
+#' in the limit (where N is large) the values are normal with mean 0 and variance 1
+#'
+genmissing_fast <- function(X1, XN, rho, N, Lfull) {
+  
+  # Degenerate case: no interior points to simulate, just return the endpoints
+  if (N == 2) return(c(X1, XN))
+  
+  s2 <- 1 - rho^2
+  m  <- N - 2                     # number of interior points for THIS call
+  
+  # Slice the precomputed sequence down to what this N needs.
+  # Valid because Ldiag[i]/Lsub[i] never depended on N to begin with.
+  Ldiag <- Lfull$Ldiag[1:m]
+  Lsub  <- Lfull$Lsub[1:m]
+  
+  # --- Step 1: build the RHS vector b for the conditional-mean equation ---
+  # The interior precision matrix only connects to the endpoints through
+  # its two boundary entries: interior point 2 connects to X1, and
+  # interior point N-1 connects to XN. Everywhere else, conditioning on
+  # the endpoints contributes nothing (that's the Markov property at work).
+  b <- numeric(m)
+  if (m == 1) {
+    # special case: with only one interior point, it's adjacent to BOTH endpoints
+    b[1] <- (rho / s2) * (X1 + XN)
+  } else {
+    b[1] <- (rho / s2) * X1
+    b[m] <- (rho / s2) * XN
+  }
+  
+  # --- Step 2: solve Omega_II %*% mu = b for the conditional mean mu ---
+  # This is done via the standard two-pass bidiagonal solve using L:
+  # forward pass solves L %*% w = b (from top down)...
+  w <- numeric(m)
+  w[1] <- b[1] / Ldiag[1]
+  if (m > 1) for (i in 2:m) w[i] <- (b[i] - Lsub[i] * w[i - 1]) / Ldiag[i]
+  
+  # ...then backward pass solves L^T %*% mu = w (from bottom up)
+  mu <- numeric(m)
+  mu[m] <- w[m] / Ldiag[m]
+  if (m > 1) for (i in (m - 1):1) mu[i] <- (w[i] - Lsub[i + 1] * mu[i + 1]) / Ldiag[i]
+  
+  # --- Step 3: sample the conditional noise term ---
+  # We want interior draws distributed as N(mu, Omega_II^{-1}).
+  # If z ~ iid N(0,1) and we solve L^T %*% y = z, then
+  # Cov(y) = (L L^T)^{-1} = Omega_II^{-1}, exactly the covariance we need.
+  # This is the same backward-substitution pattern as the mu step above,
+  # just with random z instead of the deterministic w.
+  z <- stats::rnorm(m)
+  y <- numeric(m)
+  y[m] <- z[m] / Ldiag[m]
+  if (m > 1) for (i in (m - 1):1) y[i] <- (z[i] - Lsub[i + 1] * y[i + 1]) / Ldiag[i]
+  
+  # --- Step 4: combine mean + noise, and re-attach the fixed endpoints ---
+  c(X1, mu + y, XN)
+}
+
+#' precompute_L
+#'
+#' Builds the bidiagonal Cholesky factor of the tridiagonal PRECISION matrix 
+#' shared by every call of genmissing_fast for a given value of rho.
+#'
+#' @author Claude.ai
+#'
+#' @param rho the lag one autocorrelation
+#' @param N_max the maximum number of days between samples
+#' @export
+#' @return precompute_L list with elements Ldiag a numeric vector of the diagonal of the Cholesky factor and Lsub a numeric vector of the subdiagonal of the Cholesky factor
+#'
+precompute_L <- function(rho, N_max) {
+  s2 <- 1 - rho^2            # AR(1) innovation variance, sigma^2 = 1 - rho^2
+  m  <- N_max - 2            # number of interior points for the largest N
+  d  <- (1 + rho^2) / s2     # diagonal entry of the interior precision matrix
+  o  <- -rho / s2            # off-diagonal entry of the interior precision matrix
+  
+  Ldiag <- numeric(m)        # will hold L[i,i], the diagonal of the Cholesky factor
+  Lsub  <- numeric(m)        # will hold L[i,i-1], the subdiagonal of the Cholesky factor
+  
+  # First diagonal entry has no subdiagonal neighbor to account for
+  Ldiag[1] <- sqrt(d)
+  
+  # Standard bidiagonal Cholesky recursion for a tridiagonal matrix:
+  # off-diagonal of Omega = L[i,i-1] * L[i-1,i-1]  ->  solve for L[i,i-1]
+  # diagonal of Omega     = L[i,i]^2 + L[i,i-1]^2  ->  solve for L[i,i]
+  if (m > 1) {
+    for (i in 2:m) {
+      Lsub[i]  <- o / Ldiag[i - 1]
+      Ldiag[i] <- sqrt(d - Lsub[i]^2)
+    }
+  }
+  
+  list(Ldiag = Ldiag, Lsub = Lsub)
+}
 
 #' plotWRTDSKalman
 #'
