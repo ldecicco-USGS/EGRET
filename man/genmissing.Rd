@@ -17,7 +17,7 @@ genmissing(X1, XN, rho, N)
 is two more than the gap length}
 }
 \value{
-genmissing numeric vector of length N, conditioned on the
+numeric vector of length N, conditioned on the
 first value (X1) and last value (XN) with the specified lag one autocorrelation
 in the limit (where N is large) the values are normal with mean 0 and variance 1
 }

@@ -16,18 +16,16 @@ genmissing_fast(X1, XN, rho, N, Lfull)
 \item{N}{the length of the sequence including X1 and XN. It
 is two more than the gap length}
 
-\item{Lfull}{precomputed Cholesky factor created with precompute_L}
+\item{Lfull}{Cholesky factor created with precompute_L}
 }
 \value{
-genmissing_fast numeric vector of length N, conditioned on the
+numeric vector of length N, conditioned on the
 first value (X1) and last value (XN) with the specified lag one autocorrelation
 in the limit (where N is large) the values are normal with mean 0 and variance 1
 }
 \description{
 Generates a lag one auto-regressive time series, where the first and last
 values are fixed.  Marginal expected value is zero and variance is one.
-Generated values have a normal conditional distribution.
-}
-\author{
-Claude.ai
+Generated values have a normal conditional distribution. This version replaces
+genmissing and is much faster for long sample gaps.
 }

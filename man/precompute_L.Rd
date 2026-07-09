@@ -12,12 +12,9 @@ precompute_L(rho, N_max)
 \item{N_max}{the maximum number of days between samples}
 }
 \value{
-precompute_L list with elements Ldiag a numeric vector of the diagonal of the Cholesky factor and Lsub a numeric vector of the subdiagonal of the Cholesky factor
+named list with elements Ldiag a numeric vector of the diagonal of the Cholesky factor and Lsub a numeric vector of the subdiagonal of the Cholesky factor
 }
 \description{
 Builds the bidiagonal Cholesky factor of the tridiagonal PRECISION matrix 
 shared by every call of genmissing_fast for a given value of rho.
-}
-\author{
-Claude.ai
 }
