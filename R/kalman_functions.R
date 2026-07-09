@@ -61,19 +61,20 @@ WRTDSKalman <- function(
   
   numDays <- length(localDaily$Date)
   numDaysP <- numDays + 1
-  # set up DailyGen which will hold the daily generated flux values for all days and all iterations
+  # set up DailyGen which will hold the daily generated flux values
+  # for all days and all iterations
   DailyGen <- rep(0, numDays * niter)
   dim(DailyGen) <- c(numDays, niter)
-  #   x is a vector of the standardized residuals for each day
-  #   most of the elements of x will be NA but those from sampled days will have values
+  # x is a vector of the standardized residuals for each day
+  # most of the elements of x will be NA but those from sampled days will have values
   x <- localDaily$stdResid
-  #    xP is x that has been padded with a 0 at the start and a 0 at the end
-  #    thus it is a vector that always starts and ends with non-missing values
+  # xP is x that has been padded with a 0 at the start and a 0 at the end
+  # thus it is a vector that always starts and ends with non-missing values
   xP <- c(0, x, 0)
   zz <- rle(is.na(xP))
-  #    zz$lengths is a vector of run lengths
-  #    zz$values is a vector of the values: TRUE means it is a run of missings,
-  #       FALSE means it is a run of non-missing values
+  # zz$lengths is a vector of run lengths
+  # zz$values is a vector of the values: TRUE means it is a run of missings,
+  # FALSE means it is a run of non-missing values
   nRuns <- length(zz$lengths)
   zends <- cumsum(zz$lengths)
   nRunsM <- nRuns - 1
@@ -83,7 +84,7 @@ WRTDSKalman <- function(
   # numGap is the number of groups of missing values to be filled in
   numGap <- length(doGap)
   # precompute Cholesky factor shared by every call of genmissing_fast()
-  Lfull <- precompute_L(rho, max(zz$lengths))
+  Lfull <- precompute_L(rho, numDays + 2)
   
   # now we are ready to do the iterations to generate the series
   if (verbose) {
@@ -103,9 +104,10 @@ WRTDSKalman <- function(
     # it also adds the stdResid column to Daily
     localDaily <- populateDailySamp(localEList)
     x <- localDaily$stdResid
-    #    xxP is x that has been padded with a 0 at the start and a 0 at the end
-    #    thus it is a vector that always starts and ends with non-missing values
+    # xxP is x that has been padded with a 0 at the start and a 0 at the end
+    # thus it is a vector that always starts and ends with non-missing values
     xxP <- c(0, x, 0)
+    
     # now we are going to loop through all the gaps that need to be filled in
     for (i in 1:numGap) {
       iGap <- doGap[i]
@@ -260,7 +262,7 @@ populateDailySamp <- function(eList) {
 #' @param N the length of the sequence including X1 and XN. It
 #' is two more than the gap length
 #' @export
-#' @return genmissing numeric vector of length N, conditioned on the
+#' @return numeric vector of length N, conditioned on the
 #' first value (X1) and last value (XN) with the specified lag one autocorrelation
 #' in the limit (where N is large) the values are normal with mean 0 and variance 1
 #'
@@ -288,18 +290,18 @@ genmissing <- function(X1, XN, rho, N) {
 #'
 #' Generates a lag one auto-regressive time series, where the first and last
 #' values are fixed.  Marginal expected value is zero and variance is one.
-#' Generated values have a normal conditional distribution.
+#' Generated values have a normal conditional distribution. This version replaces
+#' genmissing and is much faster for long sample gaps.
 #'
-#' @author Claude.ai
 #'
 #' @param X1 value before the gap
 #' @param XN value after the gap
 #' @param rho the lag one autocorrelation
 #' @param N the length of the sequence including X1 and XN. It
 #' is two more than the gap length
-#' @param Lfull precomputed Cholesky factor created with precompute_L
+#' @param Lfull Cholesky factor created with precompute_L
 #' @export
-#' @return genmissing_fast numeric vector of length N, conditioned on the
+#' @return numeric vector of length N, conditioned on the
 #' first value (X1) and last value (XN) with the specified lag one autocorrelation
 #' in the limit (where N is large) the values are normal with mean 0 and variance 1
 #'
@@ -309,7 +311,7 @@ genmissing_fast <- function(X1, XN, rho, N, Lfull) {
   if (N == 2) return(c(X1, XN))
   
   s2 <- 1 - rho^2
-  m  <- N - 2                     # number of interior points for THIS call
+  m  <- N - 2 # number of interior points for THIS call
   
   # Slice the precomputed sequence down to what this N needs.
   # Valid because Ldiag[i]/Lsub[i] never depended on N to begin with.
@@ -362,12 +364,11 @@ genmissing_fast <- function(X1, XN, rho, N, Lfull) {
 #' Builds the bidiagonal Cholesky factor of the tridiagonal PRECISION matrix 
 #' shared by every call of genmissing_fast for a given value of rho.
 #'
-#' @author Claude.ai
 #'
 #' @param rho the lag one autocorrelation
 #' @param N_max the maximum number of days between samples
 #' @export
-#' @return precompute_L list with elements Ldiag a numeric vector of the diagonal of the Cholesky factor and Lsub a numeric vector of the subdiagonal of the Cholesky factor
+#' @return named list with elements Ldiag a numeric vector of the diagonal of the Cholesky factor and Lsub a numeric vector of the subdiagonal of the Cholesky factor
 #'
 precompute_L <- function(rho, N_max) {
   s2 <- 1 - rho^2            # AR(1) innovation variance, sigma^2 = 1 - rho^2
