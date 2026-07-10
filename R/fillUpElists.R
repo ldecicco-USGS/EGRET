@@ -1,3 +1,24 @@
+#' fillUpElists
+#'
+#' Function used in `runSeries` to populate the yHat, SE, and ConcHat
+#' columns into the Daily and Sample data frames within the eList.
+#'
+#' @param eList named list with the INFO, Daily, and Sample dataframes and surfaces matrix
+#' @export
+#' @examples
+#'
+#' eList <- Choptank_eList
+#' eList$Daily$yHat <- NULL
+#' eList$Daily$SE <- NULL
+#' eList$Sample$SE <- NULL
+#' eList$Sample$yHat <- NULL
+#'
+#' eList <- fillUpElists(eList)
+#' head(eList$Daily$yHat)
+#' head(eList$Daily$SE)
+#' head(eList$Sample$SE)
+#' head(eList$Sample$yHat)
+#'
 fillUpElists <- function(eList) {
   # the purpose of this function is to make sure that the eList that comes out of runSeries
   # contains all the columns in Daily and Sample as you get from modelEstimation
