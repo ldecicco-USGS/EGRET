@@ -4,7 +4,7 @@
 \alias{genmissing}
 \title{genmissing}
 \usage{
-genmissing(X1, XN, rho, N)
+genmissing(X1, XN, rho, N, Lfull)
 }
 \arguments{
 \item{X1}{value before the gap}
@@ -15,6 +15,8 @@ genmissing(X1, XN, rho, N)
 
 \item{N}{the length of the sequence including X1 and XN. It
 is two more than the gap length}
+
+\item{Lfull}{Cholesky factor created with precompute_L}
 }
 \value{
 numeric vector of length N, conditioned on the
@@ -24,8 +26,6 @@ in the limit (where N is large) the values are normal with mean 0 and variance 1
 \description{
 Generates a lag one auto-regressive time series, where the first and last
 values are fixed.  Marginal expected value is zero and variance is one.
-Generated values have a normal conditional distribution.
-}
-\author{
-Tim Cohn
+Generated values have a normal conditional distribution. This version replaces
+genmissing and is much faster for long sample gaps.
 }

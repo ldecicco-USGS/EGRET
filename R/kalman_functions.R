@@ -25,40 +25,40 @@
 #' AnnualResults <- setupYears(eList$Daily)
 #' head(AnnualResults)
 WRTDSKalman <- function(
-    eList,
-    rho = 0.90,
-    niter = 200,
-    seed = NA,
-    verbose = TRUE
+  eList,
+  rho = 0.90,
+  niter = 200,
+  seed = NA,
+  verbose = TRUE
 ) {
   if (!is.egret(eList)) {
     stop("Please check eList argument")
   }
-  
+
   # Need these columns to be integers:
   int_cols <- c("Julian", "Month", "Day", "MonthSeq", "waterYear")
   int_indexs <- which(names(eList$Daily) %in% int_cols)
-  
+
   eList$Daily[, int_indexs] <- sapply(eList$Daily[, int_indexs], as.integer)
-  
+
   if (!"surfaces" %in% names(eList)) {
     eList$surfaces <- estSurfaces(eList)
   }
-  
+
   if (!is.na(seed)) {
     set.seed(seed)
   }
-  
+
   # this part is to set up the array of runs of missing values
   localEList <- cleanUp(eList, seed = seed)
   localDaily <- populateDailySamp(localEList)
-  
+
   if (sum(is.na(localDaily$trueConc)) == 0) {
     stop(
       "There are known concentration values for every day in the Daily data frame."
     )
   }
-  
+
   numDays <- length(localDaily$Date)
   numDaysP <- numDays + 1
   # set up DailyGen which will hold the daily generated flux values
@@ -83,9 +83,9 @@ WRTDSKalman <- function(
   doGap <- seq(2, nRunsM, 2)
   # numGap is the number of groups of missing values to be filled in
   numGap <- length(doGap)
-  # precompute Cholesky factor shared by every call of genmissing_fast()
+  # precompute Cholesky factor shared by every call of genmissing()
   Lfull <- precompute_L(rho, numDays + 2)
-  
+
   # now we are ready to do the iterations to generate the series
   if (verbose) {
     cat("% complete:\n")
@@ -93,7 +93,7 @@ WRTDSKalman <- function(
   printUpdate <- unique(floor(seq(1, niter, niter / 100)))
   endOfLine <- seq(10, 100, 10)
   seeds <- sample(1:5000, niter)
-  
+
   for (iter in 1:niter) {
     if (iter %in% printUpdate & verbose) {
       cat(floor(iter * 100 / niter), "\t")
@@ -107,17 +107,23 @@ WRTDSKalman <- function(
     # xxP is x that has been padded with a 0 at the start and a 0 at the end
     # thus it is a vector that always starts and ends with non-missing values
     xxP <- c(0, x, 0)
-    
+
     # now we are going to loop through all the gaps that need to be filled in
     for (i in 1:numGap) {
       iGap <- doGap[i]
       startFill <- zstarts[iGap]
       endFill <- zends[iGap] + 1
       nFill <- zz$lengths[iGap] + 2
-      # genmissing_fast() uses Lfull created above
-      xxP[startFill:endFill] <- genmissing_fast(xxP[startFill], xxP[endFill], rho, nFill, Lfull)
+      # genmissing() uses Lfull created above
+      xxP[startFill:endFill] <- genmissing(
+        xxP[startFill],
+        xxP[endFill],
+        rho,
+        nFill,
+        Lfull
+      )
     }
-    
+
     # now we need to strip out the padded days
     xResid <- xxP[2:numDaysP]
     xConc <- exp((xResid * localDaily$SE) + localDaily$yHat)
@@ -130,9 +136,9 @@ WRTDSKalman <- function(
   Daily$GenConc <- Daily$GenFlux / (Daily$Q * 86.4)
   attr(Daily, "niter") <- niter
   attr(Daily, "rho") <- rho
-  
+
   eList$Daily <- Daily
-  
+
   return(eList)
 }
 
@@ -191,30 +197,30 @@ randomSubset <- function(df, colName, seed = NA) {
     which(duplicated(df[[colName]], fromLast = FALSE)),
     which(duplicated(df[[colName]], fromLast = TRUE))
   ))
-  
+
   if (length(dupIndex) == 0) {
     return(df)
   }
-  
+
   dupIndex <- dupIndex[order(dupIndex)]
-  
+
   unique_groups <- unique(df[[colName]][dupIndex])
-  
+
   if (!is.na(seed)) {
     set.seed(seed)
   }
-  
+
   sliceIndex <- rep(NA, length(unique_groups))
   for (i in seq_along(unique_groups)) {
     sliceIndex[i] <- sample(which(df[[colName]] == unique_groups[i]), size = 1)
   }
-  
+
   dfDuplicates <- df[sliceIndex, ]
   dfNoDuplicates <- df[-dupIndex, ]
-  
+
   subDF <- rbind(dfNoDuplicates, dfDuplicates)
   subDF <- subDF[order(subDF[[colName]]), ]
-  
+
   return(subDF)
 }
 
@@ -235,58 +241,19 @@ randomSubset <- function(df, colName, seed = NA) {
 populateDailySamp <- function(eList) {
   localSample <- eList$Sample
   localDaily <- eList$Daily
-  
+
   localSample <- localSample[, c("Julian", "ConcAve")]
   names(localSample) <- c("Julian", "trueConc")
-  
+
   retDaily <- merge(localDaily, localSample, by = "Julian", all.x = TRUE)
-  
+
   retDaily$trueFlux <- retDaily$trueConc * retDaily$Q * 86.4
   retDaily$stdResid <- (log(retDaily$trueConc) - retDaily$yHat) / retDaily$SE
-  
+
   return(retDaily)
 }
 
-
 #' genmissing
-#'
-#' Generates a lag one auto-regressive time series, where the first and last
-#' values are fixed.  Marginal expected value is zero and variance is one.
-#' Generated values have a normal conditional distribution.
-#'
-#' @author Tim Cohn
-#'
-#' @param X1 value before the gap
-#' @param XN value after the gap
-#' @param rho the lag one autocorrelation
-#' @param N the length of the sequence including X1 and XN. It
-#' is two more than the gap length
-#' @export
-#' @return numeric vector of length N, conditioned on the
-#' first value (X1) and last value (XN) with the specified lag one autocorrelation
-#' in the limit (where N is large) the values are normal with mean 0 and variance 1
-#'
-genmissing <- function(X1, XN, rho, N) {
-  # this code was done by Tim Cohn
-  # @param X1 the value before the gap
-  # @param XN  value after the gap
-  # @param rho the lag one autocorrelation
-  # @param N  the length of the sequence including X1 and XN
-  # it is two more than the gap length
-  C <- t(chol(
-    rho^abs(outer(1:N, 1:N, "-"))[c(1, N, 2:(N - 1)), c(1, N, 2:(N - 1))]
-  ))
-  
-  (C %*%
-      c(
-        MASS::ginv(C[1:2, 1:2]) %*%
-          c(X1, XN),
-        stats::rnorm(N - 2)
-      ))[c(1, 3:N, 2)]
-}
-
-
-#' genmissing_fast
 #'
 #' Generates a lag one auto-regressive time series, where the first and last
 #' values are fixed.  Marginal expected value is zero and variance is one.
@@ -305,19 +272,20 @@ genmissing <- function(X1, XN, rho, N) {
 #' first value (X1) and last value (XN) with the specified lag one autocorrelation
 #' in the limit (where N is large) the values are normal with mean 0 and variance 1
 #'
-genmissing_fast <- function(X1, XN, rho, N, Lfull) {
-  
+genmissing <- function(X1, XN, rho, N, Lfull) {
   # Degenerate case: no interior points to simulate, just return the endpoints
-  if (N == 2) return(c(X1, XN))
-  
+  if (N == 2) {
+    return(c(X1, XN))
+  }
+
   s2 <- 1 - rho^2
-  m  <- N - 2 # number of interior points for THIS call
-  
+  m <- N - 2 # number of interior points for THIS call
+
   # Slice the precomputed sequence down to what this N needs.
   # Valid because Ldiag[i]/Lsub[i] never depended on N to begin with.
   Ldiag <- Lfull$Ldiag[1:m]
-  Lsub  <- Lfull$Lsub[1:m]
-  
+  Lsub <- Lfull$Lsub[1:m]
+
   # --- Step 1: build the RHS vector b for the conditional-mean equation ---
   # The interior precision matrix only connects to the endpoints through
   # its two boundary entries: interior point 2 connects to X1, and
@@ -331,19 +299,27 @@ genmissing_fast <- function(X1, XN, rho, N, Lfull) {
     b[1] <- (rho / s2) * X1
     b[m] <- (rho / s2) * XN
   }
-  
+
   # --- Step 2: solve Omega_II %*% mu = b for the conditional mean mu ---
   # This is done via the standard two-pass bidiagonal solve using L:
   # forward pass solves L %*% w = b (from top down)...
   w <- numeric(m)
   w[1] <- b[1] / Ldiag[1]
-  if (m > 1) for (i in 2:m) w[i] <- (b[i] - Lsub[i] * w[i - 1]) / Ldiag[i]
-  
+  if (m > 1) {
+    for (i in 2:m) {
+      w[i] <- (b[i] - Lsub[i] * w[i - 1]) / Ldiag[i]
+    }
+  }
+
   # ...then backward pass solves L^T %*% mu = w (from bottom up)
   mu <- numeric(m)
   mu[m] <- w[m] / Ldiag[m]
-  if (m > 1) for (i in (m - 1):1) mu[i] <- (w[i] - Lsub[i + 1] * mu[i + 1]) / Ldiag[i]
-  
+  if (m > 1) {
+    for (i in (m - 1):1) {
+      mu[i] <- (w[i] - Lsub[i + 1] * mu[i + 1]) / Ldiag[i]
+    }
+  }
+
   # --- Step 3: sample the conditional noise term ---
   # We want interior draws distributed as N(mu, Omega_II^{-1}).
   # If z ~ iid N(0,1) and we solve L^T %*% y = z, then
@@ -353,16 +329,20 @@ genmissing_fast <- function(X1, XN, rho, N, Lfull) {
   z <- stats::rnorm(m)
   y <- numeric(m)
   y[m] <- z[m] / Ldiag[m]
-  if (m > 1) for (i in (m - 1):1) y[i] <- (z[i] - Lsub[i + 1] * y[i + 1]) / Ldiag[i]
-  
+  if (m > 1) {
+    for (i in (m - 1):1) {
+      y[i] <- (z[i] - Lsub[i + 1] * y[i + 1]) / Ldiag[i]
+    }
+  }
+
   # --- Step 4: combine mean + noise, and re-attach the fixed endpoints ---
   c(X1, mu + y, XN)
 }
 
 #' precompute_L
 #'
-#' Builds the bidiagonal Cholesky factor of the tridiagonal PRECISION matrix 
-#' shared by every call of genmissing_fast for a given value of rho.
+#' Builds the bidiagonal Cholesky factor of the tridiagonal PRECISION matrix
+#' shared by every call of genmissing for a given value of rho.
 #'
 #'
 #' @param rho the lag one autocorrelation
@@ -371,27 +351,27 @@ genmissing_fast <- function(X1, XN, rho, N, Lfull) {
 #' @return named list with elements Ldiag a numeric vector of the diagonal of the Cholesky factor and Lsub a numeric vector of the subdiagonal of the Cholesky factor
 #'
 precompute_L <- function(rho, N_max) {
-  s2 <- 1 - rho^2            # AR(1) innovation variance, sigma^2 = 1 - rho^2
-  m  <- N_max - 2            # number of interior points for the largest N
-  d  <- (1 + rho^2) / s2     # diagonal entry of the interior precision matrix
-  o  <- -rho / s2            # off-diagonal entry of the interior precision matrix
-  
-  Ldiag <- numeric(m)        # will hold L[i,i], the diagonal of the Cholesky factor
-  Lsub  <- numeric(m)        # will hold L[i,i-1], the subdiagonal of the Cholesky factor
-  
+  s2 <- 1 - rho^2 # AR(1) innovation variance, sigma^2 = 1 - rho^2
+  m <- N_max - 2 # number of interior points for the largest N
+  d <- (1 + rho^2) / s2 # diagonal entry of the interior precision matrix
+  o <- -rho / s2 # off-diagonal entry of the interior precision matrix
+
+  Ldiag <- numeric(m) # will hold L[i,i], the diagonal of the Cholesky factor
+  Lsub <- numeric(m) # will hold L[i,i-1], the subdiagonal of the Cholesky factor
+
   # First diagonal entry has no subdiagonal neighbor to account for
   Ldiag[1] <- sqrt(d)
-  
+
   # Standard bidiagonal Cholesky recursion for a tridiagonal matrix:
   # off-diagonal of Omega = L[i,i-1] * L[i-1,i-1]  ->  solve for L[i,i-1]
   # diagonal of Omega     = L[i,i]^2 + L[i,i-1]^2  ->  solve for L[i,i]
   if (m > 1) {
     for (i in 2:m) {
-      Lsub[i]  <- o / Ldiag[i - 1]
+      Lsub[i] <- o / Ldiag[i - 1]
       Ldiag[i] <- sqrt(d - Lsub[i]^2)
     }
   }
-  
+
   list(Ldiag = Ldiag, Lsub = Lsub)
 }
 
@@ -422,15 +402,15 @@ precompute_L <- function(rho, N_max) {
 #' plotWRTDSKalman(eList, sideBySide = TRUE)
 #'
 plotWRTDSKalman <- function(
-    eList,
-    sideBySide = FALSE,
-    fluxUnit = 9,
-    usgsStyle = FALSE
+  eList,
+  sideBySide = FALSE,
+  fluxUnit = 9,
+  usgsStyle = FALSE
 ) {
   if (!all((c("GenFlux", "GenConc") %in% names(eList$Daily)))) {
     stop("This function requires running WRTDSKalman on eList")
   }
-  
+
   if (all(c("paStart", "paLong") %in% names(eList$INFO))) {
     paLong <- eList$INFO$paLong
     paStart <- eList$INFO$paStart
@@ -438,15 +418,15 @@ plotWRTDSKalman <- function(
     paLong <- 12
     paStart <- 10
   }
-  
+
   AnnualResults <- setupYears(eList$Daily)
-  
+
   if (is.numeric(fluxUnit)) {
     fluxUnit <- fluxConst[shortCode = fluxUnit][[1]]
   } else if (is.character(fluxUnit)) {
     fluxUnit <- fluxConst[fluxUnit][[1]]
   }
-  
+
   if (usgsStyle) {
     yLab <- fluxUnit@unitName[[1]]
   } else {
@@ -454,10 +434,10 @@ plotWRTDSKalman <- function(
   }
   yLab <- trimws(yLab, which = "left")
   unitFactorReturn <- fluxUnit@unitFactor
-  
+
   AnnualResults$Flux <- AnnualResults$Flux * unitFactorReturn
   AnnualResults$GenFlux <- AnnualResults$GenFlux * unitFactorReturn
-  
+
   yMax <- 1.1 * max(AnnualResults$Flux, AnnualResults$GenFlux)
   nYears <- length(AnnualResults[, 1])
   # first a plot of just the WRTDS estimate
@@ -494,7 +474,7 @@ plotWRTDSKalman <- function(
     xlab <- paste0("WRTDS estimate of annual flux, in ", yLab)
     ylab <- paste0("WRTDSKalman estimate of annual flux, in ", yLab)
   }
-  
+
   genericEGRETDotPlot(
     AnnualResults$DecYear,
     AnnualResults$Flux,
@@ -516,7 +496,7 @@ plotWRTDSKalman <- function(
     pch = 20,
     cex = 1.4
   )
-  
+
   # scatter plot
   genericEGRETDotPlot(
     AnnualResults$Flux,
@@ -532,7 +512,7 @@ plotWRTDSKalman <- function(
     plotTitle = title2
   )
   graphics::abline(a = 0, b = 1)
-  
+
   if (sideBySide) {
     mtext(mainTitle, line = -1, side = 3, outer = TRUE, cex = 1)
     par(mfrow = c(1, 1), oma = c(0, 0, 0, 0))
@@ -570,44 +550,44 @@ plotWRTDSKalman <- function(
 #' plotTimeSlice(eList, start = NA, end = 1991, conc = FALSE)
 #'
 plotTimeSlice <- function(
-    eList,
-    start = NA,
-    end = NA,
-    conc = TRUE,
-    fluxUnit = 3,
-    usgsStyle = FALSE
+  eList,
+  start = NA,
+  end = NA,
+  conc = TRUE,
+  fluxUnit = 3,
+  usgsStyle = FALSE
 ) {
   if (!all((c("GenFlux", "GenConc") %in% names(eList$Daily)))) {
     stop("This function requires running WRTDSKalman on eList")
   }
-  
+
   eList <- makeAugmentedSample(eList)
-  
+
   Daily <- eList$Daily
   Sample <- eList$Sample
-  
+
   if (!is.na(start)) {
     Daily <- Daily[Daily$DecYear >= start, ]
-    
+
     Sample <- Sample[Sample$DecYear >= start, ]
   } else {
     start <- min(c(Daily$DecYear, Sample$DecYear))
   }
-  
+
   if (!is.na(end)) {
     Daily <- Daily[Daily$DecYear <= end, ]
-    
+
     Sample <- Sample[Sample$DecYear <= end, ]
   } else {
     end <- max(c(Daily$DecYear, Sample$DecYear))
   }
-  
+
   # figure out which data symbol to use, red for uncensored, brown for censored
   Sample$color <- ifelse(Sample$Uncen == 1, "red", "cyan4")
-  
+
   # first concentration, then flux
   name <- paste(eList$INFO$shortName, eList$INFO$paramShortName)
-  
+
   possibleGoodUnits <- c(
     "mg/l",
     "mg/l as N",
@@ -623,10 +603,10 @@ plotTimeSlice <- function(
     "mg/l as S",
     "mg/l NH4"
   )
-  
+
   allCaps <- toupper(possibleGoodUnits)
   localUnits <- toupper(eList$INFO$param.units)
-  
+
   if (!(localUnits %in% allCaps)) {
     warning(
       "Expected concentration units are mg/l, \nThe INFO dataframe indicates:",
@@ -634,15 +614,15 @@ plotTimeSlice <- function(
       "\nFlux calculations will be wrong if units are not consistent"
     )
   }
-  
+
   if (conc) {
     ratio <- mean(Daily$GenConc) / mean(Daily$ConcDay)
     fratio <- format(ratio, digits = 2)
-    
+
     y1 <- Daily$ConcDay
     y2 <- Daily$GenConc
     y3 <- Sample$rObserved
-    
+
     plotTitle <- paste(
       name,
       "\nConcentrations, Black is WRTDS, Green is WRTDSKalman\nData in red, (rl in blue if <), Ratio of means is",
@@ -654,28 +634,28 @@ plotTimeSlice <- function(
     } else if (is.character(fluxUnit)) {
       fluxUnit <- fluxConst[fluxUnit][[1]]
     }
-    
+
     fluxFactor <- fluxUnit@unitFactor
-    
+
     ratio <- mean(Daily$GenFlux) / mean(Daily$FluxDay)
     fratio <- format(ratio, digits = 2)
-    
+
     y1 <- Daily$FluxDay * fluxFactor
     y2 <- Daily$GenFlux * fluxFactor
     y3 <- Sample$rObserved * Sample$Q * fluxFactor * 86.40
-    
+
     yLab <- ifelse(usgsStyle, fluxUnit@unitUSGS, fluxUnit@unitExpress)
-    
+
     plotTitle <- paste(
       name,
       "\nFlux, Black is WRTDS, Green is WRTDSKalman\nData in red, (rl in blue if <), Ratio of means is",
       fratio
     )
   }
-  
+
   high_y <- max(y1, y2, y3, na.rm = TRUE)
   low_y <- min(y1, y2, y3, na.rm = TRUE)
-  
+
   yInfo <- generalAxis(
     x = y1,
     minVal = low_y,
@@ -685,7 +665,7 @@ plotTimeSlice <- function(
     logScale = TRUE,
     concentration = conc
   )
-  
+
   genericEGRETDotPlot(
     Daily$DecYear,
     y1,
