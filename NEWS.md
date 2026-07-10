@@ -9,8 +9,7 @@ populateDaily for more information.
 * Added "fill_missing_daily" function as a standalone.
 * Added code to make sure the eList returned from runSeries contained
 the same columns that would be returned from modelEstimation.
-* Added internal range calculation to WRTDSKalman function to speed processing
-of records with long sample gaps.
+* Revised WRTDSKalman algorithm to speed processing of records with long sample gaps. The behavior and outputs of the WRTDSKalman function have not changed.
 * Added the use of genmissing() to WRTDSKalman function on the first and last
 gaps of the dataset instead of the existing approach where autocorrelation
 doesn't extend into those gaps.
