@@ -2,7 +2,11 @@ EGRET 3.0.12
 ===========
 * Changed readNWISDaily to use new USGS Water Data API services.
 * Changed readNWISInfo to use new USGS Water Data API services.
-* Added option to use the flow adjustment or not.
+* Added option ("adjust") to use the flow adjustment within the readNWISDaily and
+readUserDaily functions. By default, "adjust" is set to TRUE and will 
+add a constant to zero flow values to allow log transformation. In special cases,
+users may want to keep the zero-flow values, keeping in mind that in those cases 
+many of the modeling functions will not work.
 * Cleaned up plotConcTimeSmooth title.
 * Added a "fill" option to readDaily functions, see examples in
 populateDaily for more information.
